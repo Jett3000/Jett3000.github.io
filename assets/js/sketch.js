@@ -3,6 +3,7 @@ let particles = [];
 let attractors = [];
 let particleCount = 600;
 
+
 function preload() {
   coords = loadStrings('assets/js/coords.txt');
 }
@@ -18,17 +19,22 @@ function setup() {
   }
 
   //make particleCount random particles
+  // const t0 = millis();
   for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
   }
+  // const t1 = millis();
+  // console.log(`making particles took ${t1 - t0} milliseconds.`);
+
+  background(14);
 }
 
 //timings for the background dimming
 let maxDimAlpha = 30;
 let minDimAlpha = 20;
-let dimFrames = 100;
+let dimFrames = 150;
 let unDimFrames = 40;
-let dimStart = 400;
+let dimStart = 350;
 let dimMid = dimStart + dimFrames;
 let dimEnd = dimMid + unDimFrames;
 
