@@ -4,6 +4,7 @@ let attractors = [];
 let particleCount = 600;
 let textThickness = 8;
 let particleSize = 4;
+let bgBrightneess = 100 * 14 / 255;
 
 
 function preload() {
@@ -18,7 +19,7 @@ function setup() {
   canvas.parent("sketch-container");
   noStroke();
   colorMode(HSB);
-  background(14);
+  background(bgBrightneess);
 
   //downsize sketch for mobile
   if (canvasWidth < 300) {
@@ -52,13 +53,13 @@ function draw() {
   if (frameCount >= dimStart && frameCount < dimEnd) {
     if (frameCount <= dimMid) {
       let bgAlpha = map(frameCount, dimStart, dimMid, minDimAlpha, maxDimAlpha);
-      background(14, bgAlpha);
+      background(bgBrightneess, bgAlpha);
     } else if (frameCount <= dimEnd) {
       let bgAlpha = map(frameCount, dimMid, dimEnd, maxDimAlpha, minDimAlpha);
-      background(14, bgAlpha);
+      background(bgBrightneess, bgAlpha);
     }
   } else {
-    background(0, 0, 14, 0.1);
+    background(0, 0, bgBrightneess, 0.1);
   }
 
 
