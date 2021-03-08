@@ -15,8 +15,11 @@ function setup() {
 }
 
 function draw() {
-  background(15, 30);
-  // attractors.forEach(att => ellipse(att.x, att.y, 5, 5));
+  if(frameCount == 350){
+      background(14);
+      print("clear");
+    }
+    background(14, 20);
   particles.forEach(particle => particle.step());
 }
 
@@ -51,7 +54,7 @@ class Particle {
   }
 
   step() {
-    ellipse(this.pos.x, this.pos.y, 3, 3);
+    ellipse(this.pos.x, this.pos.y, 4, 4);
     this.acc = p5.Vector.sub(this.attr, this.pos);
     if(this.acc.mag() < 8){
       this.acc.limit(0.1);
