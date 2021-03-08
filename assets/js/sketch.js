@@ -25,7 +25,7 @@ function setup() {
   //make particleCount random particles
   if(canvasWidth < 300){
     print("reducing particles for mobile");
-    particleCount /= 2;
+    particleCount /= 3;
     textThickness = 4;
   }
   for (let i = 0; i < particleCount; i++) {
@@ -90,7 +90,7 @@ class Particle {
   step() {
     ellipse(this.pos.x, this.pos.y, 4, 4);
     this.acc = p5.Vector.sub(this.attr, this.pos);
-    if (this.acc.mag() < textThickness) {
+    if (this.acc.magSq() < (textThickness * textThickness)) {
       this.acc.limit(0.1);
     } else {
       this.acc.limit(1.5);
