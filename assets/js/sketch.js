@@ -2,6 +2,7 @@ let coords = [];
 let particles = [];
 let attractors = [];
 let particleCount = 600;
+let textThickness = 8;
 
 
 function preload() {
@@ -25,6 +26,7 @@ function setup() {
   if(canvasWidth < 300){
     print("reducing particles for mobile");
     particleCount /= 2;
+    textThickness = 4;
   }
   for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
