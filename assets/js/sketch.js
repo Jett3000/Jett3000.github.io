@@ -15,7 +15,7 @@ function setup() {
 }
 
 function draw() {
-  background(0, 30);
+  background(15, 30);
   // attractors.forEach(att => ellipse(att.x, att.y, 5, 5));
   particles.forEach(particle => particle.step());
 }
