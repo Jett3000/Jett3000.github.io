@@ -15,11 +15,10 @@ function setup() {
 }
 
 function draw() {
-  if(frameCount == 350){
-      background(14);
-      print("clear");
-    }
-    background(14, 20);
+  if (frameCount == 1 || frameCount == 350) {
+    background(14);
+  }
+  background(14, 20);
   particles.forEach(particle => particle.step());
 }
 
@@ -56,7 +55,7 @@ class Particle {
   step() {
     ellipse(this.pos.x, this.pos.y, 4, 4);
     this.acc = p5.Vector.sub(this.attr, this.pos);
-    if(this.acc.mag() < 8){
+    if (this.acc.mag() < 8) {
       this.acc.limit(0.1);
     } else {
       this.acc.limit(1.5);
