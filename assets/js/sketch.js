@@ -1,32 +1,53 @@
+let coords = [];
 let particles = [];
 let attractors = [];
+let particleCount = 600;
 
 function preload() {
-  loadStrings('assets/js/draft1.txt', makeAttractors);
+  coords = loadStrings('assets/js/coords.txt');
 }
 
 function setup() {
   let canvas = createCanvas(600, 600);
   canvas.parent("sketch-container");
-  stroke(150);
-  for (let i = 0; i < 600; i++) {
+  noStroke();
+
+  //make attractors from preloaded coords
+  for (i = 0; i < coords.length - 1; i += 2) {
+    attractors.push(createVector(coords[i] * width, coords[i + 1] * height));
+  }
+
+  //make particleCount random particles
+  for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
   }
 }
 
-function draw() {
-  if (frameCount == 1 || frameCount == 350) {
-    background(14);
-  }
-  background(14, 20);
-  particles.forEach(particle => particle.step());
-}
+//timings for the background dimming
+let maxDimAlpha = 30;
+let minDimAlpha = 20;
+let dimFrames = 100;
+let unDimFrames = 40;
+let dimStart = 400;
+let dimMid = dimStart + dimFrames;
+let dimEnd = dimMid + unDimFrames;
 
-function makeAttractors(strings) {
-  for (i = 0; i < strings.length - 1; i += 2) {
-    // print(strings[i], strings[i + 1]);
-    attractors.push(createVector(strings[i] * (600 / 750), strings[i + 1] * (600 / 750)));
+
+function draw() {
+  if (frameCount >= dimStart && frameCount < dimEnd) {
+    if (frameCount <= dimMid) {
+      let bgAlpha = map(frameCount, dimStart, dimMid, minDimAlpha, maxDimAlpha);
+      background(14, bgAlpha);
+    } else if (frameCount <= dimEnd) {
+      let bgAlpha = map(frameCount, dimMid, dimEnd, maxDimAlpha, minDimAlpha);
+      background(14, bgAlpha);
+    }
+  } else {
+    background(14, minDimAlpha);
   }
+
+  // attractors.forEach(att => ellipse(att.x, att.y, 5, 5));
+  particles.forEach(particle => particle.step());
 }
 
 //Particle class
@@ -41,7 +62,8 @@ class Particle {
 
   searchForVec() {
     attractors.sort((curr, other) => {
-      return this.pos.dist(curr) - this.pos.dist(other);
+      return p5.Vector.sub(curr, this.pos).magSq() -
+        p5.Vector.sub(other, this.pos).magSq();
     });
 
     attractors.sort((curr, other) => {
