@@ -40,8 +40,8 @@ function setup() {
 }
 
 //timings for the background dimming
-let maxDimAlpha = 0.2;
-let minDimAlpha = 0.1;
+let maxDimAlpha = 0.1;
+let minDimAlpha = 0.075;
 let dimFrames = 100;
 let unDimFrames = 40;
 let dimStart = 400;
@@ -59,7 +59,7 @@ function draw() {
       background(bgBrightneess, bgAlpha);
     }
   } else {
-    background(0, 0, bgBrightneess, 0.1);
+    background(0, 0, bgBrightneess, minDimAlpha);
   }
 
 
