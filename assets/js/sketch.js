@@ -1,5 +1,5 @@
-var particles = [];
-var attractors = [];
+let particles = [];
+let attractors = [];
 
 function preload() {
   loadStrings('assets/js/draft1.txt', makeAttractors);
@@ -9,7 +9,7 @@ function setup() {
   let canvas = createCanvas(600, 600);
   canvas.parent("sketch-container");
   stroke(150);
-  for (let i = 0; i < 300; i++) {
+  for (let i = 0; i < 600; i++) {
     particles.push(new Particle());
   }
 }
@@ -31,30 +31,37 @@ function makeAttractors(strings) {
 class Particle {
   constructor() {
     this.pos = createVector(random(width), random(height));
-    this.vel = p5.Vector.random2D().setMag(0.2);
-    this.attr = this.findClosestVec();
+    this.vel = p5.Vector.random2D();
+    this.attr = this.searchForVec();
     this.acc = p5.Vector.sub(this.attr, this.pos).setMag(0.3);
   }
 
-  findClosestVec() {
-    let ldist = 10000;
-    let lvec;
-    for (i = 0; i < attractors.length; i++) {
-      print(attractors[i]);
-      let cdist = p5.Vector.dist(attractors[i], this.pos);
-      if (cdist < ldist) {
-        ldist = cdist;
-        lvec = attractors[i];
-      }
-    }
-    return lvec;
+
+  searchForVec() {
+    attractors.sort((curr, other) => {
+      return this.pos.dist(curr) - this.pos.dist(other);
+    });
+
+    attractors.sort((curr, other) => {
+      return curr.z - other.z;
+    });
+
+    attractors[0].z += 1;
+    return attractors[0];
   }
 
   step() {
-    // line(this.pos.x, this.pos.y, this.attr.x, this.attr.y);
     ellipse(this.pos.x, this.pos.y, 3, 3);
+    this.acc = p5.Vector.sub(this.attr, this.pos);
+    if(this.acc.mag() < 8){
+      this.acc.limit(0.1);
+    } else {
+      this.acc.limit(1.5);
+    }
+
+    this.vel = p5.Vector.random2D().mult(2);
+    this.vel.lerp(this.acc, 0.5)
+
     this.pos.add(this.vel);
-    this.vel.add(this.acc).limit(1);
-    this.acc = p5.Vector.sub(this.attr, this.pos).limit(0.5);
   }
 }
