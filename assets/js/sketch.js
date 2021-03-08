@@ -19,14 +19,9 @@ function setup() {
   }
 
   //make particleCount random particles
-  // const t0 = millis();
   for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
   }
-  // const t1 = millis();
-  // console.log(`making particles took ${t1 - t0} milliseconds.`);
-
-  background(14);
 }
 
 //timings for the background dimming
@@ -48,6 +43,8 @@ function draw() {
       let bgAlpha = map(frameCount, dimMid, dimEnd, maxDimAlpha, minDimAlpha);
       background(14, bgAlpha);
     }
+  } else if (frameCount == 1) {
+    background(14);
   } else {
     background(14, minDimAlpha);
   }
