@@ -17,9 +17,11 @@ function setup() {
   const canvas = createCanvas(canvasWidth, canvasWidth);
   canvas.parent("sketch-container");
   noStroke();
+  colorMode(HSB);
+  background(14);
 
   //downsize sketch for mobile
-  if(canvasWidth < 300){
+  if (canvasWidth < 300) {
     particleCount /= 3;
     textThickness /= 2;
     particleSize /= 2;
@@ -37,11 +39,11 @@ function setup() {
 }
 
 //timings for the background dimming
-let maxDimAlpha = 25;
-let minDimAlpha = 20;
-let dimFrames = 150;
+let maxDimAlpha = 0.2;
+let minDimAlpha = 0.1;
+let dimFrames = 100;
 let unDimFrames = 40;
-let dimStart = 350;
+let dimStart = 400;
 let dimMid = dimStart + dimFrames;
 let dimEnd = dimMid + unDimFrames;
 
@@ -55,10 +57,8 @@ function draw() {
       let bgAlpha = map(frameCount, dimMid, dimEnd, maxDimAlpha, minDimAlpha);
       background(14, bgAlpha);
     }
-  } else if (frameCount == 1) {
-    background(14);
   } else {
-    background(14, minDimAlpha);
+    background(0, 0, 14, 0.1);
   }
 
 
@@ -69,6 +69,7 @@ function draw() {
 //Particle class
 class Particle {
   constructor() {
+    this.hoff = random(30);
     this.pos = createVector(random(width), random(height));
     this.vel = p5.Vector.random2D();
     this.attr = this.searchForVec();
@@ -91,6 +92,7 @@ class Particle {
   }
 
   step() {
+    fill((frameCount + this.hoff) % 360, 50, 200)
     ellipse(this.pos.x, this.pos.y, particleSize, particleSize);
     this.acc = p5.Vector.sub(this.attr, this.pos);
     if (this.acc.magSq() < (textThickness * textThickness)) {
@@ -99,9 +101,9 @@ class Particle {
       this.acc.limit(1.5);
     }
 
+    //jitter towards attractor behavior
     this.vel = p5.Vector.random2D().mult(2);
     this.vel.lerp(this.acc, 0.5)
-
     this.pos.add(this.vel);
   }
 }
