@@ -103,7 +103,7 @@ class Particle {
     }
 
     //jitter towards attractor behavior
-    this.vel = p5.Vector.random2D().mult(2);
+    this.vel = p5.Vector.random2D().mult(2.5);
     this.vel.lerp(this.acc, 0.5)
     this.pos.add(this.vel);
   }
