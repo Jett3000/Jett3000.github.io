@@ -22,6 +22,10 @@ function setup() {
   }
 
   //make particleCount random particles
+  if(canvasWidth < 300){
+    print("reducing particles for mobile");
+    particleCount /= 2;
+  }
   for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
   }
