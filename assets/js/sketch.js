@@ -1,8 +1,8 @@
-let particles = [];
-let attractors = [];
+var particles = [];
+var attractors = [];
 
 function preload() {
-  loadStrings('assets/draft1.txt', makeAttractors);
+  loadStrings('assets/js/draft1.txt', makeAttractors);
 }
 
 function setup() {
