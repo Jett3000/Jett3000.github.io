@@ -24,7 +24,7 @@ function setup() {
   //downsize sketch for mobile
   if (canvasWidth < 300) {
     particleCount /= 3;
-    textThickness /= 2;
+    textThickness /= 3;
     particleSize /= 2;
   }
 
