@@ -9,7 +9,10 @@ function preload() {
 }
 
 function setup() {
-  let canvas = createCanvas(600, 600);
+  //create canvas to fit container div
+  const canvasDiv = document.getElementById('sketch-container');
+  const canvasWidth = canvasDiv.offsetWidth;
+  const canvas = createCanvas(canvasWidth, canvasWidth);
   canvas.parent("sketch-container");
   noStroke();
 
@@ -19,18 +22,13 @@ function setup() {
   }
 
   //make particleCount random particles
-  // const t0 = millis();
   for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
   }
-  // const t1 = millis();
-  // console.log(`making particles took ${t1 - t0} milliseconds.`);
-
-  background(14);
 }
 
 //timings for the background dimming
-let maxDimAlpha = 30;
+let maxDimAlpha = 25;
 let minDimAlpha = 20;
 let dimFrames = 150;
 let unDimFrames = 40;
@@ -48,9 +46,12 @@ function draw() {
       let bgAlpha = map(frameCount, dimMid, dimEnd, maxDimAlpha, minDimAlpha);
       background(14, bgAlpha);
     }
+  } else if (frameCount == 1) {
+    background(14);
   } else {
     background(14, minDimAlpha);
   }
+
 
   // attractors.forEach(att => ellipse(att.x, att.y, 5, 5));
   particles.forEach(particle => particle.step());
