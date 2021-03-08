@@ -91,7 +91,7 @@ class Particle {
   }
 
   step() {
-    circle(this.pos.x, this.pos.y, particleSize);
+    ellipse(this.pos.x, this.pos.y, particleSize, particleSize);
     this.acc = p5.Vector.sub(this.attr, this.pos);
     if (this.acc.magSq() < (textThickness * textThickness)) {
       this.acc.limit(0.1);
