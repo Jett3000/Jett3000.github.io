@@ -3,6 +3,7 @@ let particles = [];
 let attractors = [];
 let particleCount = 600;
 let textThickness = 8;
+let particleSize = 4;
 
 
 function preload() {
@@ -17,17 +18,19 @@ function setup() {
   canvas.parent("sketch-container");
   noStroke();
 
+  //downsize sketch for mobile
+  if(canvasWidth < 300){
+    particleCount /= 3;
+    textThickness /= 2;
+    particleSize /= 2;
+  }
+
   //make attractors from preloaded coords
   for (i = 0; i < coords.length - 1; i += 2) {
     attractors.push(createVector(coords[i] * width, coords[i + 1] * height));
   }
 
   //make particleCount random particles
-  if(canvasWidth < 300){
-    print("reducing particles for mobile");
-    particleCount /= 3;
-    textThickness = 4;
-  }
   for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
   }
