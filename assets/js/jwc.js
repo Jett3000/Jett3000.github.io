@@ -48,7 +48,7 @@ function setup() {
 
 
 function draw() {
-  background(0, 0, bgBrightneess, 0.2 * sin(frameCount * 4));
+  background(0, 0, bgBrightneess, 0.1);
   mouseVec.x = mouseX;
   mouseVec.y = mouseY;
 
@@ -81,7 +81,7 @@ class Particle {
     }
 
     //jitter towards attractor behavior
-    this.vel = p5.Vector.random2D().mult(2.5);
+    this.vel = p5.Vector.random2D().mult(2);
     this.vel.lerp(this.acc, 0.5)
     this.pos.add(this.vel);
   }
@@ -89,8 +89,7 @@ class Particle {
 
   searchForVec() {
     attractors.sort((curr, other) => {
-      return p5.Vector.sub(curr, this.pos).magSq() -
-        p5.Vector.sub(other, this.pos).magSq();
+      return this.distSq(this.pos, curr) - this.distSq(this.pos, other);
     });
 
     attractors.sort((curr, other) => {
@@ -102,10 +101,7 @@ class Particle {
   }
 
   distSq(vec1, vec2) {
-    let xdiff = pow(vec1.x - vec2.x, 2);
-    let ydiff = pow(vec1.y - vec2.y, 2);
-    return ydiff + xdiff;
-
+    return ((vec1.x - vec2.x) * (vec1.x - vec2.x)) +
+      ((vec1.y - vec2.y) * (vec1.y - vec2.y));
   }
-
 }
