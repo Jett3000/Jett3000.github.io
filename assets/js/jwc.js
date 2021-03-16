@@ -5,6 +5,7 @@ let particleCount = 600;
 let textThickness = 8;
 let particleSize = 4;
 let bgBrightneess = 100 * 14 / 255;
+let mouseVec;
 
 
 function preload() {
@@ -17,12 +18,15 @@ function setup() {
   const canvasWidth = canvasDiv.offsetWidth;
   const canvas = createCanvas(canvasWidth, canvasWidth);
   canvas.parent("sketch-container");
+
+  //sketch settings
   noStroke();
   colorMode(HSB);
   background(bgBrightneess);
 
   //downsize sketch for mobile
   if (canvasWidth < 300) {
+    console.log("downsizing for mobile");
     particleCount /= 3;
     textThickness /= 3;
     particleSize /= 2;
@@ -37,31 +41,16 @@ function setup() {
   for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
   }
+
+  mouseVec = createVector(0, 0);
 }
 
-//timings for the background dimming
-let maxDimAlpha = 0.1;
-let minDimAlpha = 0.075;
-let dimFrames = 100;
-let unDimFrames = 40;
-let dimStart = 400;
-let dimMid = dimStart + dimFrames;
-let dimEnd = dimMid + unDimFrames;
 
 
 function draw() {
-  if (frameCount >= dimStart && frameCount < dimEnd) {
-    if (frameCount <= dimMid) {
-      let bgAlpha = map(frameCount, dimStart, dimMid, minDimAlpha, maxDimAlpha);
-      background(bgBrightneess, bgAlpha);
-    } else if (frameCount <= dimEnd) {
-      let bgAlpha = map(frameCount, dimMid, dimEnd, maxDimAlpha, minDimAlpha);
-      background(bgBrightneess, bgAlpha);
-    }
-  } else {
-    background(0, 0, bgBrightneess, minDimAlpha);
-  }
-
+  background(0, 0, bgBrightneess, 0.2 * sin(frameCount * 4));
+  mouseVec.x = mouseX;
+  mouseVec.y = mouseY;
 
   // attractors.forEach(att => ellipse(att.x, att.y, 5, 5));
   particles.forEach(particle => particle.step());
@@ -75,6 +64,26 @@ class Particle {
     this.vel = p5.Vector.random2D();
     this.attr = this.searchForVec();
     this.acc = p5.Vector.sub(this.attr, this.pos).setMag(0.3);
+  }
+
+  step() {
+    fill((frameCount + this.hoff) % 360, 50, 200)
+    ellipse(this.pos.x, this.pos.y, particleSize, particleSize);
+    this.acc = p5.Vector.sub(this.attr, this.pos);
+    if (this.acc.magSq() < (textThickness * textThickness)) {
+      this.acc.limit(0.1);
+    } else {
+      this.acc.limit(2);
+    }
+
+    if (this.distSq(this.pos, mouseVec) <= 3600) {
+      this.acc = p5.Vector.sub(this.pos, mouseVec).rotate(radians(45)).setMag(3);
+    }
+
+    //jitter towards attractor behavior
+    this.vel = p5.Vector.random2D().mult(2.5);
+    this.vel.lerp(this.acc, 0.5)
+    this.pos.add(this.vel);
   }
 
 
@@ -92,19 +101,11 @@ class Particle {
     return attractors[0];
   }
 
-  step() {
-    fill((frameCount + this.hoff) % 360, 50, 200)
-    ellipse(this.pos.x, this.pos.y, particleSize, particleSize);
-    this.acc = p5.Vector.sub(this.attr, this.pos);
-    if (this.acc.magSq() < (textThickness * textThickness)) {
-      this.acc.limit(0.1);
-    } else {
-      this.acc.limit(1.5);
-    }
+  distSq(vec1, vec2) {
+    let xdiff = pow(vec1.x - vec2.x, 2);
+    let ydiff = pow(vec1.y - vec2.y, 2);
+    return ydiff + xdiff;
 
-    //jitter towards attractor behavior
-    this.vel = p5.Vector.random2D().mult(2.5);
-    this.vel.lerp(this.acc, 0.5)
-    this.pos.add(this.vel);
   }
+
 }
