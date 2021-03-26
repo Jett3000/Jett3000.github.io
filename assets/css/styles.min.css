@@ -1,1 +1,1 @@
-.col{overflow:scroll;max-height:80vh;max-width:60%;width:60%}
+.col{overflow-y:auto;max-height:80vh;max-width:60%;width:60%}
