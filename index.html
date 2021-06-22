@@ -7,59 +7,25 @@
     <title>Jett's Web Portfolio</title>
     <meta name="description" content="A website to show off my stuff.">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/splash.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
-<script src="https://editor.p5js.org/Jett3000/sketches/abD22l7Ic/sketch.js
-"></script>
 </head>
 
-<body style="background: black;">
-    <main class="d-flex flex-column justify-content-center align-items-center align-content-center" style="background: rgb(14,14,14);color: #f8f9fa;width: 100vw;padding-left: 20px;padding-right: 20px;">
-        <!-- Start: pics and info -->
-        <div class="row d-flex flex-column justify-content-start align-items-center align-content-center flex-lg-row flex-xl-row" style="height: 100vh;width: 100%;padding: 0px;margin: 0px;">
-            <!-- Start: picture col -->
-            <div class="col d-flex flex-column justify-content-center align-items-center align-content-center" style="max-width: 40%;width: 40%;">
-                <!-- Start: picture grid -->
-                <div class="row" style="max-width: 600px;width: 100%;">
-                    <div class="col d-flex flex-column justify-content-start align-items-end align-content-end" style="padding: 0px 0px;"><img style="max-width: 100%;" src="assets/img/nasa.jpeg"><img style="max-width: 100%;" src="assets/img/butterfly.jpeg"></div>
-                    <div class="col d-flex flex-column justify-content-start align-items-start align-content-start" style="padding: 0px 0px;"><img style="max-width: 100%;" src="assets/img/circles.jpeg"><img style="max-width: 100%;" src="assets/img/tropical.jpeg"></div>
-                </div><!-- End: picture grid -->
-            </div><!-- End: picture col -->
-            <!-- Start: info col -->
-            <div class="col d-flex flex-column justify-content-start align-items-center align-content-center" style="max-width: 60%;max-height: 80vh;overflow-y: auto;">
-                <!-- Start: sketch -->
-                <div class="row d-flex flex-column justify-content-center align-items-center align-content-center flex-lg-row flex-xl-row" style="padding: 0px;margin-left: 0px;margin-bottom: 60px;margin-right: 0px;margin-top: 24px;height: 100%;width: 100%;">
-                    <div class="col d-flex justify-content-center" style="width: 100%;">
-                        <div class="d-flex justify-content-center align-items-center" id="sketch-container" style="width: 600px;min-height: 300px;max-width: 600px;min-width: 300px;max-height: 600px;height: 600px;overflow: hidden;"></div>
-                    </div>
-                </div><!-- End: sketch -->
-                <!-- Start: university -->
-                <div class="row d-flex flex-column justify-content-center align-items-center align-content-center flex-lg-row flex-xl-row" style="height: 100%;width: 100%;padding: 0px;margin: 0px;margin-bottom: 60px;">
-                    <!-- Start: uni text -->
-                    <div class="col d-flex flex-column justify-content-start align-items-start align-content-start" style="max-width: 600px;width: 50%;height: 100%;">
-                        <h1 style="text-align: left;">I'm a proud Tarheel 🐏!</h1>
-                        <p style="width: 66%;text-align: left;">I'm a sophomore at UNC Chapel Hill, majoring in Computer Science. Although I enjoy the rigorous coursework at Carolina, my greatest accomplishments are often outside the classroom.</p>
-                    </div><!-- End: uni text -->
-                    <!-- Start: uni graphic -->
-                    <div class="col d-flex flex-column justify-content-center align-items-center align-content-center" style="width: 50%;max-width: 50%;height: 100%;max-height: 100%;">
-                        <!-- Start: unc bubble video --><video preload="auto" autoplay="" loop="" muted="" style="max-width: 500px;border-radius: 50px;overflow: hidden;">
-                            <source src="assets/img/uncbubbles.mp4" type="video/mp4">
-                        </video><!-- End: unc bubble video -->
-                    </div><!-- End: uni graphic -->
-                </div><!-- End: university -->
-                <!-- Start: gen art -->
-                <div class="row d-flex flex-column justify-content-start align-items-center align-content-center flex-lg-row flex-xl-row" style="height: 100%;width: 100%;padding: 0px;margin: 0px;">
-                    <div class="col d-flex flex-column justify-content-center align-items-center align-content-center" style="max-width: 60%;width: 80%;"><img src="assets/img/smallrnoise.png" style="max-width: 400px;border-radius: 60px;border-width: 4px;border-style: solid;"></div>
-                    <div class="col d-flex flex-column justify-content-center align-items-start align-content-start" style="max-width: 80%;width: 80%;">
-                        <h1 style="width: 100%;">I love to make generative art.</h1>
-                        <p style="width: 66%;">I've been programming sketches in Processing for almost a year now, and I think I've made some pretty cool stuff... including everything you see on this page!</p>
-                    </div>
-                </div><!-- End: gen art -->
-            </div><!-- End: info col -->
-        </div><!-- End: pics and info -->
+<body style="background: #0e0e0e;">
+    <main class="d-flex flex-row justify-content-center align-items-stretch" style="background: #0e0e0e;width: 100%;height: 100vh;padding: 5%;">
+        <div class="col" style="padding: 0px;">
+            <div id="waterfall-sketch-container" style="width: 100%;height: 100%;">
+                <div id="p5_loading"></div>
+            </div>
+        </div>
+        <div class="col d-flex flex-column justify-content-center align-items-center" style="padding: 15px;">
+            <h1 style="text-align: center;color: #fcfaee;font-size: 8vh;margin-bottom: 8px;padding-bottom: 8px;border-bottom: 4px solid #bc9eca;">Jett Pavlica</h1>
+            <div class="d-flex flex-column justify-content-center align-items-center"><a href="projects.html">view projects -&gt;</a></div>
+        </div>
     </main>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://editor.p5js.org/Jett3000/sketches/abD22l7Ic/sketch.js"></script>
+    <script src="assets/js/portfolio-waterfall.min.js"></script>
 </body>
 
 </html>
