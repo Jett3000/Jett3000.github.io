@@ -1,0 +1,19 @@
+a {
+  color: #e0e0e0;
+  font-size: 4.5vh;
+  text-decoration: none;
+  font-family: lores-12-narrow, sans-serif;
+}
+
+a:hover {
+  color: #e5c4d6;
+  font-size: 5vh;
+  text-decoration: none;
+}
+
+h1 {
+  font-family: poppins,sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
