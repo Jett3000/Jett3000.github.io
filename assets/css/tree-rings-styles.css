@@ -1,0 +1,28 @@
+html, body, main {
+  width: 100vw;
+  height: 100vh;
+  background: rgb(14,14,14);
+}
+
+#sketch-container {
+  min-width: 70vw;
+  height: 100vh;
+}
+
+#control-panel {
+  min-width: 30vw;
+  height: 100vh;
+}
+
+.slider-title, .slider-label {
+  color: #fcfaee;
+}
+
+.slider {
+  width: 70%;
+}
+
+.slider-holder {
+  min-width: 100%;
+}
+
