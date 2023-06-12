@@ -22,7 +22,7 @@ function setup() {
     if (getItem('userRadius')) {
         defaultValue = getItem('userRadius');
     } else {
-        defaultValue = 12;
+        defaultValue = 20;
     }
     radiusSlider = document.getElementById('radius-slider');
     radiusSlider.min = 2;
@@ -38,7 +38,7 @@ function setup() {
     if (getItem('userAttempts')) {
         defaultValue = getItem('userAttempts');
     } else {
-        defaultValue = 4;
+        defaultValue = 30;
     }
     attemptSlider = document.getElementById('attempts-slider');
     attemptSlider.min = 2;
@@ -54,7 +54,7 @@ function setup() {
     if (getItem('userSAL')) {
         defaultValue = getItem('userSAL');
     } else {
-        defaultValue = HALF_PI;
+        defaultValue = PI;
     }
     searchArcLengthSlider = document.getElementById('sal-slider');
     searchArcLengthSlider.min = 0;
@@ -70,7 +70,7 @@ function setup() {
      if (getItem('userSinStrength')) {
         defaultValue = getItem('userSinStrength');
     } else {
-        defaultValue = 1;
+        defaultValue = 0;
     }
     sinStengthSlider = document.getElementById('sin-strength-slider');
     sinStengthSlider.min = 0;
@@ -86,7 +86,7 @@ function setup() {
     if (getItem('userSinSpeed')) {
         defaultValue = getItem('userSinSpeed');
     } else {
-        defaultValue = 1;
+        defaultValue = 0;
     }
     sinSpeedSlider = document.getElementById('sin-speed-slider');
     sinSpeedSlider.min = 0;
@@ -120,7 +120,7 @@ function setup() {
     if (getItem('userNoiseStrength')) {
         defaultValue = getItem('userNoiseStrength');
     } else {
-        defaultValue = 1;
+        defaultValue = 0;
     }
     noiseStrengthSlider = document.getElementById('noise-slider');
     noiseStrengthSlider.min = 0;
