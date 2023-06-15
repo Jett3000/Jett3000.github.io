@@ -58,7 +58,7 @@ function setup() {
     document.getElementById('sal-slider-label').innerHTML = Math.round(searchArcLengthSlider.value) + '°';
     searchArcLengthSlider.oninput = () => {
         storeItem("userSAL", searchArcLengthSlider.value);
-        document.getElementById('sal-slider-label').innerHTML = Math.round(searchArcLengthSlider.value)+ '°';
+        document.getElementById('sal-slider-label').innerHTML = Math.round(searchArcLengthSlider.value) + '°';
     }
 
     if (getItem('userFocalPhase')) {
@@ -67,14 +67,14 @@ function setup() {
         defaultValue = 0;
     }
     focalPhaseSlider = document.getElementById('phase-slider');
-    focalPhaseSlider.min = -180;
-    focalPhaseSlider.max = 180;
+    focalPhaseSlider.min = -90;
+    focalPhaseSlider.max = 90;
     focalPhaseSlider.step = 0.001;
     focalPhaseSlider.value = defaultValue;
-    document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value)+ '°';
+    document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value) + '°';
     focalPhaseSlider.oninput = () => {
         storeItem("userFocalPhase", focalPhaseSlider.value);
-        document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value)+ '°';
+        document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value) + '°';
     }
 
     if (getItem('userSinStrength')) {
@@ -87,10 +87,10 @@ function setup() {
     sinStengthSlider.max = 120;
     sinStengthSlider.step = 0.01;
     sinStengthSlider.value = defaultValue;
-    document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value)+ '°';
+    document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value) + '°';
     sinStengthSlider.oninput = () => {
         storeItem("userSinStrength", sinStengthSlider.value);
-        document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value)+ '°';
+        document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value) + '°';
     }
 
     if (getItem('userSinSpeed')) {
@@ -99,8 +99,8 @@ function setup() {
         defaultValue = 0;
     }
     sinSpeedSlider = document.getElementById('sin-speed-slider');
-    sinSpeedSlider.min = 0;
-    sinSpeedSlider.max = 1;
+    sinSpeedSlider.min = -0.5;
+    sinSpeedSlider.max = 0.5;
     sinSpeedSlider.step = 0.001;
     sinSpeedSlider.value = defaultValue;
     document.getElementById('sin-speed-slider-label').innerHTML = sinSpeedSlider.value;
@@ -110,7 +110,7 @@ function setup() {
     }
 
 
-    
+
 
 
     if (getItem('userNoiseStrength')) {
@@ -198,11 +198,28 @@ function keyPressed() {
 
 }
 
+function maxNodeDepth(node) {
+    if (!node.hasChildren) {
+        return 0;
+    } else {
+        let maxChildDepth = 0;
+        for (let c of node.children) {
+            let childDepth = maxNodeDepth(c);
+            if (childDepth > maxChildDepth) {
+                maxChildDepth = childDepth;
+            }
+        }
+        return 1 + maxChildDepth;
+    }
+}
+
 function drawFromNode(node) {
     curveVertex(node.pos.x, node.pos.y)
     if (node.hasChildren) {
         drawFromNode(node.children[0]);
         for (let i = 1; i < node.children.length; i++) {
+            if (maxNodeDepth(node.children[i]) < 3) continue;
+
             if (node.parent != undefined) {
                 if (node.parent.parent != undefined) {
                     beginShape()
@@ -255,26 +272,20 @@ function drawSegmentedCurves() {
 }
 
 function draw() {
-    clear();
     if (!sampler.samplesFull) {
         sampler.growSamples();
-
-        for (let s of sampler.samples) {
-            if (s.pos.z < 0) {
-                stroke('#fcfaee');
-            } else {
-                stroke('#bc9eca');
-            }
-            s.show();
-            // ellipse(s.pos.x, s.pos.y, 2, 2)
-        }
-    } else {
-        beginShape();
-        drawFromNode(sampler.samples[0]);
-        beginShape();
-        drawFromNode(sampler.samples[1]);
+    }
+    else {
         noLoop();
     }
+
+    clear();
+    stroke(255)
+    beginShape();
+    drawFromNode(sampler.samples[0]);
+    beginShape();
+    drawFromNode(sampler.samples[1]);
+
 }
 
 class Node {
@@ -283,6 +294,7 @@ class Node {
         this.parent = parent;
         this.children = [];
         this.hasChildren = false;
+        this.maxDepth = -1;
     }
 
     show() {
@@ -324,6 +336,10 @@ class PoissonHash {
     addSample(sampleX, sampleY, parent) {
         if (sampleX < 0 || sampleY < 0 ||
             sampleX > this.domainVec.x || sampleY > this.domainVec.y) return false;
+        let centDist = Math.pow(
+            Math.pow(abs(sampleX - (this.domainVec.x / 2)), 2) +
+            Math.pow(abs(sampleY - (this.domainVec.y / 2)), 2), 0.5);
+        if (centDist > this.domainVec.x/2) return false;
 
         let potentialSample =
             new Node(createVector(sampleX, sampleY, 1.8), parent);
