@@ -1,4 +1,5 @@
 var sampler;
+var renderMode;
 
 var radiusSlider;
 var attemptSlider;
@@ -10,13 +11,6 @@ var sinStengthSlider;
 
 
 function setup() {
-    let dim = min(window.innerWidth, window.innerHeight);
-    let sketchNode = document.getElementById('sketch-container');
-    let c = createCanvas(dim, dim);
-    c.parent(sketchNode);
-    noFill();
-    strokeWeight(1);
-
     // setup control sliders
     let defaultValue;
     if (getItem('userRadius')) {
@@ -58,16 +52,32 @@ function setup() {
     }
     searchArcLengthSlider = document.getElementById('sal-slider');
     searchArcLengthSlider.min = 0;
-    searchArcLengthSlider.max = PI;
+    searchArcLengthSlider.max = 360;
     searchArcLengthSlider.step = 0.001;
     searchArcLengthSlider.value = defaultValue;
-    document.getElementById('sal-slider-label').innerHTML = searchArcLengthSlider.value;
+    document.getElementById('sal-slider-label').innerHTML = Math.round(searchArcLengthSlider.value) + '°';
     searchArcLengthSlider.oninput = () => {
         storeItem("userSAL", searchArcLengthSlider.value);
-        document.getElementById('sal-slider-label').innerHTML = Math.round(100 * searchArcLengthSlider.value) / 100;
+        document.getElementById('sal-slider-label').innerHTML = Math.round(searchArcLengthSlider.value)+ '°';
     }
 
-     if (getItem('userSinStrength')) {
+    if (getItem('userFocalPhase')) {
+        defaultValue = getItem('userFocalPhase');
+    } else {
+        defaultValue = 0;
+    }
+    focalPhaseSlider = document.getElementById('phase-slider');
+    focalPhaseSlider.min = -180;
+    focalPhaseSlider.max = 180;
+    focalPhaseSlider.step = 0.001;
+    focalPhaseSlider.value = defaultValue;
+    document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value)+ '°';
+    focalPhaseSlider.oninput = () => {
+        storeItem("userFocalPhase", focalPhaseSlider.value);
+        document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value)+ '°';
+    }
+
+    if (getItem('userSinStrength')) {
         defaultValue = getItem('userSinStrength');
     } else {
         defaultValue = 0;
@@ -77,10 +87,10 @@ function setup() {
     sinStengthSlider.max = 120;
     sinStengthSlider.step = 0.01;
     sinStengthSlider.value = defaultValue;
-    document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value);
+    document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value)+ '°';
     sinStengthSlider.oninput = () => {
         storeItem("userSinStrength", sinStengthSlider.value);
-        document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value);
+        document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value)+ '°';
     }
 
     if (getItem('userSinSpeed')) {
@@ -90,7 +100,7 @@ function setup() {
     }
     sinSpeedSlider = document.getElementById('sin-speed-slider');
     sinSpeedSlider.min = 0;
-    sinSpeedSlider.max = 1.5;
+    sinSpeedSlider.max = 1;
     sinSpeedSlider.step = 0.001;
     sinSpeedSlider.value = defaultValue;
     document.getElementById('sin-speed-slider-label').innerHTML = sinSpeedSlider.value;
@@ -100,21 +110,7 @@ function setup() {
     }
 
 
-    if (getItem('userFocalPhase')) {
-        defaultValue = getItem('userFocalPhase');
-    } else {
-        defaultValue = 0;
-    }
-    focalPhaseSlider = document.getElementById('phase-slider');
-    focalPhaseSlider.min = -HALF_PI;
-    focalPhaseSlider.max = HALF_PI;
-    focalPhaseSlider.step = 0.001;
-    focalPhaseSlider.value = defaultValue;
-    document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value);
-    focalPhaseSlider.oninput = () => {
-        storeItem("userFocalPhase", focalPhaseSlider.value);
-        document.getElementById('phase-slider-label').innerHTML = Math.round(100 * focalPhaseSlider.value) / 100;
-    }
+    
 
 
     if (getItem('userNoiseStrength')) {
@@ -133,9 +129,40 @@ function setup() {
         document.getElementById('noise-slider-label').innerHTML = Math.round(100 * noiseStrengthSlider.value) / 100;
     }
 
+    // read last render mode, or supply default
+    debugger;
+    if (getItem('userRenderMode') == undefined) {
+        storeItem('userRenderMode', P2D)
+    }
+    let renderMode = getItem('userRenderMode');
 
+    // update the display paragraph
+    let renderModeDisplay = document.getElementById('render-mode-display');
+    if (renderMode == SVG) {
+        renderModeDisplay.innerHTML = "Render Mode: SVG"
+    } else {
+        renderModeDisplay.innerHTML = "Render Mode: PNG"
+    }
 
+    document.getElementById('render-mode-toggle').onclick = () => {
+        debugger;
+        if (renderMode == P2D) {
+            storeItem('userRenderMode', SVG)
+        } else {
+            storeItem('userRenderMode', P2D)
+        }
+        location.reload()
+    }
 
+    // create the canvas for the sketch
+    let dim = min(window.innerWidth, window.innerHeight);
+    let sketchNode = document.getElementById('sketch-container');
+    let c = createCanvas(dim, dim, renderMode);
+    c.parent(sketchNode);
+    noFill();
+    strokeWeight(1);
+
+    // begin generations :)
     initSampler();
 }
 
@@ -158,12 +185,46 @@ function keyPressed() {
         case 's':
             clear();
             stroke(0);
-            drawSegmentedCurves();
+            let node = sampler.samples[0]
+            beginShape();
+            drawFromNode(node);
+            node = sampler.samples[1]
+            beginShape();
+            drawFromNode(node);
             save();
             loop();
             break;
     }
 
+}
+
+function drawFromNode(node) {
+    curveVertex(node.pos.x, node.pos.y)
+    if (node.hasChildren) {
+        drawFromNode(node.children[0]);
+        for (let i = 1; i < node.children.length; i++) {
+            if (node.parent != undefined) {
+                if (node.parent.parent != undefined) {
+                    beginShape()
+                    curveVertex(node.parent.parent.pos.x, node.parent.parent.pos.y)
+                    curveVertex(node.parent.pos.x, node.parent.pos.y)
+                    curveVertex(node.pos.x, node.pos.y);
+                    drawFromNode(node.children[i]);
+                } else {
+                    beginShape()
+                    curveVertex(node.parent.pos.x, node.parent.pos.y)
+                    curveVertex(node.pos.x, node.pos.y);
+                    drawFromNode(node.children[i]);
+                }
+            } else {
+                beginShape();
+                curveVertex(node.pos.x, node.pos.y);
+                drawFromNode(node.children[i]);
+            }
+        }
+    } else {
+        endShape();
+    }
 }
 
 function drawFullCurves() {
@@ -182,17 +243,15 @@ function drawFullCurves() {
 
 function drawSegmentedCurves() {
     for (let n of sampler.samples) {
-        beginShape();
-        let counter = 0;
-        let currNode = n;
-        while (currNode != undefined && counter < 4) {
-            curveVertex(currNode.pos.x, currNode.pos.y);
-            currNode = currNode.parent;
-            counter++;
+        if (n.parent != undefined &&
+            n.parent.parent != undefined &&
+            n.parent.parent.parent != undefined) {
+            curve(n.pos.x, n.pos.y,
+                n.parent.pos.x, n.parent.pos.y,
+                n.parent.parent.pos.x, n.parent.parent.pos.y,
+                n.parent.parent.parent.pos.x, n.parent.parent.parent.pos.y)
         }
-        endShape();
     }
-
 }
 
 function draw() {
@@ -210,7 +269,10 @@ function draw() {
             // ellipse(s.pos.x, s.pos.y, 2, 2)
         }
     } else {
-        drawSegmentedCurves();
+        beginShape();
+        drawFromNode(sampler.samples[0]);
+        beginShape();
+        drawFromNode(sampler.samples[1]);
         noLoop();
     }
 }
@@ -219,6 +281,7 @@ class Node {
     constructor(pos, parent) {
         this.pos = pos;
         this.parent = parent;
+        this.children = [];
         this.hasChildren = false;
     }
 
@@ -241,8 +304,8 @@ class PoissonHash {
         this.hashArray = Array(this.hashCols * this.hashRows).fill(-1);
         this.samples = [];
         this.samplesFull = false;
-        this.addSample(2*sampleRadius + domainVec.x / 2, domainVec.y / 2);
-        this.addSample(-2*sampleRadius + domainVec.x / 2, domainVec.y / 2);
+        this.addSample(2 * sampleRadius + domainVec.x / 2, domainVec.y / 2);
+        this.addSample(-2 * sampleRadius + domainVec.x / 2, domainVec.y / 2);
 
         console.log("constructed sampler");
     }
@@ -277,9 +340,9 @@ class PoissonHash {
                 let hashResult = this.hashArray[this.coords2index(searchRow, searchCol)];
                 if (hashResult > -1) {
                     let noiseDelta = 0.05;
-                    let noiseVal = .99 + noise(sampleCol * noiseDelta, sampleRow * noiseDelta) * parseFloat(noiseStrengthSlider.value);
+                    let noiseVal = this.sampleRadius * 0.5 * noise(sampleCol * noiseDelta, sampleRow * noiseDelta) * parseFloat(noiseStrengthSlider.value);
                     let dist = this.samples[hashResult].pos.dist(potentialSample.pos);
-                    if (dist * noiseVal < this.sampleRadius) return false;
+                    if (dist + noiseVal < this.sampleRadius) return false;
                 }
             }
         }
@@ -288,6 +351,10 @@ class PoissonHash {
         let hashIndex = this.coords2index(sampleRow, sampleCol);
         this.hashArray[hashIndex] = this.samples.length;
         this.samples.push(potentialSample);
+        if (parent != undefined) {
+            parent.hasChildren = true;
+            parent.children.push(potentialSample);
+        }
         return true;
     }
 
@@ -329,9 +396,9 @@ class PoissonHash {
             let sampleAdded = false;
             // the angle between this sample and the center of the screen
             let screenTheta = createVector(sample.pos.x - (width / 2), sample.pos.y - (height / 2)).heading();
-            let searchArcLength = parseFloat(searchArcLengthSlider.value);
+            let searchArcLength = radians(parseFloat(searchArcLengthSlider.value));
             let focalTheta = screenTheta +
-                parseFloat(focalPhaseSlider.value) +
+                radians(parseFloat(focalPhaseSlider.value)) +
                 (radians(parseFloat(sinStengthSlider.value)) * sin(frameCount * parseFloat(sinSpeedSlider.value)));
 
             // attempt to add new sample new the current one
@@ -347,7 +414,6 @@ class PoissonHash {
                 if (this.addSample(potentialX, potentialY, sample)) {
                     // if it's accepted, record and break
                     sampleAdded = true;
-                    sample.hasChildren = true;
                     break;
                 } else {
                     // otherwise, increase chaos a bit
