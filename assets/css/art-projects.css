@@ -1,0 +1,43 @@
+main {
+  width: 100vw;
+  min-height: 100vh;
+  background: #0e0e0e;
+}
+
+.project-holder {
+  width: 100%;
+  max-width: min(90vw, 600px);
+  margin-bottom: 10vh;
+}
+
+h1 {
+  color: #fcfaee;
+  font-size: 2.2rem;
+  font-family: 'Courier Prime';
+}
+
+p, a {
+  color: #fcfaee;
+  font-size: 1.4rem;
+  font-family: 'Inconsolata';
+  text-decoration: none;
+}
+
+a {
+  color: #e5c4d6;
+}
+
+a:hover {
+  color: #bc9eca;
+}
+
+img {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+#thank-you-holder {
+  margin-top: 20vh;
+  margin-bottom: 20vh;
+}
+

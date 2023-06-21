@@ -1,0 +1,57 @@
+main {
+  width: 100vw;
+  min-height: 100vh;
+  background: #0e0e0e;
+}
+
+h1 {
+  color: #fcfaee;
+  font-size: 2.4rem;
+  font-family: 'Courier Prime';
+  margin: 0;
+  margin-top: 20px;
+}
+
+h2 {
+  color: #bc9eca;
+  font-size: 2.2rem;
+  font-family: 'Courier Prime';
+  margin-top: 20px;
+  /*margin-bottom: -12px;*/
+}
+
+h3 {
+  color: #fcfaee;
+  font-size: 1.6rem;
+  font-family: 'Inconsolata';
+  margin-top: 12px;
+  margin-bottom: 2px;
+}
+
+p, a {
+  color: #fcfaee;
+  font-size: 1.2rem;
+  font-family: 'Inconsolata';
+  text-decoration: none;
+  margin: 0;
+  margin-bottom: 2px;
+}
+
+a {
+  color: #e5c4d6;
+}
+
+a:hover {
+  color: #bc9eca;
+}
+
+img {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+#text-holder {
+  width: 100%;
+  max-width: 600px;
+}
+
