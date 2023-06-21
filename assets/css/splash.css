@@ -36,5 +36,6 @@ p {
 .bio-button:hover {
   background-color: #bc9eca;
   border-color: #fcfaee;
+  color: #fcfaee;
 }
 
