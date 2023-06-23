@@ -5,13 +5,14 @@ html, body, main {
 }
 
 #sketch-container {
-  min-width: 70vw;
+  min-width: 50vw;
   height: 100vh;
 }
 
 #control-panel {
   min-width: 30vw;
   height: 100vh;
+  padding-top: 2vh;
 }
 
 .slider-title, .slider-label {
