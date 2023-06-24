@@ -129,8 +129,7 @@ function setup() {
         document.getElementById('noise-slider-label').innerHTML = Math.round(100 * noiseStrengthSlider.value) / 100;
     }
 
-    // read last render mode, or supply default
-    debugger;
+    // read last render mode, or supply default to P2D
     if (getItem('userRenderMode') == undefined) {
         storeItem('userRenderMode', P2D)
     }
@@ -145,7 +144,6 @@ function setup() {
     }
 
     document.getElementById('render-mode-toggle').onclick = () => {
-        debugger;
         if (renderMode == P2D) {
             storeItem('userRenderMode', SVG)
         } else {
@@ -169,7 +167,9 @@ function setup() {
 function initSampler() {
     clear();
     background(14);
-    sampler = new PoissonHash(createVector(width, height), radiusSlider.value, attemptSlider.value);
+    sampler = new PoissonHash(createVector(width, height),
+        parseFloat(radiusSlider.value),
+        parseInt(attemptSlider.value));
     loop()
 }
 
@@ -185,17 +185,15 @@ function keyPressed() {
         case 's':
             clear();
             stroke(0);
-            let node = sampler.samples[0]
-            beginShape();
-            drawFromNode(node);
-            node = sampler.samples[1]
-            beginShape();
-            drawFromNode(node);
+            for (let s of sampler.samples) {
+                if (s.parent != undefined) {
+                    line(s.pos.x, s.pos.y, s.parent.pos.x, s.parent.pos.y);
+                }
+            }
             save();
             loop();
             break;
     }
-
 }
 
 function maxNodeDepth(node) {
@@ -273,19 +271,24 @@ function drawSegmentedCurves() {
 
 function draw() {
     if (!sampler.samplesFull) {
-        sampler.growSamples();
+        sampler.growSamples()
     }
     else {
-        noLoop();
+        if (sampler.samples.length < 100) {
+            initSampler();
+        } else {
+            noLoop();
+        }
     }
 
-    clear();
-    stroke(255)
-    beginShape();
-    drawFromNode(sampler.samples[0]);
-    beginShape();
-    drawFromNode(sampler.samples[1]);
 
+    clear();
+    stroke(255);
+    for (let s of sampler.samples) {
+        if (s.parent != undefined) {
+            line(s.pos.x, s.pos.y, s.parent.pos.x, s.parent.pos.y);
+        }
+    }
 }
 
 class Node {
@@ -294,7 +297,8 @@ class Node {
         this.parent = parent;
         this.children = [];
         this.hasChildren = false;
-        this.maxDepth = -1;
+        this.active = true;
+        this.drawn = false;
     }
 
     show() {
@@ -310,12 +314,15 @@ class PoissonHash {
         this.domainVec = domainVec;
         this.sampleRadius = sampleRadius;
         this.attemptCount = attemptCount;
+        this.noiseStrength = parseFloat(noiseStrengthSlider.value)
         this.cellSize = sampleRadius / Math.sqrt(2);
         this.hashCols = floor(domainVec.x / this.cellSize);
         this.hashRows = floor(domainVec.y / this.cellSize);
         this.hashArray = Array(this.hashCols * this.hashRows).fill(-1);
         this.samples = [];
         this.samplesFull = false;
+
+        // initial samples
         this.addSample(2 * sampleRadius + domainVec.x / 2, domainVec.y / 2);
         this.addSample(-2 * sampleRadius + domainVec.x / 2, domainVec.y / 2);
 
@@ -334,42 +341,45 @@ class PoissonHash {
     }
 
     addSample(sampleX, sampleY, parent) {
+        // reject samples outside of the domain
         if (sampleX < 0 || sampleY < 0 ||
             sampleX > this.domainVec.x || sampleY > this.domainVec.y) return false;
-        let centDist = Math.pow(
+        // or a circular subset of the domain
+        let centDist = Math.sqrt(
             Math.pow(abs(sampleX - (this.domainVec.x / 2)), 2) +
-            Math.pow(abs(sampleY - (this.domainVec.y / 2)), 2), 0.5);
-        if (centDist > this.domainVec.x/2) return false;
-
-        let potentialSample =
-            new Node(createVector(sampleX, sampleY, 1.8), parent);
-        let sampleCol = floor(potentialSample.pos.x / this.cellSize);
-        let sampleRow = floor(potentialSample.pos.y / this.cellSize);
+            Math.pow(abs(sampleY - (this.domainVec.y / 2)), 2));
+        if (centDist > this.domainVec.x * 0.5) return false;
 
         // test neighboring squares in the spatial hash
+        let sampleCol = floor(sampleX / this.cellSize);
+        let sampleRow = floor(sampleY / this.cellSize);
+        let noiseDelta = 0.05;
+        let noiseVal = this.sampleRadius * 0.5 *
+            noise(sampleCol * noiseDelta, sampleRow * noiseDelta) * this.noiseStrength;
         for (let xOff = -1; xOff <= 1; xOff++) {
             for (let yOff = -1; yOff <= 1; yOff++) {
                 let searchCol = sampleCol + xOff;
                 let searchRow = sampleRow + yOff;
-                if (searchCol < 0 || searchRow < 0 || searchCol > this.hashCols || searchRow > this.hashRows) continue;
+                if (searchCol < 0 || searchRow < 0 ||
+                    searchCol > this.hashCols || searchRow > this.hashRows) continue;
 
-                let hashResult = this.hashArray[this.coords2index(searchRow, searchCol)];
-                if (hashResult > -1) {
-                    let noiseDelta = 0.05;
-                    let noiseVal = this.sampleRadius * 0.5 * noise(sampleCol * noiseDelta, sampleRow * noiseDelta) * parseFloat(noiseStrengthSlider.value);
-                    let dist = this.samples[hashResult].pos.dist(potentialSample.pos);
-                    if (dist + noiseVal < this.sampleRadius) return false;
+                let collidingSampleIndex = this.hashArray[this.coords2index(searchRow, searchCol)];
+                if (collidingSampleIndex > -1) {
+                    let distance = Math.sqrt(
+                        Math.pow(sampleX - this.samples[collidingSampleIndex].pos.x, 2) +
+                        Math.pow(sampleY - this.samples[collidingSampleIndex].pos.y, 2) + 1);
+                    if (distance + noiseVal < this.sampleRadius) return false;
                 }
             }
         }
 
         // on success, add to the sample list and hashmap
-        let hashIndex = this.coords2index(sampleRow, sampleCol);
-        this.hashArray[hashIndex] = this.samples.length;
-        this.samples.push(potentialSample);
+        this.hashArray[this.coords2index(sampleRow, sampleCol)] = this.samples.length;
+        let newSample = new Node(createVector(sampleX, sampleY), parent);
+        this.samples.push(newSample);
         if (parent != undefined) {
             parent.hasChildren = true;
-            parent.children.push(potentialSample);
+            parent.children.push(newSample);
         }
         return true;
     }
@@ -389,9 +399,9 @@ class PoissonHash {
                     searchCol > this.hashCols ||
                     searchRow > this.hashRows) continue;
 
-                let hashResult = this.hashArray[this.coords2index(searchRow, searchCol)];
-                if (hashResult > -1) {
-                    neighbors.push(this.samples[hashResult]);
+                let collidingSampleIndex = this.hashArray[this.coords2index(searchRow, searchCol)];
+                if (collidingSampleIndex > -1) {
+                    neighbors.push(this.samples[collidingSampleIndex]);
                 }
             }
         }
@@ -401,7 +411,7 @@ class PoissonHash {
         if (this.samplesFull) return;
 
         // pull the active samples from the main list
-        let currentSamples = this.samples.filter(s => s.pos.z >= 0);
+        let currentSamples = this.samples.filter(s => s.active);
         if (currentSamples.length == 0) {
             this.samplesFull = true;
             return;
@@ -417,11 +427,9 @@ class PoissonHash {
                 radians(parseFloat(focalPhaseSlider.value)) +
                 (radians(parseFloat(sinStengthSlider.value)) * sin(frameCount * parseFloat(sinSpeedSlider.value)));
 
-            // attempt to add new sample new the current one
+            // attempt to add new sample from the current one
             for (let i = 0; i < this.attemptCount; i++) {
                 let theta = focalTheta + random(-0.5, 0.5) * searchArcLength;
-
-                // and the radius
                 let r = random(this.sampleRadius, 2 * this.sampleRadius)
 
                 // test the new sample for validity
@@ -431,14 +439,11 @@ class PoissonHash {
                     // if it's accepted, record and break
                     sampleAdded = true;
                     break;
-                } else {
-                    // otherwise, increase chaos a bit
-                    sample.pos.z *= 1.1;
                 }
             }
             // flag the sample as inactive if no samples are placed after max attempts
             if (!sampleAdded) {
-                sample.pos.z = -1;
+                sample.active = false;
             }
         }
     }
