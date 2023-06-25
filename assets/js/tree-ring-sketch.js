@@ -7,7 +7,7 @@ var userSettings = {
     wiggleWidth: 0,
     wiggleSpeed: 0,
     noiseStrength: 0,
-    rainbowMode: 0,
+    rainbowMode: 1,
     renderMode: null
 }
 var record = false;
