@@ -1,175 +1,128 @@
 var sampler;
-var renderMode;
-
-var radiusSlider;
-var attemptSlider;
-var noiseStrengthSlider;
-var sinSpeedSlider;
-var focalPhaseSlider;
-var searchArcLengthSlider;
-var sinStengthSlider;
-
+var userSettings = {
+    radius: 16,
+    attempts: 30,
+    searchWidth: 90,
+    searchHeading: 0,
+    wiggleWidth: 0,
+    wiggleSpeed: 0,
+    noiseStrength: 0,
+    rainbowMode: 0,
+    renderMode: null
+}
+var record = false;
 
 function setup() {
     // setup control sliders
-    let defaultValue;
-    if (getItem('userRadius')) {
-        defaultValue = getItem('userRadius');
+    if (getItem('userSettings')) {
+        userSettings = getItem('userSettings');
     } else {
-        defaultValue = 20;
-    }
-    radiusSlider = document.getElementById('radius-slider');
-    radiusSlider.min = 2;
-    radiusSlider.max = 40;
-    radiusSlider.step = 1;
-    radiusSlider.value = defaultValue;
-    document.getElementById('radius-slider-label').innerHTML = radiusSlider.value;
-    radiusSlider.oninput = () => {
-        storeItem("userRadius", radiusSlider.value);
-        document.getElementById('radius-slider-label').innerHTML = radiusSlider.value;
+        userSettings.renderMode = P2D // default definition workaround
     }
 
-    if (getItem('userAttempts')) {
-        defaultValue = getItem('userAttempts');
-    } else {
-        defaultValue = 30;
-    }
-    attemptSlider = document.getElementById('attempts-slider');
-    attemptSlider.min = 2;
-    attemptSlider.max = 40;
-    attemptSlider.step = 1;
-    attemptSlider.value = defaultValue;
-    document.getElementById('attempts-slider-label').innerHTML = attemptSlider.value;
-    attemptSlider.oninput = () => {
-        storeItem("userAttempts", attemptSlider.value);
-        document.getElementById('attempts-slider-label').innerHTML = attemptSlider.value;
-    }
-
-    if (getItem('userSAL')) {
-        defaultValue = getItem('userSAL');
-    } else {
-        defaultValue = PI;
-    }
-    searchArcLengthSlider = document.getElementById('sal-slider');
-    searchArcLengthSlider.min = 0;
-    searchArcLengthSlider.max = 360;
-    searchArcLengthSlider.step = 0.001;
-    searchArcLengthSlider.value = defaultValue;
-    document.getElementById('sal-slider-label').innerHTML = Math.round(searchArcLengthSlider.value) + '°';
-    searchArcLengthSlider.oninput = () => {
-        storeItem("userSAL", searchArcLengthSlider.value);
-        document.getElementById('sal-slider-label').innerHTML = Math.round(searchArcLengthSlider.value) + '°';
-    }
-
-    if (getItem('userFocalPhase')) {
-        defaultValue = getItem('userFocalPhase');
-    } else {
-        defaultValue = 0;
-    }
-    focalPhaseSlider = document.getElementById('phase-slider');
-    focalPhaseSlider.min = -90;
-    focalPhaseSlider.max = 90;
-    focalPhaseSlider.step = 0.001;
-    focalPhaseSlider.value = defaultValue;
-    document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value) + '°';
-    focalPhaseSlider.oninput = () => {
-        storeItem("userFocalPhase", focalPhaseSlider.value);
-        document.getElementById('phase-slider-label').innerHTML = Math.round(focalPhaseSlider.value) + '°';
+    function initSlider(domSlider,
+        min, max, step, defaultValue,
+        settingID, labelID,
+        degreeSymbol = false, precisionRound = false) {
+        domSlider.min = min;
+        domSlider.max = max;
+        domSlider.step = step;
+        domSlider.value = defaultValue;
+        if (!degreeSymbol && !precisionRound) {
+            document.getElementById(labelID).innerHTML = Math.round(domSlider.value);
+            domSlider.oninput = () => {
+                userSettings[settingID] = parseFloat(domSlider.value);
+                storeItem('userSettings', userSettings);
+                document.getElementById(labelID).innerHTML = Math.round(domSlider.value);
+            }
+        } else if (degreeSymbol) {
+            document.getElementById(labelID).innerHTML = Math.round(domSlider.value) + '°';
+            domSlider.oninput = () => {
+                userSettings[settingID] = parseFloat(domSlider.value);
+                storeItem('userSettings', userSettings);
+                document.getElementById(labelID).innerHTML = Math.round(domSlider.value) + '°';
+            }
+        } else {
+            document.getElementById(labelID).innerHTML = Math.round(domSlider.value * 100) / 100;
+            domSlider.oninput = () => {
+                userSettings[settingID] = parseFloat(domSlider.value);
+                storeItem('userSettings', userSettings);
+                document.getElementById(labelID).innerHTML = Math.round(domSlider.value * 100) / 100;
+            }
+        }
     }
 
-    if (getItem('userSinStrength')) {
-        defaultValue = getItem('userSinStrength');
-    } else {
-        defaultValue = 0;
-    }
-    sinStengthSlider = document.getElementById('sin-strength-slider');
-    sinStengthSlider.min = 0;
-    sinStengthSlider.max = 120;
-    sinStengthSlider.step = 0.01;
-    sinStengthSlider.value = defaultValue;
-    document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value) + '°';
-    sinStengthSlider.oninput = () => {
-        storeItem("userSinStrength", sinStengthSlider.value);
-        document.getElementById('sin-strength-slider-label').innerHTML = Math.round(sinStengthSlider.value) + '°';
-    }
+    // radius
+    initSlider(document.getElementById('radius-slider'), 2, 40, 1, userSettings.radius,
+        'radius', 'radius-slider-label');
+    // attempts
+    initSlider(document.getElementById('attempts-slider'), 2, 40, 1, userSettings.attempts,
+        'attempts', 'attempts-slider-label');
+    // search width
+    initSlider(document.getElementById('sal-slider'), 0, 360, 0.01, userSettings.searchWidth,
+        'searchWidth', 'sal-slider-label', true);
+    // search heading
+    initSlider(document.getElementById('phase-slider'), -90, 90, 0.01, userSettings.searchHeading,
+        'searchHeading', 'phase-slider-label', true);
 
-    if (getItem('userSinSpeed')) {
-        defaultValue = getItem('userSinSpeed');
-    } else {
-        defaultValue = 0;
-    }
-    sinSpeedSlider = document.getElementById('sin-speed-slider');
-    sinSpeedSlider.min = -0.5;
-    sinSpeedSlider.max = 0.5;
-    sinSpeedSlider.step = 0.001;
-    sinSpeedSlider.value = defaultValue;
-    document.getElementById('sin-speed-slider-label').innerHTML = sinSpeedSlider.value;
-    sinSpeedSlider.oninput = () => {
-        storeItem("userSinSpeed", sinSpeedSlider.value);
-        document.getElementById('sin-speed-slider-label').innerHTML = Math.round(100 * sinSpeedSlider.value) / 100;
-    }
+    // wiggle width
+    initSlider(document.getElementById('sin-strength-slider'), 0, 120, 0.01, userSettings.wiggleWidth,
+        'wiggleWidth', 'sin-strength-slider-label', true);
+
+    // wiggle speed
+    initSlider(document.getElementById('sin-speed-slider'), -0.5, 0.5, 0.01, userSettings.wiggleSpeed,
+        'wiggleSpeed', 'sin-speed-slider-label', false, true);
+
+    // noise strength
+    initSlider(document.getElementById('noise-slider'), 0, 1, 0.001, userSettings.noiseStrength,
+        'noiseStrength', 'noise-slider-label', false, true);
+
+    // rainbow mode
+    initSlider(document.getElementById('rainbow-slider'), 0, 1, 1, userSettings.rainbowMode,
+        'rainbowMode', 'rainbow-slider-label');
 
 
-
-
-
-    if (getItem('userNoiseStrength')) {
-        defaultValue = getItem('userNoiseStrength');
-    } else {
-        defaultValue = 0;
-    }
-    noiseStrengthSlider = document.getElementById('noise-slider');
-    noiseStrengthSlider.min = 0;
-    noiseStrengthSlider.max = 1;
-    noiseStrengthSlider.step = 0.001;
-    noiseStrengthSlider.value = defaultValue;
-    document.getElementById('noise-slider-label').innerHTML = noiseStrengthSlider.value;
-    noiseStrengthSlider.oninput = () => {
-        storeItem("userNoiseStrength", noiseStrengthSlider.value);
-        document.getElementById('noise-slider-label').innerHTML = Math.round(100 * noiseStrengthSlider.value) / 100;
-    }
-
-    // read last render mode, or supply default to P2D
-    if (getItem('userRenderMode') == undefined) {
-        storeItem('userRenderMode', P2D)
-    }
-    let renderMode = getItem('userRenderMode');
-
-    // update the display paragraph
+    // update the render mode label
     let renderModeDisplay = document.getElementById('render-mode-display');
-    if (renderMode == SVG) {
+    if (userSettings.renderMode == SVG) {
         renderModeDisplay.innerHTML = "Render Mode: SVG"
     } else {
         renderModeDisplay.innerHTML = "Render Mode: PNG"
     }
 
+    // set render toggle onclick function
     document.getElementById('render-mode-toggle').onclick = () => {
-        if (renderMode == P2D) {
-            storeItem('userRenderMode', SVG)
+        debugger;
+        if (userSettings.renderMode == P2D) {
+            userSettings.renderMode = SVG;
         } else {
-            storeItem('userRenderMode', P2D)
+            userSettings.renderMode = P2D;
         }
+        storeItem('userSettings', userSettings);
         location.reload()
     }
 
     // create the canvas for the sketch
     let dim = min(window.innerWidth, window.innerHeight);
     let sketchNode = document.getElementById('sketch-container');
-    let c = createCanvas(dim, dim, renderMode);
+    let c = createCanvas(dim, dim, userSettings.renderMode);
     c.parent(sketchNode);
     noFill();
     strokeWeight(1);
+    if (userSettings.renderMode == P2D && userSettings.rainbowMode > 0) {
+        colorMode(HSB);
+    }
 
     // begin generations :)
     initSampler();
 }
 
+
 function initSampler() {
     clear();
-    background(14);
     sampler = new PoissonHash(createVector(width, height),
-        parseFloat(radiusSlider.value),
-        parseInt(attemptSlider.value));
+        parseFloat(userSettings.radius),
+        parseInt(userSettings.attempts));
     loop()
 }
 
@@ -183,14 +136,7 @@ function keyPressed() {
             initSampler();
             break;
         case 's':
-            clear();
-            stroke(0);
-            for (let s of sampler.samples) {
-                if (s.parent != undefined) {
-                    line(s.pos.x, s.pos.y, s.parent.pos.x, s.parent.pos.y);
-                }
-            }
-            save();
+            record = true;
             loop();
             break;
     }
@@ -283,12 +229,38 @@ function draw() {
 
 
     clear();
-    stroke(255);
-    for (let s of sampler.samples) {
-        if (s.parent != undefined) {
-            line(s.pos.x, s.pos.y, s.parent.pos.x, s.parent.pos.y);
+    if (userSettings.rainbowMode > 0 && userSettings.renderMode == P2D) {
+        colorMode(HSB)
+        let maxParents = 0;
+        for (let s of sampler.samples) {//.filter(x => !x.hasChildren)) {
+            maxParents = max(maxParents, s.numParents);
+        }
+        for (let s of sampler.samples) {
+            stroke(360 * Math.pow(s.numParents / maxParents, 0.9) % 360, 70, 90);
+            if (s.parent != undefined) {
+                line(s.pos.x, s.pos.y, s.parent.pos.x, s.parent.pos.y);
+            }
+        }
+    } else {
+        if (record) {
+            stroke(0)
+        } else {
+            stroke(255);
+        }
+        for (let s of sampler.samples) {
+            if (s.parent != undefined) {
+                line(s.pos.x, s.pos.y, s.parent.pos.x, s.parent.pos.y);
+            }
         }
     }
+
+
+    if (record) {
+        save();
+        record = false;
+        loop();
+    }
+
 }
 
 class Node {
@@ -299,6 +271,10 @@ class Node {
         this.hasChildren = false;
         this.active = true;
         this.drawn = false;
+        this.numParents = 0;
+        if (parent != undefined) {
+            this.numParents = parent.numParents + 1;
+        }
     }
 
     show() {
@@ -314,7 +290,6 @@ class PoissonHash {
         this.domainVec = domainVec;
         this.sampleRadius = sampleRadius;
         this.attemptCount = attemptCount;
-        this.noiseStrength = parseFloat(noiseStrengthSlider.value)
         this.cellSize = sampleRadius / Math.sqrt(2);
         this.hashCols = floor(domainVec.x / this.cellSize);
         this.hashRows = floor(domainVec.y / this.cellSize);
@@ -355,7 +330,7 @@ class PoissonHash {
         let sampleRow = floor(sampleY / this.cellSize);
         let noiseDelta = 0.05;
         let noiseVal = this.sampleRadius * 0.5 *
-            noise(sampleCol * noiseDelta, sampleRow * noiseDelta) * this.noiseStrength;
+            noise(sampleCol * noiseDelta, sampleRow * noiseDelta) * userSettings.noiseStrength;
         for (let xOff = -1; xOff <= 1; xOff++) {
             for (let yOff = -1; yOff <= 1; yOff++) {
                 let searchCol = sampleCol + xOff;
@@ -384,29 +359,6 @@ class PoissonHash {
         return true;
     }
 
-    sampleNeighbors(sample) {
-        let sampleCol = floor(potentialSample.x / this.cellSize);
-        let sampleRow = floor(potentialSample.y / this.cellSize);
-        let neighbors = [];
-
-        // pull samples from neighboring squares in the spatial hash
-        for (let xOff = -1; xOff <= 1; xOff++) {
-            for (let yOff = -1; yOff <= 1; yOff++) {
-                let searchCol = sampleCol + xOff;
-                let searchRow = sampleRow + yOff;
-                if (searchCol < 0 ||
-                    searchRow < 0 ||
-                    searchCol > this.hashCols ||
-                    searchRow > this.hashRows) continue;
-
-                let collidingSampleIndex = this.hashArray[this.coords2index(searchRow, searchCol)];
-                if (collidingSampleIndex > -1) {
-                    neighbors.push(this.samples[collidingSampleIndex]);
-                }
-            }
-        }
-    }
-
     growSamples() {
         if (this.samplesFull) return;
 
@@ -422,10 +374,10 @@ class PoissonHash {
             let sampleAdded = false;
             // the angle between this sample and the center of the screen
             let screenTheta = createVector(sample.pos.x - (width / 2), sample.pos.y - (height / 2)).heading();
-            let searchArcLength = radians(parseFloat(searchArcLengthSlider.value));
+            let searchArcLength = radians(userSettings.searchWidth);
             let focalTheta = screenTheta +
-                radians(parseFloat(focalPhaseSlider.value)) +
-                (radians(parseFloat(sinStengthSlider.value)) * sin(frameCount * parseFloat(sinSpeedSlider.value)));
+                radians(userSettings.searchHeading) +
+                (radians(userSettings.wiggleWidth) * sin(frameCount * userSettings.wiggleSpeed));
 
             // attempt to add new sample from the current one
             for (let i = 0; i < this.attemptCount; i++) {
@@ -446,30 +398,5 @@ class PoissonHash {
                 sample.active = false;
             }
         }
-    }
-}
-
-class Star {
-    constructor() {
-        this.pos = createVector(random(width), random(height));
-        this.angle = random(TWO_PI);
-        this.sharpness = random(0.2, 0.8);
-        this.size = random(10, 20);
-    }
-
-    show() {
-        push();
-        translate(this.pos.x, this.pos.y);
-        // rotate(this.angle);
-        for (let i = 0; i < 4; i++) {
-            beginShape()
-            vertex(0, this.size);
-            bezierVertex(0, this.size * this.sharpness,
-                this.size * this.sharpness, 0,
-                this.size, 0);
-            endShape();
-            rotate(PI / 2);
-        }
-        pop();
     }
 }

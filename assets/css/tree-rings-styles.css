@@ -10,13 +10,18 @@ html, body, main {
 }
 
 #control-panel {
-  min-width: 30vw;
+  min-width: min(100vw, 400px);
   height: 100vh;
   padding-top: 2vh;
 }
 
 .slider-title, .slider-label {
   color: #fcfaee;
+}
+
+.slider-title {
+  font-family: 'Inconsolata';
+  font-size: 2rem;
 }
 
 .slider {
