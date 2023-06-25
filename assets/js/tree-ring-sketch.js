@@ -1,9 +1,9 @@
 var sampler;
 var userSettings = {
-    radius: 16,
+    radius: 12,
     attempts: 30,
-    searchWidth: 90,
-    searchHeading: 0,
+    searchWidth: 45,
+    searchHeading: 60,
     wiggleWidth: 0,
     wiggleSpeed: 0,
     noiseStrength: 0,
