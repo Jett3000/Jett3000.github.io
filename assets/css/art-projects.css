@@ -6,8 +6,10 @@ main {
 
 .project-holder {
   width: 100%;
-  max-width: min(90vw, 600px);
-  margin-bottom: 10vh;
+  max-width: min(90vw, 700px);
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {
@@ -32,8 +34,10 @@ a:hover {
 }
 
 img {
-  width: 100%;
+  max-width: 100%;
+  max-height: 80vh;
   margin-bottom: 12px;
+  object-fit: contain;
 }
 
 #thank-you-holder {

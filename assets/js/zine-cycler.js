@@ -159,23 +159,23 @@ function populateSceneBank() {
 function preload() {
     let currImage;
 
-    beasleyPic = loadImage('assets/img/derrick-beasley-prism.png');
+    beasleyPic = loadImage('assets/img/prototype-images/derrick-beasley-prism.png');
 
-    eakesPic = loadImage('assets/img/cwe-prism.png');
+    eakesPic = loadImage('assets/img/prototype-images/cwe-prism.png');
 
-    powellPic = loadImage('assets/img/jermaine-powell-prism.png');
+    powellPic = loadImage('assets/img/prototype-images/jermaine-powell-prism.png');
 
-    banPic = loadImage('assets/img/ban-artwork-prism.png');
+    banPic = loadImage('assets/img/prototype-images/ban-artwork-prism.png');
 
-    moranPic = loadImage('assets/img/mailande-moran-prism.png');
+    moranPic = loadImage('assets/img/prototype-images/mailande-moran-prism.png');
 
-    knegoPic = loadImage('assets/img/samir-knego-prism.png');
+    knegoPic = loadImage('assets/img/prototype-images/samir-knego-prism.png');
 
-    leePic = loadImage('assets/img/jim-lee-prism.png');
+    leePic = loadImage('assets/img/prototype-images/jim-lee-prism.png');
 
-    headPic = loadImage('assets/img/jim-lee-head.png');
+    headPic = loadImage('assets/img/prototype-images/jim-lee-head.png');
 
-    collabLogo = loadImage('assets/img/collab-logo.png');
+    collabLogo = loadImage('assets/img/prototype-images/collab-logo.png');
 }
 
 function setup() {

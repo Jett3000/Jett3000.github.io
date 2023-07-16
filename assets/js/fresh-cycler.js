@@ -173,8 +173,8 @@ function preload() {
     fontAzoSansItalic = loadFont(
         "https://use.typekit.net/af/90ca1f/000000000000000000013f4f/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=i7&v=3");
 
-    pbgLogo = loadImage("assets/img/pbg-logo.png")
-    durmpacLogo = loadImage("assets/img/durmpac-logo.png")
+    pbgLogo = loadImage("assets/img/prototype-images/pbg-logo.png")
+    durmpacLogo = loadImage("assets/img/prototype-images/durmpac-logo.png")
 }
 
 function setup() {
