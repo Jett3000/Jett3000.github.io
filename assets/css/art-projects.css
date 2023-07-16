@@ -10,6 +10,21 @@ main {
   margin-bottom: 24px;
   display: flex;
   flex-direction: column;
+  border-bottom: solid 3px;
+  border-image: linear-gradient(to left, #bc9eca, #fcfaee) 1;
+}
+
+#thank-you-holder {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  /*border-bottom: #bc9eca solid 2px;*/
+}
+
+img {
+  max-width: 100%;
+  max-height: 80vh;
+  margin-bottom: 12px;
+  object-fit: contain;
 }
 
 h1 {
@@ -31,17 +46,5 @@ a {
 
 a:hover {
   color: #bc9eca;
-}
-
-img {
-  max-width: 100%;
-  max-height: 80vh;
-  margin-bottom: 12px;
-  object-fit: contain;
-}
-
-#thank-you-holder {
-  margin-top: 20vh;
-  margin-bottom: 20vh;
 }
 
