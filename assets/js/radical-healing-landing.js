@@ -5,8 +5,8 @@ var drops = [];
 var caughtDrops = 0;
 
 function preload() {
-  heartImage = loadImage('assets/img/heart.png');
-  titleFont = loadFont('assets/font/JosefinSans-Bold.ttf')
+  heartImage = loadImage('/Jett3000/assets/img/heart.png');
+  titleFont = loadFont('/Jett3000/assets/font/JosefinSans-Bold.ttf')
 }
 
 function windowResized() {
