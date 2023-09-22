@@ -6,7 +6,7 @@ var caughtDrops = 0;
 
 function preload() {
   heartImage = loadImage('assets/img/heart.png');
-  titleFont = loadFont('assets/font/JosefinSans-Bold.ttf')
+  titleFont = loadFont('Josefin+Sans:wght@700')
 }
 
 function windowResized() {
