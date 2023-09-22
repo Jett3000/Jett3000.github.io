@@ -1,65 +1,56 @@
 var heartImage;
+var heartHeightProp;
 var titleFont;
 var title;
 var drops = [];
 var caughtDrops = 0;
+var mouseVec;
 
 function preload() {
-  heartImage = loadImage('/Jett3000/assets/img/heart.png');
-  titleFont = loadFont('/Jett3000/assets/font/JosefinSans-Bold.ttf')
+  heartImage = loadImage('assets/img/heart.png');
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  // typography
-  textSize(1);
-
-  if (windowWidth > height) {
-    title = ' RADICAL       HEALING'
-    while (textWidth(title) < windowWidth * 0.8) {
-      textSize(textSize() + 1);
-    }
-  } else {
-    while (textWidth('RADICAL') < windowWidth * 0.5) {
-      textSize(textSize() + 1);
-    }
-  }
+  calibrateFontSize();
 
   drops = [];
   background(0);
 }
 
-
-function setup() {
-  // cnavas & environment
-  let c = createCanvas(window.innerWidth, window.innerHeight);
-  let sketchNode = document.getElementById('sketch-container');
-  imageMode(CENTER);
-  textAlign(CENTER, CENTER)
-  // textFont(titleFont);
-  noStroke();
-  background(0);
-
-  // typography
-  if (width > height) {
+function calibrateFontSize() {
+  textSize(1);
+  if (windowWidth > height) {
+    // landscape orientation
     title = ' RADICAL       HEALING'
-    while (textWidth(title) < width * 0.8) {
+    while (textWidth(title) < windowWidth * 0.8) {
       textSize(textSize() + 1);
     }
   } else {
-    while (textWidth('RADICAL') < width * 0.5) {
+    // portrait orientation
+    while (textWidth('RADICAL') < windowWidth * 0.5) {
       textSize(textSize() + 1);
     }
   }
+}
 
 
+function setup() {
+  // cnavas & environment
+  createCanvas(window.innerWidth, window.innerHeight);
+  imageMode(CENTER);
+  textAlign(CENTER, CENTER)
+  textFont('Josefin Sans');
+  noStroke();
+  background(0);
 
-  // heartImage.resize(0, textSize() * 1.5);
+  calibrateFontSize();
+  heartHeightProp = width > height ? 0.5 : 0.66;
+  mouseVec = createVector(0, 0);
 }
 
 function draw() {
   background(0, 10);
-  let heartHeightProp = width > height ? 0.5 : 0.66;
   // prepare heart image
   let heartImageCopy = heartImage.get();
   let heartSize =
@@ -81,10 +72,11 @@ function draw() {
   }
 
   drops = drops.filter(d => {
-    return d.pos.y < (height + 60) && d.pos.x > -20 && d.pos.x < width + 20
+    return d.pos.y < height + 60 && d.pos.x > -20 && d.pos.x < width + 20
   });
 
-  let mouseVec = createVector(mouseX, mouseY);
+  mouseVec.x = mouseX;
+  mouseVec.y = mouseY;
   caughtDrops = 0;
   drops.forEach(d => d.show(mouseVec))
 
@@ -102,6 +94,8 @@ function draw() {
 }
 
 function drawTitle() {
+  textFont('Josefin Sans');
+
   let bank = ['LOVE', 'CHANGE', 'GROWTH']
   fill(255);
   if (width > height) {
@@ -146,7 +140,7 @@ class Drop {
     this.interactionRadius = textSize() * textSize();
   }
 
-  show(mouseVec) {
+  show() {
     fill(this.fillColor)
     circle(this.pos.x, this.pos.y, this.size);
 
