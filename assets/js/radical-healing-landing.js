@@ -16,6 +16,7 @@ function windowResized() {
 
   drops = [];
   background(0);
+  heartHeightProp = width > height ? 0.5 : 0.66;
 }
 
 function calibrateFontSize() {
