@@ -11,12 +11,18 @@ function preload() {
 }
 
 function windowResized() {
+  if (windowWidth == width) return;
+
   resizeCanvas(windowWidth, windowHeight);
   calibrateFontSize();
-
-  drops = [];
   background(0);
-  heartHeightProp = width > height ? 0.5 : 0.66;
+
+  if (width > height) {
+    drops = [];
+    heartHeightProp = 0.5;
+  } else {
+    heartHeightProp = 0.66;
+  }
 }
 
 function calibrateFontSize() {
@@ -41,7 +47,8 @@ function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   imageMode(CENTER);
   textAlign(CENTER, CENTER)
-  textFont('Josefin Sans');
+  textFont('Josefin Sans, sans-serif');
+  console.log(textFont())
   noStroke();
   background(0);
 
@@ -95,7 +102,7 @@ function draw() {
 }
 
 function drawTitle() {
-  textFont('Josefin Sans');
+  // textFont('Josefin Sans');
 
   let bank = ['LOVE', 'CHANGE', 'GROWTH']
   fill(255);
