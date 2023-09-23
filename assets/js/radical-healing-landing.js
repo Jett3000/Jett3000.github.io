@@ -102,23 +102,21 @@ function draw() {
 }
 
 function drawTitle() {
-  // textFont('Josefin Sans');
-
-  let bank = ['LOVE', 'CHANGE', 'GROWTH']
+  let bank = ['LOVE', 'CHANGE', 'GROWTH', 'HOPE']
   fill(255);
   if (width > height) {
     textAlign(CENTER)
     text(title, width / 2, height / 2);
     let titleLeftX = (width / 2) - textWidth(title) / 2;
     let wordbankLeftX = titleLeftX + textWidth(' RADICAL       ');
-    // push()
-    // textSize(2 * textSize() / 3);
-    // textAlign(LEFT);
-    // fill(140)
-    // text(
-    //     '& ' + bank[floor(frameCount / 300) % 3], wordbankLeftX,
-    //     height / 2 + textSize() * 1.5);
-    // pop();
+    push()
+    textSize(2 * textSize() / 3);
+    textAlign(LEFT);
+    fill(254, 172, 210)
+    text(
+        '& ' + bank[floor(frameCount / 300) % 3], wordbankLeftX,
+        height / 2 + textSize() * 1.5);
+    pop();
 
   } else {
     text('RADICAL', width / 2, height * 0.33 - textSize());
