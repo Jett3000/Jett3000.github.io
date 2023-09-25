@@ -8,6 +8,7 @@ var mouseVec;
 
 function preload() {
   heartImage = loadImage('assets/img/heart.png');
+  titleFont = loadFont('assets/font/JosefinSans-Bold.ttf')
 }
 
 function windowResized() {
@@ -47,7 +48,8 @@ function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   imageMode(CENTER);
   textAlign(CENTER, CENTER)
-  textFont('Josefin Sans, sans-serif');
+  // textFont('Josefin Sans, sans-serif');
+  textFont(titleFont);
   console.log(textFont())
   noStroke();
   background(0);
