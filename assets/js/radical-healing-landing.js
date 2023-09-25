@@ -8,7 +8,7 @@ var mouseVec;
 
 function preload() {
   heartImage = loadImage('assets/img/heart.png');
-  titleFont = loadFont('assets/font/JosefinSans-Bold.ttf')
+  titleFont = loadFont('assets/font/JosefinSans-SemiBold.ttf')
 }
 
 function windowResized() {
