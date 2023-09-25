@@ -5,6 +5,7 @@ var title;
 var drops = [];
 var caughtDrops = 0;
 var mouseVec;
+var subtitle;
 
 function preload() {
   heartImage = loadImage('assets/img/heart.png');
@@ -16,6 +17,7 @@ function windowResized() {
 
   resizeCanvas(windowWidth, windowHeight);
   calibrateFontSize();
+  subtitle.calibrateSizeAndPos();
   background(0);
 
   if (width > height) {
@@ -48,14 +50,20 @@ function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   imageMode(CENTER);
   textAlign(CENTER, CENTER)
-  // textFont('Josefin Sans, sans-serif');
-  textFont(titleFont);
-  console.log(textFont())
+  try {
+    textFont(titleFont);
+  } catch {
+    textFont('Arial')
+  }
   noStroke();
   background(0);
 
+  // size/proporitons
   calibrateFontSize();
+  subtitle = new Subtitle();
   heartHeightProp = width > height ? 0.5 : 0.66;
+
+  // interactivity
   mouseVec = createVector(0, 0);
 }
 
@@ -104,21 +112,12 @@ function draw() {
 }
 
 function drawTitle() {
-  let bank = ['LOVE', 'CHANGE', 'GROWTH', 'HOPE']
+  let bank = ['LOVE', 'CHANGE', 'GROWTH', 'HOPE'];
   fill(255);
   if (width > height) {
     textAlign(CENTER)
     text(title, width / 2, height / 2);
-    let titleLeftX = (width / 2) - textWidth(title) / 2;
-    let wordbankLeftX = titleLeftX + textWidth(' RADICAL       ');
-    push()
-    textSize(2 * textSize() / 3);
-    textAlign(LEFT);
-    fill(254, 172, 210)
-    text(
-        '& ' + bank[floor(frameCount / 300) % 3], wordbankLeftX,
-        height / 2 + textSize() * 1.5);
-    pop();
+    subtitle.show();
 
   } else {
     text('RADICAL', width / 2, height * 0.33 - textSize());
@@ -161,6 +160,51 @@ class Drop {
     } else {
       this.pos.add(this.vel);
       this.vel.x *= this.decayFactor;
+    }
+  }
+}
+
+class Subtitle {
+  constructor() {
+    // timing
+    this.typeingFrames = 240;
+    this.currFrames = 0;
+
+    // word bank randomization
+    this.bank =
+        ['LOVE', 'CARE', 'CHANGE', 'GROWTH', 'HOPE', 'DREAMING', 'SECURITY'];
+    this.shuffledBank = shuffle(this.bank);
+    this.currWord = this.shuffledBank.pop();
+
+    // sizing
+    this.calibrateSizeAndPos();
+  }
+
+  calibrateSizeAndPos() {
+    let titleLeftX = (width - textWidth(title)) / 2;
+    this.textHeight = 2 * textSize() / 3;
+
+    this.leftX = titleLeftX + textWidth(' RADICAL       ');
+    this.centerY = height / 2 + this.textHeight * 1.5;
+  }
+
+  show() {
+    let progress = 1 - abs((this.currFrames / this.typeingFrames) - 0.5) * 2;
+    let wordSlice =
+        this.currWord.slice(0, progress * (this.currWord.length * 2));
+
+    push()
+    textSize(this.textHeight);
+    textAlign(LEFT);
+    fill(254, 172, 210)
+    text('& ' + wordSlice, this.leftX, this.centerY);
+    pop();
+
+    this.currFrames++;
+    if (this.currFrames == this.typeingFrames) {
+      this.currFrames = 0;
+      if (this.shuffledBank.length == 0) this.shuffledBank = shuffle(this.bank);
+      this.currWord = this.shuffledBank.pop();
     }
   }
 }
