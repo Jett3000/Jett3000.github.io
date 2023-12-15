@@ -51,7 +51,7 @@ const runAtomicStructureWidget =
 
       // Insert the hidden input into the html
       if (particleInteractivity.protons || particleInteractivity.electrons ||
-          particleInteractivity.nuetrons || particleInteractivity.shells)
+          particleInteractivity.neutrons || particleInteractivity.shells)
         node.append(answerHiddenInput);
 
       const heightToWidthRatio = 5 / 8;
@@ -109,6 +109,10 @@ const runAtomicStructureWidget =
           p.widgetObject.handleClickStart(p.createVector(p.mouseX, p.mouseY));
         };
 
+        p.touchStarted = () => {
+          return true
+        };
+
         p.mouseReleased = () => {
           p.widgetObject.handleClickEnd(p.createVector(p.mouseX, p.mouseY));
         };
@@ -151,14 +155,14 @@ class AtomicStructureWidget {
    * - particleInteractivity:
    *    - Protons: boolean / display or hide
    *    - Electrons: boolean / display or hide
-   *    - Nuetrons: boolean / display or hide
+   *    - Neutrons: boolean / display or hide
    *    - Shells: boolean / display or hide
    * - atomData:
    *    - protons: integer / number of protons
-   *    - nuetrons: integer / number of nuetrons
+   *    - neutrons: integer / number of neutrons
    *    - shells: array / number of electrons per shell
    *    - atomCard: boolean / show the atom's period table entry
-   * - colors (optional): array // [protonHexCode, nuetronHexCode,
+   * - colors (optional): array // [protonHexCode, neutronHexCode,
    * electronHexCode]
    * @param {p5} p The p5.js sketch object
    */
@@ -168,17 +172,21 @@ class AtomicStructureWidget {
     this.atomData = widgetConfig.atomData;
     this.colors = widgetConfig.colors;
 
-    // link to the sketch instance and document outputs
+    // link to the sketch instance and document input/outputs
     this.p = p;
     this.updateHiddenInputs = updateHiddenInputs;
+    this.lastInputFrame = 0;
+    this.lastInputWasAdjuster = false;
 
-    // initialize particle arrays & counters
+    // initialize particle arrays
     this.activeProtons = 0;
-    this.activeNuetrons = 0;
+    this.activeNeutrons = 0;
     this.activeElectrons = 0;
+    this.activeShells = 1;
     this.nucleusParticles = [];
+    this.shells = [];
     this.shellParticles = [];
-    this.paletteParticles = [];
+    this.shellParticleCounts = [];
 
     // initialize size dependent variables
     this.atomCenter;
@@ -191,66 +199,188 @@ class AtomicStructureWidget {
     this.paletteLabelOffset;
 
     // set p5 instance's text alignment
-    this.p.textAlign(this.p.LEFT, this.p.CENTER);
+    this.p.textAlign(this.p.RIGHT, this.p.CENTER);
     // complete size dependent setup
     this.resize();
   }
 
   // used for canvas-size-dependent elements
-  resize(shrinkingAtom = false) {
+  resize() {
+    // set the center of the atom model
     this.atomCenter = this.p.createVector(
         this.p.width * 3 / 5,
         this.p.height / 2,
     );
 
-    this.particleSize =
-        shrinkingAtom ? this.particleSize * 0.8 : this.p.width * 0.05;
+    // set the particle size and spread factor
+    this.particleSize = this.p.width * 0.05;
     this.nucleusSpreadFactor = this.particleSize * 0.5;
 
-    if (shrinkingAtom) {
-      // resize & reposition existing particles in the scene
-      this.particleSize *= 0.9;
-      this.nucleusParticles.forEach((particle, i) => {
-        particle.size = this.particleSize;
-        particle.targetPos = this.indexToRestPosition(i);
-      });
-      this.shellParticles.forEach((particle, i) => {
-        particle.size = this.particleSize * 0.66;
-      });
+    // create adjuster UI elements for the model
+    let adjusterDims =
+        this.p.createVector(this.p.textWidth('Electrons: 999') * 2, 0);
+    adjusterDims.y = adjusterDims.x / 4;
+    let adjusterCenter =
+        this.p.createVector(adjusterDims.x * 2 / 3, adjusterDims.x * 2 / 3);
+    let adjusterSpacing = adjusterDims.y * 1.1;
 
-      return;  // prevent changing the palette size & location
+    this.shellAdjuster = new ElementAdjuster(
+        adjusterCenter.copy(), adjusterDims, 'Shells: ', 'shell', this);
+    adjusterCenter.y += adjusterSpacing;
+
+    this.protonAdjuster = new ElementAdjuster(
+        adjusterCenter.copy(), adjusterDims, 'Protons: ', 'proton', this);
+    adjusterCenter.y += adjusterSpacing;
+
+    this.neutronAdjuster = new ElementAdjuster(
+        adjusterCenter.copy(), adjusterDims, 'Neutrons: ', 'neutron', this);
+    adjusterCenter.y += adjusterSpacing;
+
+    this.electronAdjuster = new ElementAdjuster(
+        adjusterCenter.copy(), adjusterDims, 'Electrons: ', 'electron', this);
+
+    this.adjusters = [
+      this.shellAdjuster, this.protonAdjuster, this.neutronAdjuster,
+      this.electronAdjuster
+    ];
+  }
+
+  draw() {
+    // draw the adjuster palette
+    this.adjusters.forEach(a => a.draw());
+
+    // draw the protons and neutrons that have been added to the scene
+    this.nucleusParticles.forEach(particle => particle.draw());
+
+    // draw electron shells & distribute electrons
+    for (let shellIndex = 0; shellIndex < this.activeShells; shellIndex++) {
+      // draw orbital path
+      let shellRadius = this.minShellRadius() + shellIndex * this.particleSize;
+      if (shellRadius + this.particleSize > this.atomCenter.y) {
+        this.shrinkAtom();
+        return;
+      }
+
+      this.p.push();
+      this.p.noFill();
+      this.p.stroke(0);
+      this.p.ellipse(this.atomCenter.x, this.atomCenter.y, shellRadius * 2);
+      this.p.pop();
+
+      // envenly distribute electrons on shells
+      let currentShellElectrons =
+          this.shellParticles.filter(sp => {return sp.shell == shellIndex + 1});
+      currentShellElectrons.forEach((electron, i) => {
+        let angle = this.p.TAU * i /
+            currentShellElectrons.length;  // distrubute on shell
+        // update electron target position
+        electron.targetPos = p5.Vector.fromAngle(angle).mult(shellRadius);
+        electron.targetPos.add(this.atomCenter);
+      });
     }
 
-    // position particle palette
-    this.paletteParticles = [];
-    this.paletteX = this.p.width * 0.05;
-    this.paletteY = this.p.height * 0.33;
-    this.paletteWidth =
-        this.particleSize * 2 + this.p.textWidth('nuetrons: 99');
-    this.paletteHeight = this.particleSize * 5;
-    this.paletteLabelOffset = this.particleSize * 0.66;
-    let particleSpacing = this.particleSize * 1.5;
-    if (this.particleInteractivity.protons) {
-      this.paletteParticles.push(new AtomicParticle(
-          this.p.createVector(
-              this.paletteX + this.particleSize,
-              this.paletteY + this.particleSize),
-          this.particleSize, this.colors[0], true, this.p));
+    // draw electrons
+    this.shellParticles.forEach(p => p.draw());
+  }
+
+  addElement(element) {
+    let particle;
+    switch (element) {
+      case 'shell':
+        this.activeShells++;
+        break;
+      case 'proton':
+      case 'neutron':
+        let color;
+        if (element == 'proton') {
+          color = this.colors[0];
+          this.activeProtons++;
+        } else {
+          color = this.colors[1];
+          this.activeNeutrons++;
+        }
+        // create new particle
+        particle = new AtomicParticle(
+            this.p.createVector(this.p.mouseX, this.p.mouseY),
+            this.particleSize, color, true, this.p);
+        // calculate rest position
+        particle.targetPos =
+            this.indexToRestPosition(this.nucleusParticles.length);
+        // add to the model
+        this.nucleusParticles.push(particle);
+        break;
+      case 'electron':
+        // create new particle
+        particle = new AtomicParticle(
+            this.p.createVector(this.p.mouseX, this.p.mouseY),
+            this.particleSize * 0.66, this.colors[2], true, this.p);
+        // add to the model
+        this.shellParticles.push(particle);
+        this.activeElectrons++;
+
+        // if there are no shells yet, create one
+        if (this.activeShells < 1) {
+          this.activeShells++;
+          this.shellParticleCounts = [1];
+        }
+        break;
     }
-    if (this.particleInteractivity.nuetrons) {
-      this.paletteParticles.push(new AtomicParticle(
-          this.p.createVector(
-              this.paletteX + this.particleSize,
-              this.paletteY + this.particleSize + particleSpacing),
-          this.particleSize, this.colors[1], true, this.p));
+
+    this.adjusters.forEach(adjuster => adjuster.updateLabelCount());
+  }
+
+  subtractElement(element) {
+    switch (element) {
+      case 'shell':
+        let shellElectrons = this.shellParticles.filter(
+            e => {return e.shell == this.activeShells});
+        shellElectrons.forEach(e => e.shell--);
+
+        this.activeShells = this.activeShells > 0 ? this.activeShells - 1 : 0;
+        break;
+      case 'proton':
+      case 'neutron':
+        let targetColor;
+        if (element == 'proton') {
+          targetColor = this.colors[0];
+          this.activeProtons =
+              this.activeProtons > 0 ? this.activeProtons - 1 : 0;
+        } else {
+          targetColor = this.colors[1];
+          this.activeNeutrons =
+              this.activeNeutrons > 0 ? this.activeNeutrons - 1 : 0;
+        }
+        for (let i = this.nucleusParticles.length - 1; i >= 0; i--) {
+          if (this.nucleusParticles[i].color == targetColor) {
+            // remove from the model
+            this.nucleusParticles.splice(i, 1);
+            // remap rest positions
+            this.nucleusParticles.forEach((p, i) => {
+              p.targetPos = this.indexToRestPosition(i);
+            });
+            return;
+          }
+        }
+        break;
+      case 'electron':
+        this.shellParticles.pop();
+        this.activeElectrons--;
+        break;
     }
-    if (this.particleInteractivity.electrons) {
-      this.paletteParticles.push(new AtomicParticle(
-          this.p.createVector(
-              this.paletteX + this.particleSize,
-              this.paletteY + this.particleSize + particleSpacing * 2),
-          this.particleSize * 2 / 3, this.colors[2], true, this.p));
-    }
+    this.adjusters.forEach(adjuster => adjuster.updateLabelCount());
+  }
+
+  shrinkAtom() {
+    this.particleSize *= 0.9;
+    this.nucleusSpreadFactor = this.particleSize * 0.5;
+
+    this.nucleusParticles.forEach((particle, i) => {
+      particle.size = this.particleSize;
+      particle.targetPos = this.indexToRestPosition(i);
+    });
+    this.shellParticles.forEach((particle, i) => {
+      particle.size = this.particleSize * 0.66;
+    });
   }
 
   indexToRestPosition(i) {
@@ -265,37 +395,27 @@ class AtomicStructureWidget {
     return position;
   }
 
-  handleClickStart(mouseVec) {
-    // check if user clicked on palette particle
-    for (const particle of this.paletteParticles) {
-      if (particle.clickWithin(mouseVec)) {
-        // create a copy of the palette particle to add to the scene
-        let particleCopy = new AtomicParticle(
-            particle.pos.copy(), this.particleSize, particle.color,
-            particle.interactive, particle.p);
-        particleCopy.inUserGrasp = true;
-        particleCopy.targetPos =
-            this.indexToRestPosition(this.nucleusParticles.length);
+  minShellRadius() {
+    return this.nucleusSpreadFactor *
+        this.p.sqrt(this.p.max(2, this.nucleusParticles.length)) +
+        this.particleSize;
+  }
 
-        // add the copied particle to the scene and track particle counts
-        switch (particle.color) {
-          case this.colors[0]:  // proton
-            this.nucleusParticles.push(particleCopy);
-            this.activeProtons++;
-            break;
-          case this.colors[1]:  // nuetron
-            this.nucleusParticles.push(particleCopy);
-            this.activeNuetrons++;
-            break;
-          case this.colors[2]:  // electron
-            particleCopy.size *= 0.66;
-            this.shellParticles.push(particleCopy);
-            this.activeElectrons++;
-            break;
-        }
-        return;
+  handleClickStart(mouseVec) {
+    this.lastInputFrame = this.p.frameCount;
+
+    // check if user clicked on adjuster cap
+    this.lastInputWasAdjuster = false;
+    for (const adjuster of this.adjusters) {
+      if (adjuster.mouseOnAdd(mouseVec)) {
+        adjuster.addElement();
+        this.lastInputWasAdjuster = true;
       }
-    }
+      if (adjuster.mouseOnSubtract(mouseVec)) {
+        adjuster.subtractElement();
+        this.lastInputWasAdjuster = true;
+      }
+    };
 
     // if the user clicked an electron or nuclear particle, add it to their
     // grasp
@@ -308,86 +428,37 @@ class AtomicStructureWidget {
     for (const particle of this.shellParticles) {
       if (particle.clickWithin(mouseVec)) {
         particle.inUserGrasp = true;
-        return;
+        particle.shell = 0;
+        // return;
       }
     }
   }
 
   handleClickEnd(mouseVec) {
+    // delete quickly clicked particles
+    if (this.p.frameCount - this.lastInputFrame < 10 &&
+        !this.lastInputWasAdjuster) {
+      // delete nucleus particles under the mouse
+      this.nucleusParticles =
+          this.nucleusParticles.filter(p => {return !p.inUserGrasp});
+      // delete shell particles under the mouse
+      this.shellParticles =
+          this.shellParticles.filter(p => {return !p.inUserGrasp});
+    }
+
     // release any dragged particles
     for (const particle of this.nucleusParticles) {
       particle.inUserGrasp = false;
     }
     for (const particle of this.shellParticles) {
-      particle.inUserGrasp = false;
-    }
-  }
-
-  draw() {
-    // draw the palette
-    // bounding box and particles
-    this.p.push();
-    this.p.noFill();
-    this.p.stroke(0);
-    this.p.rect(
-        this.paletteX, this.paletteY, this.paletteWidth, this.paletteHeight,
-        12);
-    this.paletteParticles.forEach(particle => particle.draw());
-    // particle count labels
-    this.p.fill(0);
-    this.p.noStroke();
-    this.p.text(
-        'protons: ' + this.activeProtons,
-        this.paletteParticles[0].pos.x + this.paletteLabelOffset,
-        this.paletteParticles[0].pos.y);
-    this.p.text(
-        'nuetrons: ' + this.activeNuetrons,
-        this.paletteParticles[1].pos.x + this.paletteLabelOffset,
-        this.paletteParticles[1].pos.y);
-    this.p.text(
-        'electrons: ' + this.activeElectrons,
-        this.paletteParticles[2].pos.x + this.paletteLabelOffset,
-        this.paletteParticles[2].pos.y);
-    this.p.pop();
-
-    // draw the protons and nuetrons that have been added to the scene
-    this.nucleusParticles.forEach(particle => particle.draw());
-
-    // draw electrons & electron shells
-    let minShellRadius =
-        this.nucleusSpreadFactor * this.p.sqrt(this.nucleusParticles.length);
-    let electronPool = this.shellParticles.slice();
-    let shellCounter = 1;
-    for (const spliceSize of this.atomData.shells) {
-      if (electronPool.length == 0) return;
-      let shellRadius = minShellRadius + shellCounter * this.particleSize;
-      if (shellRadius > this.atomCenter.y - this.particleSize) {
-        this.resize(true);
-        return;
+      if (particle.inUserGrasp) {
+        // need to calculate which shell it lands on
+        let atomicRadius = this.atomCenter.dist(particle.pos);
+        atomicRadius -= this.minShellRadius();
+        let shell = 1 + this.p.floor(0.5 + atomicRadius / this.particleSize);
+        particle.shell = this.p.constrain(shell, 1, this.activeShells);
       }
-
-      // draw orbital path
-      this.p.push();
-      this.p.noFill();
-      this.p.stroke(0);
-      this.p.ellipse(this.atomCenter.x, this.atomCenter.y, shellRadius * 2);
-      this.p.pop();
-
-      // distribute current shell's electrons
-      let currentShellElectrons = electronPool.splice(0, spliceSize);
-      currentShellElectrons.forEach((electron, i) => {
-        let angle = this.p.TAU * i /
-            currentShellElectrons.length;  // distrubute on shell
-        angle += this.p.TAU *
-            (this.p.frameCount / shellCounter / 600);          // animate shell
-        angle += this.p.TAU * shellCounter / (1.618 * 1.618);  // offset shells
-        // create electron target position
-        electron.targetPos = p5.Vector.fromAngle(angle).mult(shellRadius);
-        electron.targetPos.add(this.atomCenter);
-        // draw the electron
-        electron.draw();
-      });
-      shellCounter++;
+      particle.inUserGrasp = false;
     }
   }
 }
@@ -400,11 +471,7 @@ class AtomicParticle {
     this.color = color;
     this.interactive = interactive;
     this.p = p;
-    this.inPalette = false;
     this.inUserGrasp = false;
-
-    this.shell;
-    this.theta;
   }
 
   draw() {
@@ -415,15 +482,117 @@ class AtomicParticle {
       this.pos.lerp(this.targetPos, 0.05);
     }
 
-
     this.p.push();
-    this.p.noStroke();
     this.p.fill(this.color);
+    this.p.stroke(0);
     this.p.ellipse(this.pos.x, this.pos.y, this.size);
     this.p.pop();
   }
 
   clickWithin(mouseVec) {
     return mouseVec.dist(this.pos) < this.size / 2;
+  }
+}
+
+class ElementAdjuster {
+  constructor(centerPos, dims, label, element, widgetController) {
+    // link to controller
+    this.widgetController = widgetController;
+    this.p = widgetController.p;
+
+    // positioning
+    this.centerPos = centerPos;
+    this.dims = dims;
+    this.capDims = dims.copy();
+    this.capDims.x = this.dims.x / 4;
+    this.leftCapCenter = this.p.createVector(
+        this.centerPos.x - (this.dims.x - this.capDims.x) / 2,
+        this.centerPos.y);
+    this.rightCapCenter = this.p.createVector(
+        this.centerPos.x + (this.dims.x - this.capDims.x) / 2,
+        this.centerPos.y);
+
+    // label
+    this.element = element;
+    this.label = label;
+    this.labelCount = 0;
+    this.updateLabelCount();
+  }
+
+  draw() {
+    this.p.push();
+    this.p.rectMode(this.p.CENTER);
+    this.p.fill(0, 100);
+    this.p.noFill();
+    // draw outer container
+    this.p.rect(this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y);
+    // draw -/+ caps
+    this.p.rect(
+        this.leftCapCenter.x, this.leftCapCenter.y, this.capDims.x,
+        this.capDims.y);
+    this.p.rect(
+        this.rightCapCenter.x, this.rightCapCenter.y, this.capDims.x,
+        this.capDims.y);
+    // draw the -/+ signs
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    // minus sign
+    this.p.line(
+        this.leftCapCenter.x - this.capDims.x / 3, this.leftCapCenter.y,
+        this.leftCapCenter.x + this.capDims.x / 3, this.leftCapCenter.y);
+    // plus sign
+    this.p.line(
+        this.rightCapCenter.x - this.capDims.x / 3, this.rightCapCenter.y,
+        this.rightCapCenter.x + this.capDims.x / 3, this.rightCapCenter.y);
+    this.p.line(
+        this.rightCapCenter.x, this.rightCapCenter.y - this.capDims.x / 3.5,
+        this.rightCapCenter.x, this.rightCapCenter.y + this.capDims.x / 3.5);
+
+    // draw the label
+    this.p.fill(0);
+    this.p.noStroke();
+    this.p.text(
+        this.label + this.labelCount,
+        this.rightCapCenter.x - this.capDims.x * 2 / 3, this.centerPos.y);
+
+    this.p.pop();
+  }
+
+  updateLabelCount() {
+    switch (this.element) {
+      case 'shell':
+        this.labelCount = this.widgetController.activeShells;
+        break;
+      case 'proton':
+        this.labelCount = this.widgetController.activeProtons;
+        break;
+      case 'neutron':
+        this.labelCount = this.widgetController.activeNeutrons;
+        break;
+      case 'electron':
+        this.labelCount = this.widgetController.shellParticles.length;
+        break;
+    }
+  }
+
+  addElement() {
+    this.widgetController.addElement(this.element);
+    this.updateLabelCount();
+  }
+
+  subtractElement() {
+    this.widgetController.subtractElement(this.element);
+    this.updateLabelCount();
+  }
+
+  mouseOnSubtract(mouseVec) {
+    return this.p.abs(mouseVec.x - this.leftCapCenter.x) < this.capDims.x / 2 &&
+        this.p.abs(mouseVec.y - this.leftCapCenter.y) < this.capDims.y / 2;
+  }
+
+  mouseOnAdd(mouseVec) {
+    return this.p.abs(mouseVec.x - this.rightCapCenter.x) <
+        this.capDims.x / 2 &&
+        this.p.abs(mouseVec.y - this.rightCapCenter.y) < this.capDims.y / 2;
   }
 }
