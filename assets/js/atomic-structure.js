@@ -105,12 +105,12 @@ const runAtomicStructureWidget =
           p.widgetObject.draw();
         };
 
-        p.mousePressed = () => {
-          p.widgetObject.handleClickStart(p.createVector(p.mouseX, p.mouseY));
+        p.touchStarted = () => {
+          return true  // prevents touches firing twice on mobile
         };
 
-        p.touchStarted = () => {
-          return true
+        p.mousePressed = () => {
+          p.widgetObject.handleClickStart(p.createVector(p.mouseX, p.mouseY));
         };
 
         p.mouseReleased = () => {
@@ -177,12 +177,13 @@ class AtomicStructureWidget {
     this.updateHiddenInputs = updateHiddenInputs;
     this.lastInputFrame = 0;
     this.lastInputWasAdjuster = false;
+    this.mouseVec = this.p.createVector();
 
     // initialize particle arrays
     this.activeProtons = 0;
     this.activeNeutrons = 0;
     this.activeElectrons = 0;
-    this.activeShells = 1;
+    this.activeShells = 0;
     this.nucleusParticles = [];
     this.shells = [];
     this.shellParticles = [];
@@ -202,6 +203,34 @@ class AtomicStructureWidget {
     this.p.textAlign(this.p.RIGHT, this.p.CENTER);
     // complete size dependent setup
     this.resize();
+
+    // add shells and particles according to config
+    // protons
+    for (let i = 0; i < widgetConfig.atomData.protons; i++) {
+      this.addElement('proton');
+      this.nucleusParticles[this.nucleusParticles.length - 1].pos =
+          this.atomCenter.copy();
+    }
+    // neutrons
+    for (let i = 0; i < widgetConfig.atomData.neutrons; i++) {
+      this.addElement('neutron');
+      this.nucleusParticles[this.nucleusParticles.length - 1].pos =
+          this.atomCenter.copy();
+    }
+    // shells and electrons
+    if (widgetConfig.atomData.shells.length > 0) {
+      for (const shellCount of widgetConfig.atomData.shells) {
+        this.addElement('shell');
+        for (let i = 0; i < shellCount; i++) {
+          this.addElement('electron');
+          let electron = this.shellParticles[this.shellParticles.length - 1];
+          electron.pos = this.atomCenter.copy();
+          electron.shell = this.activeShells;
+        }
+      }
+    } else {
+      this.activeShells = 1;
+    }
   }
 
   // used for canvas-size-dependent elements
@@ -281,6 +310,34 @@ class AtomicStructureWidget {
 
     // draw electrons
     this.shellParticles.forEach(p => p.draw());
+
+    // change the cursor if hovering on an interactive element
+    this.mouseVec.x = this.p.mouseX;
+    this.mouseVec.y = this.p.mouseY;
+    // nucleus particles
+    for (const p of this.nucleusParticles) {
+      if (p.clickWithin(this.mouseVec)) {
+        this.p.cursor(this.p.HAND)
+        return;
+      }
+    }
+    // electrons
+    for (const p of this.shellParticles) {
+      if (p.clickWithin(this.mouseVec)) {
+        this.p.cursor(this.p.HAND)
+        return;
+      }
+    }
+    // palette adjusters
+    for (const adjuster of this.adjusters) {
+      if (adjuster.mouseOnAdd(this.mouseVec) ||
+          adjuster.mouseOnSubtract(this.mouseVec)) {
+        this.p.cursor(this.p.HAND)
+        return;
+      }
+    };
+
+    this.p.cursor(this.p.ARROW);
   }
 
   addElement(element) {
@@ -321,7 +378,6 @@ class AtomicStructureWidget {
         // if there are no shells yet, create one
         if (this.activeShells < 1) {
           this.activeShells++;
-          this.shellParticleCounts = [1];
         }
         break;
     }
@@ -332,10 +388,10 @@ class AtomicStructureWidget {
   subtractElement(element) {
     switch (element) {
       case 'shell':
-        let shellElectrons = this.shellParticles.filter(
-            e => {return e.shell == this.activeShells});
-        shellElectrons.forEach(e => e.shell--);
-
+        // remove shell particles on the outermost shell
+        this.shellParticles = this.shellParticles.filter(
+            e => {return e.shell != this.activeShells});
+        // set the new number of shells
         this.activeShells = this.activeShells > 0 ? this.activeShells - 1 : 0;
         break;
       case 'proton':
@@ -401,17 +457,20 @@ class AtomicStructureWidget {
         this.particleSize;
   }
 
-  handleClickStart(mouseVec) {
+  handleClickStart() {
+    // register click with widget state
     this.lastInputFrame = this.p.frameCount;
+    this.mouseVec.x = this.p.mouseX;
+    this.mouseVec.y = this.p.mouseY;
 
     // check if user clicked on adjuster cap
     this.lastInputWasAdjuster = false;
     for (const adjuster of this.adjusters) {
-      if (adjuster.mouseOnAdd(mouseVec)) {
+      if (adjuster.mouseOnAdd(this.mouseVec)) {
         adjuster.addElement();
         this.lastInputWasAdjuster = true;
       }
-      if (adjuster.mouseOnSubtract(mouseVec)) {
+      if (adjuster.mouseOnSubtract(this.mouseVec)) {
         adjuster.subtractElement();
         this.lastInputWasAdjuster = true;
       }
@@ -420,13 +479,13 @@ class AtomicStructureWidget {
     // if the user clicked an electron or nuclear particle, add it to their
     // grasp
     for (const particle of this.nucleusParticles) {
-      if (particle.clickWithin(mouseVec)) {
+      if (particle.clickWithin(this.mouseVec)) {
         particle.inUserGrasp = true;
         return;
       }
     }
     for (const particle of this.shellParticles) {
-      if (particle.clickWithin(mouseVec)) {
+      if (particle.clickWithin(this.mouseVec)) {
         particle.inUserGrasp = true;
         particle.shell = 0;
         // return;
@@ -525,14 +584,15 @@ class ElementAdjuster {
     this.p.fill(0, 100);
     this.p.noFill();
     // draw outer container
-    this.p.rect(this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y);
+    this.p.rect(
+        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 10);
     // draw -/+ caps
     this.p.rect(
         this.leftCapCenter.x, this.leftCapCenter.y, this.capDims.x,
-        this.capDims.y);
+        this.capDims.y, 10, 0, 0, 10);
     this.p.rect(
         this.rightCapCenter.x, this.rightCapCenter.y, this.capDims.x,
-        this.capDims.y);
+        this.capDims.y, 0, 10, 10, 0);
     // draw the -/+ signs
     this.p.stroke(0);
     this.p.strokeWeight(1);
