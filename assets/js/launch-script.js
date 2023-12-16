@@ -7,10 +7,9 @@ const atomicStructureConfig = {
 				shells: true,
 			},
 			atomData: {
-				protons: 1,
-				electrons: 1,
-				nuetrons: 1,
-				shells: [2, 4, 4, 16],
+				protons: 10,
+				nuetrons: 10,
+				shells: [2,4,4],
 				atomCard: true
 			},
 			colors: ["#4B0082", "#6C6377", "#FFD700"]
