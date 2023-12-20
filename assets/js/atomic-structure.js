@@ -402,6 +402,7 @@ class AtomicStructureWidget {
           if (tracking) this.userActions.push('subtractProton');
         } else {
           if (this.activeNeutrons <= 0) return;
+          targetColor = this.colors[1];
           this.activeNeutrons--;
           if (tracking) this.userActions.push('subtractNeutron');
         }
@@ -413,7 +414,7 @@ class AtomicStructureWidget {
             this.nucleusParticles.forEach((p, i) => {
               p.targetPos = this.indexToRestPosition(i);
             });
-            return;
+            break;
           }
         }
         break;
@@ -458,22 +459,22 @@ class AtomicStructureWidget {
     // add shells and particles according to config
     // protons
     for (let i = 0; i < this.atomData.protons; i++) {
-      this.addElement('proton');
+      this.addElement('proton', false);
       this.nucleusParticles[this.nucleusParticles.length - 1].pos =
           this.atomCenter.copy();
     }
     // neutrons
     for (let i = 0; i < this.atomData.neutrons; i++) {
-      this.addElement('neutron');
+      this.addElement('neutron', false);
       this.nucleusParticles[this.nucleusParticles.length - 1].pos =
           this.atomCenter.copy();
     }
     // shells and electrons
     if (this.atomData.shells.length > 0) {
       for (const shellCount of this.atomData.shells) {
-        this.addElement('shell');
+        this.addElement('shell', false);
         for (let i = 0; i < shellCount; i++) {
-          this.addElement('electron');
+          this.addElement('electron', false);
           let electron = this.shellParticles[this.shellParticles.length - 1];
           electron.pos = this.atomCenter.copy();
           electron.shell = this.activeShells;
