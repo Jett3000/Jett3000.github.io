@@ -241,7 +241,7 @@ class AtomicStructureWidget {
         adjusterCenter.copy(), adjusterDims, 'Electrons: ', 'electron', this);
     adjusterCenter.y += adjusterSpacing - adjusterDims.y * 0.2;
 
-    this.adjusters =
+    this.particleButtons =
         [this.protonAdjuster, this.neutronAdjuster, this.electronAdjuster];
 
 
@@ -258,8 +258,8 @@ class AtomicStructureWidget {
   }
 
   draw() {
-    // draw the adjuster palette
-    this.adjusters.forEach(a => a.draw());
+    // draw the ui elements
+    this.particleButtons.forEach(a => a.draw());
     this.shellAdjuster.draw();
     this.undoButton.draw();
     this.resetButton.draw();
@@ -275,7 +275,6 @@ class AtomicStructureWidget {
         this.shrinkAtom();
         return;
       }
-
       this.p.push();
       this.p.noFill();
       this.p.stroke(0);
@@ -286,8 +285,7 @@ class AtomicStructureWidget {
       let currentShellElectrons =
           this.shellParticles.filter(sp => {return sp.shell == shellIndex + 1});
       currentShellElectrons.forEach((electron, i) => {
-        let angle = this.p.TAU * i /
-            currentShellElectrons.length;  // distrubute on shell
+        let angle = this.p.TAU * i / currentShellElectrons.length;
         // update electron target position
         electron.targetPos = p5.Vector.fromAngle(angle).mult(shellRadius);
         electron.targetPos.add(this.atomCenter);
@@ -295,35 +293,39 @@ class AtomicStructureWidget {
     }
 
     // draw electrons
-    this.shellParticles.forEach(p => p.draw());
+    this.shellParticles.forEach(particle => particle.draw());
 
     // change the cursor if hovering on an interactive element
     this.mouseVec.x = this.p.mouseX;
     this.mouseVec.y = this.p.mouseY;
     // nucleus particles
-    for (const p of this.nucleusParticles) {
-      if (p.clickWithin(this.mouseVec)) {
+    for (const particle of this.nucleusParticles) {
+      if (particle.clickWithin(this.mouseVec)) {
         this.p.cursor(this.p.HAND)
         return;
       }
     }
     // electrons
-    for (const p of this.shellParticles) {
-      if (p.clickWithin(this.mouseVec)) {
+    for (const particle of this.shellParticles) {
+      if (particle.clickWithin(this.mouseVec)) {
         this.p.cursor(this.p.HAND)
         return;
       }
     }
     // palette particles
-    for (const adjuster of this.adjusters) {
-      if (adjuster.mouseOnButton(this.mouseVec)) {
+    for (const button of this.particleButtons) {
+      button.hoveredOn = false;
+      if (button.mouseOnButton(this.mouseVec)) {
         this.p.cursor(this.p.HAND)
+        button.hoveredOn = true;
         return;
       }
     };
-    // shell adjuster
+    // shell adjuster, undo and reset button
     if (this.shellAdjuster.mouseOnAdd(this.mouseVec) ||
-        this.shellAdjuster.mouseOnSubtract(this.mouseVec)) {
+        this.shellAdjuster.mouseOnSubtract(this.mouseVec) ||
+        this.undoButton.mouseOnButton(this.mouseVec) ||
+        this.resetButton.mouseOnButton(this.mouseVec)) {
       this.p.cursor(this.p.HAND)
       return;
     }
@@ -377,7 +379,7 @@ class AtomicStructureWidget {
         break;
     }
 
-    this.adjusters.forEach(adjuster => adjuster.updateLabelCount());
+    this.particleButtons.forEach(adjuster => adjuster.updateLabelCount());
   }
 
   subtractElement(element, tracking = true) {
@@ -425,7 +427,7 @@ class AtomicStructureWidget {
         if (tracking) this.userActions.push('subtractElectron');
         break;
     }
-    this.adjusters.forEach(adjuster => adjuster.updateLabelCount());
+    this.particleButtons.forEach(adjuster => adjuster.updateLabelCount());
   }
 
   shrinkAtom() {
@@ -551,7 +553,7 @@ class AtomicStructureWidget {
 
     // check if user clicked on adjuster
     this.lastInputWasAdjuster = false;
-    for (const adjuster of this.adjusters) {
+    for (const adjuster of this.particleButtons) {
       if (adjuster.mouseOnButton(this.mouseVec)) {
         adjuster.addElement();
         this.lastInputWasAdjuster = true;
@@ -645,6 +647,7 @@ class PaletteParticle {
     // link to controller
     this.widgetController = widgetController;
     this.p = widgetController.p;
+    this.hoveredOn = false;
 
     // positioning
     this.centerPos = centerPos;
@@ -669,6 +672,8 @@ class PaletteParticle {
         this.particleColor = widgetController.colors[2];
         break;
     }
+    this.hoverColor = this.p.color(this.particleColor);
+    this.hoverColor.setAlpha(40);
 
     // label
     this.particleType = particleType;
@@ -680,7 +685,11 @@ class PaletteParticle {
   draw() {
     this.p.push();
     this.p.rectMode(this.p.CENTER);
-    this.p.noFill();
+    if (this.hoveredOn) {
+      this.p.fill(this.hoverColor)
+    } else {
+      this.p.noFill();
+    }
     // draw outer container
     this.p.rect(
         this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 10);
