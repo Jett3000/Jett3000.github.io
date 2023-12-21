@@ -106,7 +106,26 @@ const runAtomicStructureWidget =
         };
 
         p.touchStarted = () => {
-          return true  // prevents touches firing twice on mobile
+          return true;  // prevents touches firing twice on mobile
+        };
+
+        p.touchMoved = (e) => {
+          let anyParticleInGrasp = false;
+          for (const particle of widgetObject.nucleusParticles) {
+            if (particle.inUserGrasp) {
+              anyParticleInGrasp = true;
+              break;
+            }
+          }
+          for (const particle of widgetObject.shellParticles) {
+            if (particle.inUserGrasp) {
+              anyParticleInGrasp = true;
+              break;
+            }
+          }
+          // prevent scrolling when the widget is being interacted with
+          if (!e.cancelable) return;
+          if (anyParticleInGrasp) return false;
         };
 
         p.mousePressed = () => {
@@ -485,6 +504,11 @@ class AtomicStructureWidget {
     } else {
       this.activeShells = 1;
     }
+
+    this.nucleusParticles = this.p.shuffle(this.nucleusParticles);
+    this.nucleusParticles.forEach((p, i) => {
+      p.targetPos = this.indexToRestPosition(i);
+    });
   }
 
   undoLastAction() {
@@ -586,9 +610,23 @@ class AtomicStructureWidget {
     // delete quickly clicked particles
     if (this.p.frameCount - this.lastInputFrame < 10 &&
         !this.lastInputWasAdjuster) {
+      // update nucleus particle count
+      for (const particle of this.nucleusParticles) {
+        if (particle.inUserGrasp) {
+          if (particle.color == this.colors[0]) {
+            this.activeProtons--
+          } else {
+            this.activeNeutrons--
+          }
+        }
+      }
       // delete nucleus particles under the mouse
       this.nucleusParticles =
           this.nucleusParticles.filter(p => {return !p.inUserGrasp});
+      this.nucleusParticles.forEach((p, i) => {
+        p.targetPos = this.indexToRestPosition(i);
+      });
+
       // delete shell particles under the mouse
       this.shellParticles =
           this.shellParticles.filter(p => {return !p.inUserGrasp});
@@ -627,7 +665,7 @@ class AtomicParticle {
       this.pos.x = this.p.mouseX;
       this.pos.y = this.p.mouseY;
     } else {
-      this.pos.lerp(this.targetPos, 0.05);
+      this.pos.lerp(this.targetPos, 0.08);
     }
 
     this.p.push();
@@ -708,6 +746,7 @@ class PaletteParticle {
     this.p.text(this.labelText, this.labelPos.x, this.labelPos.y);
 
     // draw the count
+    this.updateLabelCount();
     this.p.textAlign(this.p.RIGHT);
     this.p.text(this.labelCount, this.countPos.x, this.countPos.y);
 
