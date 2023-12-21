@@ -601,11 +601,13 @@ class AtomicStructureWidget {
     // reset button
     if (this.resetButton.mouseOnButton(this.mouseVec)) {
       this.resetAtom();
+      this.lastInputWasAdjuster = true;
     }
 
     // undo button
     if (this.undoButton.mouseOnButton(this.mouseVec)) {
       this.undoLastAction();
+      this.lastInputWasAdjuster = true;
     }
 
     // check if user clicked on adjuster
@@ -634,7 +636,7 @@ class AtomicStructureWidget {
       if (particle.clickWithin(this.mouseVec)) {
         particle.inUserGrasp = true;
         particle.shell = 0;
-        // return;
+        return;
       }
     }
   }
@@ -642,14 +644,17 @@ class AtomicStructureWidget {
   handleClickEnd() {
     // delete quickly clicked particles
     if (this.p.frameCount - this.lastInputFrame < 10 &&
-        !this.lastInputWasAdjuster) {
+        !this.lastInputWasAdjuster &&
+        !this.undoButton.mouseOnButton(this.mouseVec)) {
       // update nucleus particle count
       for (const particle of this.nucleusParticles) {
         if (particle.inUserGrasp) {
           if (particle.color == this.colors[0]) {
-            this.activeProtons--
+            this.activeProtons--;
+            this.userActions.push('subtractProton');
           } else {
-            this.activeNeutrons--
+            this.activeNeutrons--;
+            this.userActions.push('subtractNeutron');
           }
         }
       }
