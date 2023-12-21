@@ -58,14 +58,17 @@ const runAtomicStructureWidget =
 
       const getHeightOfCanvas = () => {
         const windowHeight = window.innerHeight ||
-            document.documentElement.clientHeight || document.body.clientHeight
+            document.documentElement.clientHeight || document.body.clientHeight;
         const maxHeight = windowHeight * (0.55);
 
         let height = node.clientWidth * heightToWidthRatio;
+        if (window.innerHeight > window.innerWidth) {
+          height = node.clientWidth / heightToWidthRatio;
+        }
 
-        if (height > maxHeight) {
-          height = maxHeight
-        };
+        // if (height > maxHeight) {
+        //   height = maxHeight
+        // };
 
         return height;
       };
@@ -226,54 +229,80 @@ class AtomicStructureWidget {
 
   // used for canvas-size-dependent elements
   resize() {
-    // set the center of the atom model
-    this.atomCenter = this.p.createVector(
-        this.p.width * 3 / 5,
-        this.p.height / 2,
-    );
+    let paletteCenter;
+    let paletteElementDims;
 
-    // set the particle size and spread factor
+    if (this.p.width > this.p.height) {
+      // landscape / desktop view
+      // set the dimension and position of the palette
+      paletteElementDims =
+          this.p.createVector(this.p.width * 0.3, this.p.height * .12);
+      paletteCenter = this.p.createVector(
+          paletteElementDims.x / 2 + 10,
+          this.p.height * 0.5 - paletteElementDims.y * 2);
+      // set the center of the atom model
+      this.atomCenter = this.p.createVector(
+          this.p.width - paletteElementDims.x, this.p.height / 2);
+    } else {
+      // portrait / mobile view
+      // set the dimension and position of the palette
+      paletteElementDims =
+          this.p.createVector(this.p.width * 0.4, this.p.height * 0.07);
+      paletteCenter = this.p.createVector(
+          this.p.width / 2, this.p.height - paletteElementDims.y * 5);
+      // set the center of the atom model
+      this.atomCenter = this.p.createVector(
+          this.p.width / 2,
+          this.p.height / 4,
+      )
+    }
+
+    // set the particle size
     this.particleSize = this.p.width * 0.05;
-    this.nucleusSpreadFactor = this.particleSize * 0.5;
 
     // create adjuster UI elements for the model
-    let adjusterDims =
-        this.p.createVector(this.p.textWidth('Electrons: 999') * 2, 0);
-    adjusterDims.y = adjusterDims.x / 3;
-    let adjusterCenter =
-        this.p.createVector(adjusterDims.x * 2 / 3, adjusterDims.x * 2 / 3);
-    let adjusterSpacing = adjusterDims.y * 1.1;
-
+    let paletteElementSpacing = paletteElementDims.y * 1.1;
+    // shells
     this.shellAdjuster =
-        new ShellAdjuster(adjusterCenter.copy(), adjusterDims, this);
-    adjusterCenter.y += adjusterSpacing;
-
-    this.protonAdjuster = new PaletteParticle(
-        adjusterCenter.copy(), adjusterDims, 'Protons: ', 'proton', this);
-    adjusterCenter.y += adjusterSpacing;
-
-    this.neutronAdjuster = new PaletteParticle(
-        adjusterCenter.copy(), adjusterDims, 'Neutrons: ', 'neutron', this);
-    adjusterCenter.y += adjusterSpacing;
-
-    this.electronAdjuster = new PaletteParticle(
-        adjusterCenter.copy(), adjusterDims, 'Electrons: ', 'electron', this);
-    adjusterCenter.y += adjusterSpacing - adjusterDims.y * 0.2;
-
+        new ShellAdjuster(paletteCenter.copy(), paletteElementDims, this);
+    paletteCenter.y += paletteElementSpacing;
+    // particles
+    this.paletteProton = new PaletteParticle(
+        paletteCenter.copy(), paletteElementDims, 'Protons: ', 'proton', this);
+    paletteCenter.y += paletteElementSpacing;
+    this.paletteNeutron = new PaletteParticle(
+        paletteCenter.copy(), paletteElementDims, 'Neutrons: ', 'neutron',
+        this);
+    paletteCenter.y += paletteElementSpacing;
+    this.paletteElectron = new PaletteParticle(
+        paletteCenter.copy(), paletteElementDims, 'Electrons: ', 'electron',
+        this);
+    paletteCenter.y += paletteElementSpacing - paletteElementDims.y * 0.2;
     this.particleButtons =
-        [this.protonAdjuster, this.neutronAdjuster, this.electronAdjuster];
+        [this.paletteProton, this.paletteNeutron, this.paletteElectron];
 
-
-    let buttonDims = adjusterDims.copy()
+    // undo & reset buttons
+    let buttonDims = paletteElementDims.copy()
     buttonDims.x *= 0.5;
     buttonDims.y *= 0.6
-    let undoCenter = adjusterCenter.copy();
-    undoCenter.x -= adjusterDims.x / 4;
+    // undo
+    let undoCenter = paletteCenter.copy();
+    undoCenter.x -= paletteElementDims.x / 4;
     this.undoButton = new WidgetButton(undoCenter, buttonDims, 'Undo', this);
-    let resetCenter = adjusterCenter.copy();
-    resetCenter.x += adjusterDims.x / 4;
-
+    // reset
+    let resetCenter = paletteCenter.copy();
+    resetCenter.x += paletteElementDims.x / 4;
     this.resetButton = new WidgetButton(resetCenter, buttonDims, 'Reset', this);
+
+    // particle spread, and positioning
+    for (const particle of this.nucleusParticles) {
+      particle.size = this.particleSize;
+    }
+    for (const electron of this.shellParticles) {
+      electron.size = this.particleSize * 0.66;
+    }
+    this.nucleusSpreadFactor = this.particleSize * 0.5;
+    this.remapNucleus();
   }
 
   draw() {
@@ -506,9 +535,7 @@ class AtomicStructureWidget {
     }
 
     this.nucleusParticles = this.p.shuffle(this.nucleusParticles);
-    this.nucleusParticles.forEach((p, i) => {
-      p.targetPos = this.indexToRestPosition(i);
-    });
+    this.remapNucleus();
   }
 
   undoLastAction() {
@@ -557,6 +584,12 @@ class AtomicStructureWidget {
     return this.nucleusSpreadFactor *
         this.p.sqrt(this.p.max(2, this.nucleusParticles.length)) +
         this.particleSize;
+  }
+
+  remapNucleus() {
+    this.nucleusParticles.forEach((p, i) => {
+      p.targetPos = this.indexToRestPosition(i);
+    });
   }
 
   handleClickStart() {
