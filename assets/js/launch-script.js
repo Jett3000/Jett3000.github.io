@@ -8,7 +8,7 @@ const atomicStructureConfig = {
 			},
 			atomData: {
 				protons: 10,
-				nuetrons: 10,
+				neutrons: 10,
 				shells: [2,4,4],
 				atomCard: true
 			},
