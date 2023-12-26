@@ -325,7 +325,7 @@ class AtomicStructureWidget {
 
   draw() {
     // draw the ui elements
-    this.particleButtons.forEach(a => a.draw());
+    this.particleButtons.forEach(pb => pb.draw());
     this.shellAdjuster.draw();
     this.undoButton.draw();
     this.resetButton.draw();
@@ -334,6 +334,15 @@ class AtomicStructureWidget {
     this.nucleusParticles.forEach(particle => particle.draw());
 
     // draw electron shells & distribute electrons
+    let highlightedShell = -1;
+    for (const electron of this.shellParticles) {
+      if (electron.inUserGrasp) {
+        highlightedShell += electron.calculateShell(
+            this.atomCenter, this.minShellRadius(), this.particleSize,
+            this.activeShells);
+        break;
+      }
+    }
     for (let shellIndex = 0; shellIndex < this.activeShells; shellIndex++) {
       // draw orbital path
       let shellRadius = this.minShellRadius() + shellIndex * this.particleSize;
@@ -344,6 +353,8 @@ class AtomicStructureWidget {
       this.p.push();
       this.p.noFill();
       this.p.stroke(0);
+      this.p.strokeWeight(1);
+      if (highlightedShell == shellIndex) this.p.strokeWeight(2);
       this.p.ellipse(this.atomCenter.x, this.atomCenter.y, shellRadius * 2);
       this.p.pop();
 
@@ -453,15 +464,13 @@ class AtomicStructureWidget {
         particle = new AtomicParticle(
             this.p.createVector(this.p.mouseX, this.p.mouseY),
             this.particleSize * 0.66, this.colors[2], true, this.p);
+        particle.calculateShell(
+            this.atomCenter, this.minShellRadius(), this.particleSize,
+            this.activeShells);
         // add to the model
         this.shellParticles.push(particle);
         this.activeElectrons++;
         if (tracking) this.userActions.push('addElectron');
-
-        let atomicRadius = this.atomCenter.dist(particle.pos);
-        atomicRadius -= this.minShellRadius();
-        let shell = 1 + this.p.floor(0.5 + atomicRadius / this.particleSize);
-        particle.shell = this.p.constrain(shell, 1, this.activeShells);
 
         // if there are no shells yet, create one
         if (this.activeShells < 1) {
@@ -719,17 +728,15 @@ class AtomicStructureWidget {
     }
     for (const particle of this.shellParticles) {
       if (particle.inUserGrasp) {
-        // need to calculate which shell it lands on
-        let atomicRadius = this.atomCenter.dist(particle.pos);
-        atomicRadius -= this.minShellRadius();
-        let shell = 1 + this.p.floor(0.5 + atomicRadius / this.particleSize);
-        particle.shell = this.p.constrain(shell, 1, this.activeShells);
+        particle.calculateShell(
+            this.atomCenter, this.minShellRadius(), this.particleSize,
+            this.activeShells);
       }
       particle.inUserGrasp = false;
     }
   }
 
-  handleTab() {
+  handleTab(unfocusAll = false) {
     // clear all focuses
     this.shellAdjuster.subtractKeyboardFocused = false;
     this.shellAdjuster.addKeyboardFocused = false;
@@ -738,7 +745,7 @@ class AtomicStructureWidget {
     this.paletteElectron.keyboardFocused = false;
     this.undoButton.keyboardFocused = false;
     this.resetButton.keyboardFocused = false;
-
+    if (unfocusAll) return;
 
     // increment the focused element index
     this.keyboardFocusIndex++;
@@ -809,6 +816,7 @@ class AtomicParticle {
   constructor(pos, size, color, interactive, p) {
     this.pos = pos;
     this.targetPos = pos.copy();
+    this.shell = 0;
     this.size = size;
     this.color = color;
     this.interactive = interactive;
@@ -829,6 +837,13 @@ class AtomicParticle {
     this.p.stroke(0);
     this.p.ellipse(this.pos.x, this.pos.y, this.size);
     this.p.pop();
+  }
+
+  calculateShell(atomCenter, minShellRadius, particleSize, activeShells) {
+    let atomicRadius = atomCenter.dist(this.pos) - minShellRadius;
+    let shellCalculation = 1 + this.p.floor(0.5 + atomicRadius / particleSize);
+    this.shell = this.p.constrain(shellCalculation, 1, activeShells);
+    return this.shell;
   }
 
   clickWithin(mouseVec) {
