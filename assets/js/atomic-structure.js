@@ -1,6 +1,6 @@
 
 const runAtomicStructureWidget =
-    ({container, particleInteractivity, atomData, colors = widgetColors}) => {
+    ({container, particleInteractivity, atomData, atomColors}) => {
       const getThemeColors =
           (theme) => {
             // Edit these colors to change the colors
@@ -78,7 +78,6 @@ const runAtomicStructureWidget =
         h: getHeightOfCanvas(),
       };
 
-
       // Define the p5 sketch methods
       const sketch = (p) => {
         p.setup = () => {
@@ -87,20 +86,8 @@ const runAtomicStructureWidget =
 
           // Create the widget obejct
           p.widgetObject = new AtomicStructureWidget(
-              {particleInteractivity, atomData, colors}, p, updateHiddenInputs);
-
-
-          // TODO: make colors optional
-          // if (!(typeof widgetColors === 'undefined') && widgetColors !==
-          // null) {
-          //   widgetObject = new AtomicStructureWidget(
-          //       particleInteractivity, atomData, colors, p,
-          //       updateHiddenInputs)
-          // }
-          // else {
-          //   widgetObject = new AtomicStructureWidget(
-          //       {segments, interactive}, p, updateHiddenInputs)
-          // }
+              {particleInteractivity, atomData, atomColors}, p,
+              updateHiddenInputs);
         };
 
         p.draw = () => {
@@ -195,15 +182,18 @@ class AtomicStructureWidget {
    *    - neutrons: integer / number of neutrons
    *    - shells: array / number of electrons per shell
    *    - atomCard: boolean / show the atom's period table entry
-   * - colors (optional): array // [protonHexCode, neutronHexCode,
-   * electronHexCode]
+   * - atomColors:
+   *    - protonColor: string (hex code) / color of protons
+   *    - neutronColor: string (hex code) / color of neutrons
+   *    - electronColor: string (hex code) / color of electrons
+   *    - buttonFocusColor: string (hex code) / color of focused buttons
    * @param {p5} p The p5.js sketch object
    */
   constructor(widgetConfig, p, updateHiddenInputs) {
     // read configuration data
     this.particleInteractivity = widgetConfig.particleInteractivity;
     this.atomData = widgetConfig.atomData;
-    this.colors = widgetConfig.colors;
+    this.atomColors = widgetConfig.atomColors;
 
     // link to the sketch instance and document input/outputs
     this.p = p;
@@ -372,9 +362,25 @@ class AtomicStructureWidget {
     // draw electrons
     this.shellParticles.forEach(particle => particle.draw());
 
-    // respond to cursor hovering on interactive elements
+    // visually respond to the mouse
+    this.updateHoverEffects();
+  }
+
+  updateHoverEffects() {
+    // update mouse vector object
     this.mouseVec.x = this.p.mouseX;
     this.mouseVec.y = this.p.mouseY;
+
+    // clear all hover effects
+    this.shellAdjuster.subtractMouseFocused = false;
+    this.shellAdjuster.addMouseFocused = false;
+    this.paletteProton.mouseFocused = false;
+    this.paletteNeutron.mouseFocused = false;
+    this.paletteElectron.mouseFocused = false;
+    this.undoButton.mouseFocused = false;
+    this.resetButton.mouseFocused = false;
+
+    // check draggable particles for hand cursor
     // nucleus particles
     for (const particle of this.nucleusParticles) {
       if (particle.clickWithin(this.mouseVec)) {
@@ -389,39 +395,26 @@ class AtomicStructureWidget {
         return;
       }
     }
+    // check ui elements for hover effects + hand cursor
     // palette particles
     for (const button of this.particleButtons) {
-      button.hoveredOn = button.mouseOnButton(this.mouseVec);
-      if (button.hoveredOn) {
+      button.mouseFocused = button.mouseOnButton(this.mouseVec);
+      if (button.mouseFocused) {
         this.p.cursor(this.p.HAND)
         return;
       }
     };
-    // shell adjuster
-    this.shellAdjuster.addFocused = this.shellAdjuster.mouseOnAdd(this.mouseVec)
-    if (this.shellAdjuster.addFocused) {
-      this.p.cursor(this.p.HAND);
-      return;
-    }
-    this.shellAdjuster.subtractFocused =
+    // shell adjuster, undo and reset buttons
+    this.shellAdjuster.addMouseFocused =
+        this.shellAdjuster.mouseOnAdd(this.mouseVec);
+    this.shellAdjuster.subtractMouseFocused =
         this.shellAdjuster.mouseOnSubtract(this.mouseVec);
-    if (this.shellAdjuster.subtractFocused) {
-      this.p.cursor(this.p.HAND);
-      return;
-    }
-
-    // undo button
-    this.undoButton.buttonFocused =
-        this.undoButton.mouseOnButton(this.mouseVec);
-    if (this.undoButton.buttonFocused) {
-      this.p.cursor(this.p.HAND)
-      return;
-    }
-
-    // reset button
-    this.resetButton.buttonFocused =
+    this.undoButton.mouseFocused = this.undoButton.mouseOnButton(this.mouseVec);
+    this.resetButton.mouseFocused =
         this.resetButton.mouseOnButton(this.mouseVec);
-    if (this.resetButton.buttonFocused) {
+    if (this.shellAdjuster.addMouseFocused ||
+        this.shellAdjuster.subtractMouseFocused ||
+        this.undoButton.mouseFocused || this.resetButton.mouseFocused) {
       this.p.cursor(this.p.HAND)
       return;
     }
@@ -441,11 +434,11 @@ class AtomicStructureWidget {
       case 'neutron':
         let color;
         if (element == 'proton') {
-          color = this.colors[0];
+          color = this.atomColors.protonColor;
           this.activeProtons++;
           if (tracking) this.userActions.push('addProton');
         } else {
-          color = this.colors[1];
+          color = this.atomColors.neutronColor;
           this.activeNeutrons++;
           if (tracking) this.userActions.push('addNeutron');
         }
@@ -463,7 +456,8 @@ class AtomicStructureWidget {
         // create new particle
         particle = new AtomicParticle(
             this.p.createVector(this.p.mouseX, this.p.mouseY),
-            this.particleSize * 0.66, this.colors[2], true, this.p);
+            this.particleSize * 0.66, this.atomColors.electronColor, true,
+            this.p);
         particle.calculateShell(
             this.atomCenter, this.minShellRadius(), this.particleSize,
             this.activeShells);
@@ -499,12 +493,12 @@ class AtomicStructureWidget {
         let targetColor;
         if (element == 'proton') {
           if (this.activeProtons <= 0) return;
-          targetColor = this.colors[0];
+          targetColor = this.atomColors.protonColor;
           this.activeProtons--;
           if (tracking) this.userActions.push('subtractProton');
         } else {
           if (this.activeNeutrons <= 0) return;
-          targetColor = this.colors[1];
+          targetColor = this.atomColors.neutronColor;
           this.activeNeutrons--;
           if (tracking) this.userActions.push('subtractNeutron');
         }
@@ -701,7 +695,7 @@ class AtomicStructureWidget {
       // update nucleus particle count
       for (const particle of this.nucleusParticles) {
         if (particle.inUserGrasp) {
-          if (particle.color == this.colors[0]) {
+          if (particle.color == this.atomColors.protonColor) {
             this.activeProtons--;
             this.userActions.push('subtractProton');
           } else {
@@ -851,6 +845,105 @@ class AtomicParticle {
   }
 }
 
+class ShellAdjuster {
+  constructor(centerPos, dims, widgetController) {
+    // link to controller
+    this.widgetController = widgetController;
+    this.p = widgetController.p;
+
+    // positioning
+    this.centerPos = centerPos;
+    this.dims = dims;
+    this.capDims = dims.copy();
+    this.capDims.x = this.dims.x / 3;
+    this.leftCapCenter = this.p.createVector(
+        this.centerPos.x - (this.dims.x - this.capDims.x) / 2,
+        this.centerPos.y);
+    this.rightCapCenter = this.p.createVector(
+        this.centerPos.x + (this.dims.x - this.capDims.x) / 2,
+        this.centerPos.y);
+    this.labelPos = this.centerPos.copy().sub(0, dims.y / 4);
+    this.countPos = this.centerPos.copy().add(0, dims.y / 4);
+
+    // hover and keyboard focused display
+    this.subtractMouseFocused = false;
+    this.subtractKeyboardFocused = false;
+    this.addMouseFocused = false;
+    this.addKeyboardFocused = false;
+  }
+
+  draw() {
+    this.p.push();
+    this.p.rectMode(this.p.CENTER);
+
+    // draw minus button
+    this.p.stroke(0);
+    if (this.subtractMouseFocused || this.subtractKeyboardFocused) {
+      this.p.fill(this.widgetController.atomColors.buttonFocusColor)
+    } else {
+      this.p.noFill();
+    };
+    this.p.rect(
+        this.leftCapCenter.x, this.leftCapCenter.y, this.capDims.x,
+        this.capDims.y, 10);
+    // draw plus button
+    if (this.addMouseFocused || this.addKeyboardFocused) {
+      this.p.fill(this.widgetController.atomColors.buttonFocusColor)
+    } else {
+      this.p.noFill();
+    };
+    this.p.rect(
+        this.rightCapCenter.x, this.rightCapCenter.y, this.capDims.x,
+        this.capDims.y, 10);
+
+    // draw the -/+ signs
+    this.p.stroke(0);
+    this.p.strokeWeight(1);
+    // minus sign
+    this.p.line(
+        this.leftCapCenter.x - this.capDims.x / 3, this.leftCapCenter.y,
+        this.leftCapCenter.x + this.capDims.x / 3, this.leftCapCenter.y);
+    // plus sign
+    this.p.line(
+        this.rightCapCenter.x - this.capDims.x / 3, this.rightCapCenter.y,
+        this.rightCapCenter.x + this.capDims.x / 3, this.rightCapCenter.y);
+    this.p.line(
+        this.rightCapCenter.x, this.rightCapCenter.y - this.capDims.x / 3.5,
+        this.rightCapCenter.x, this.rightCapCenter.y + this.capDims.x / 3.5);
+
+    // draw the label
+    this.p.fill(0);
+    this.p.noStroke();
+    this.p.textSize(this.dims.y / 3);
+    this.p.textAlign(this.p.CENTER, this.p.TOP);
+    this.p.text('Shells', this.centerPos.x, this.centerPos.y - this.dims.y);
+    this.p.textAlign(this.p.CENTER, this.p.CENTER);
+
+    this.p.text(
+        this.widgetController.activeShells, this.centerPos.x, this.centerPos.y);
+    this.p.pop();
+  }
+
+  addElement() {
+    this.widgetController.addElement('shell');
+  }
+
+  subtractElement() {
+    this.widgetController.subtractElement('shell');
+  }
+
+  mouseOnSubtract(mouseVec) {
+    return this.p.abs(mouseVec.x - this.leftCapCenter.x) < this.capDims.x / 2 &&
+        this.p.abs(mouseVec.y - this.leftCapCenter.y) < this.capDims.y / 2;
+  }
+
+  mouseOnAdd(mouseVec) {
+    return this.p.abs(mouseVec.x - this.rightCapCenter.x) <
+        this.capDims.x / 2 &&
+        this.p.abs(mouseVec.y - this.rightCapCenter.y) < this.capDims.y / 2;
+  }
+}
+
 class PaletteParticle {
   constructor(centerPos, dims, labelText, particleType, widgetController) {
     // link to controller
@@ -871,13 +964,13 @@ class PaletteParticle {
     this.particleColor;
     switch (particleType) {
       case 'proton':
-        this.particleColor = widgetController.colors[0];
+        this.particleColor = widgetController.atomColors.protonColor;
         break;
       case 'neutron':
-        this.particleColor = widgetController.colors[1];
+        this.particleColor = widgetController.atomColors.neutronColor;
         break;
       case 'electron':
-        this.particleColor = widgetController.colors[2];
+        this.particleColor = widgetController.atomColors.electronColor;
         break;
     }
 
@@ -885,7 +978,7 @@ class PaletteParticle {
     this.hoverColor = this.p.color(this.particleColor);
     this.hoverColor.setAlpha(40);
     this.keyboardFocused = false;
-    this.hoveredOn = false;
+    this.mouseFocused = false;
 
     // label
     this.particleType = particleType;
@@ -897,7 +990,7 @@ class PaletteParticle {
   draw() {
     this.p.push();
     this.p.rectMode(this.p.CENTER);
-    if (this.hoveredOn || this.keyboardFocused) {
+    if (this.mouseFocused || this.keyboardFocused) {
       this.p.fill(this.hoverColor)
     } else {
       this.p.noFill();
@@ -952,109 +1045,6 @@ class PaletteParticle {
   }
 }
 
-class ShellAdjuster {
-  constructor(centerPos, dims, widgetController) {
-    // link to controller
-    this.widgetController = widgetController;
-    this.p = widgetController.p;
-
-    // positioning
-    this.centerPos = centerPos;
-    this.dims = dims;
-    this.capDims = dims.copy();
-    this.capDims.x = this.dims.x / 3;
-    this.leftCapCenter = this.p.createVector(
-        this.centerPos.x - (this.dims.x - this.capDims.x) / 2,
-        this.centerPos.y);
-    this.rightCapCenter = this.p.createVector(
-        this.centerPos.x + (this.dims.x - this.capDims.x) / 2,
-        this.centerPos.y);
-    this.labelPos = this.centerPos.copy().sub(0, dims.y / 4);
-    this.countPos = this.centerPos.copy().add(0, dims.y / 4);
-
-    // hover and keyboard focused display
-    this.subtractFocused = false;
-    this.subtractKeyboardFocused = false;
-    this.addFocused = false;
-    this.addKeyboardFocused = false;
-    this.fillColor = this.p.color(100, 100, 255, 90);
-  }
-
-  draw() {
-    this.p.push();
-    this.p.rectMode(this.p.CENTER);
-
-    // draw minus button
-    if (this.subtractFocused || this.subtractKeyboardFocused) {
-      this.p.fill(this.fillColor)
-      if (this.subtractKeyboardFocused) this.p.stroke(255, 0, 255);
-    } else {
-      this.p.noFill();
-      this.p.stroke(0);
-    };
-    this.p.rect(
-        this.leftCapCenter.x, this.leftCapCenter.y, this.capDims.x,
-        this.capDims.y, 10);
-    // draw plus button
-    if (this.addFocused || this.addKeyboardFocused) {
-      this.p.fill(this.fillColor)
-      if (this.addKeyboardFocused) this.p.stroke(255, 0, 255);
-    } else {
-      this.p.noFill();
-      this.p.stroke(0);
-    };
-    this.p.rect(
-        this.rightCapCenter.x, this.rightCapCenter.y, this.capDims.x,
-        this.capDims.y, 10);
-
-    // draw the -/+ signs
-    this.p.stroke(0);
-    this.p.strokeWeight(1);
-    // minus sign
-    this.p.line(
-        this.leftCapCenter.x - this.capDims.x / 3, this.leftCapCenter.y,
-        this.leftCapCenter.x + this.capDims.x / 3, this.leftCapCenter.y);
-    // plus sign
-    this.p.line(
-        this.rightCapCenter.x - this.capDims.x / 3, this.rightCapCenter.y,
-        this.rightCapCenter.x + this.capDims.x / 3, this.rightCapCenter.y);
-    this.p.line(
-        this.rightCapCenter.x, this.rightCapCenter.y - this.capDims.x / 3.5,
-        this.rightCapCenter.x, this.rightCapCenter.y + this.capDims.x / 3.5);
-
-    // draw the label
-    this.p.fill(0);
-    this.p.noStroke();
-    this.p.textSize(this.dims.y / 3);
-    this.p.textAlign(this.p.CENTER, this.p.TOP);
-    this.p.text('Shells', this.centerPos.x, this.centerPos.y - this.dims.y);
-    this.p.textAlign(this.p.CENTER, this.p.CENTER);
-
-    this.p.text(
-        this.widgetController.activeShells, this.centerPos.x, this.centerPos.y);
-    this.p.pop();
-  }
-
-  addElement() {
-    this.widgetController.addElement('shell');
-  }
-
-  subtractElement() {
-    this.widgetController.subtractElement('shell');
-  }
-
-  mouseOnSubtract(mouseVec) {
-    return this.p.abs(mouseVec.x - this.leftCapCenter.x) < this.capDims.x / 2 &&
-        this.p.abs(mouseVec.y - this.leftCapCenter.y) < this.capDims.y / 2;
-  }
-
-  mouseOnAdd(mouseVec) {
-    return this.p.abs(mouseVec.x - this.rightCapCenter.x) <
-        this.capDims.x / 2 &&
-        this.p.abs(mouseVec.y - this.rightCapCenter.y) < this.capDims.y / 2;
-  }
-}
-
 class WidgetButton {
   constructor(centerPos, dims, labelText, widgetController) {
     // link to controller
@@ -1069,17 +1059,20 @@ class WidgetButton {
     this.labelText = labelText;
 
     // hover and keyboard focusing
-    this.buttonFocused = false;
+    this.mouseFocused = false;
     this.keyboardFocused = false;
-    this.fillColor = this.p.color(100, 100, 255, 100);
   }
 
   draw() {
     this.p.push();
-    this.p.rectMode(this.p.CENTER);
-    this.p.noFill();
-    if (this.buttonFocused || this.keyboardFocused) this.p.fill(this.fillColor);
+
     // draw outer container
+    this.p.rectMode(this.p.CENTER);
+    if (this.mouseFocused || this.keyboardFocused) {
+      this.p.fill(this.widgetController.atomColors.buttonFocusColor);
+    } else {
+      this.p.noFill();
+    }
     this.p.rect(
         this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 10);
 
