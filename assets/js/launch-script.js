@@ -1,5 +1,5 @@
 const atomicStructureConfig = {
-  container: 'answer-visual-container45342',
+  container: 'sketch-container',
   particleInteractivity: {
     protons: true,
     electrons: true,
