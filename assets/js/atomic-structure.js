@@ -80,6 +80,10 @@ const runAtomicStructureWidget =
 
       // Define the p5 sketch methods
       const sketch = (p) => {
+        p.preload = () => {
+          p.periodicTableData = p.loadJSON('periodic-table-lookup.json');
+        };
+
         p.setup = () => {
           // create the canvas
           p.createCanvas(dims.w, dims.h)
@@ -257,7 +261,7 @@ class AtomicStructureWidget {
       paletteElementDims =
           this.p.createVector(this.p.width * 0.4, this.p.height * 0.07);
       paletteCenter = this.p.createVector(
-          this.p.width / 2, this.p.height - paletteElementDims.y * 5);
+          this.p.width / 2, this.p.height - paletteElementDims.y * 6);
       // set the center of the atom model
       this.atomCenter = this.p.createVector(
           this.p.width / 2,
@@ -302,6 +306,14 @@ class AtomicStructureWidget {
     resetCenter.x += paletteElementDims.x / 4;
     this.resetButton = new WidgetButton(resetCenter, buttonDims, 'Reset', this);
 
+    // atomic data card
+    let dataCardCenter =
+        this.p.createVector(paletteCenter.x, undoCenter.y + buttonDims.y * 1.6);
+    paletteCenter.y += buttonDims.y * 2;
+    this.atomicDataCard = new AtomicDataCard(
+        dataCardCenter, buttonDims.copy().add(0, buttonDims.y), this.p);
+
+
     // particle spread, and positioning
     for (const particle of this.nucleusParticles) {
       particle.size = this.particleSize;
@@ -319,6 +331,7 @@ class AtomicStructureWidget {
     this.shellAdjuster.draw();
     this.undoButton.draw();
     this.resetButton.draw();
+    this.atomicDataCard.draw(this.activeProtons);
 
     // draw the protons and neutrons that have been added to the scene
     this.nucleusParticles.forEach(particle => particle.draw());
@@ -1088,5 +1101,49 @@ class WidgetButton {
   mouseOnButton(mouseVec) {
     return this.p.abs(mouseVec.x - this.centerPos.x) < this.dims.x / 2 &&
         this.p.abs(mouseVec.y - this.centerPos.y) < this.dims.y / 2;
+  }
+}
+
+class AtomicDataCard {
+  constructor(centerPos, dims, p) {
+    // link to controller and p5 instance
+    this.p = p;
+
+    // size and positioning
+    this.centerPos = centerPos;
+    this.dims = dims;
+  }
+
+  draw(protonCount) {
+    // if not protons are in the model, skip displaying
+    if (protonCount <= 0) return;
+
+    // extract the periodic table data
+    let elementID = this.p.periodicTableData.order[protonCount - 1];
+    let elementData = this.p.periodicTableData[elementID];
+
+
+    this.p.push();
+    // outer container
+    this.p.rectMode(this.p.CENTER);
+    this.p.noFill();
+    this.p.rect(
+        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 10);
+
+    // text
+    this.p.fill(0);
+    this.p.textAlign(this.p.CENTER, this.p.CENTER);
+    this.p.textSize(this.dims.y / 5);
+    this.p.text(
+        '' + elementData.number, this.centerPos.x,
+        this.centerPos.y - this.dims.y / 2 + this.p.textSize());
+    this.p.textSize(this.dims.y / 3);
+    this.p.text('' + elementData.symbol, this.centerPos.x, this.centerPos.y);
+    this.p.textSize(this.dims.y / 5);
+    this.p.text(
+        '' + elementData.name, this.centerPos.x,
+        this.centerPos.y + this.dims.y / 2 - this.p.textSize());
+
+    this.p.pop();
   }
 }
