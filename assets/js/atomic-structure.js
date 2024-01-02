@@ -81,7 +81,8 @@ const runAtomicStructureWidget =
       // Define the p5 sketch methods
       const sketch = (p) => {
         p.preload = () => {
-          p.periodicTableData = p.loadJSON('periodic-table-lookup.json');
+          p.periodicTableData =
+              p.loadJSON('assets/js/periodic-table-lookup.json');
         };
 
         p.setup = () => {
