@@ -37,16 +37,14 @@ const runAtomicStructureWidget =
 
       const node = document.getElementById(container);
 
+      // create and configure the hidden input
       const answerHiddenInput = document.createElement('input');
-
-      // Configure the hidden input
       answerHiddenInput.type = 'hidden';
       answerHiddenInput.name = 'answers[]';
       answerHiddenInput.value = '';
 
       const updateHiddenInputs = (output) => {
-        answerHiddenInput.value = encodeURIComponent(
-            JSON.stringify(output.map((segment) => segment.value)))
+        answerHiddenInput.value = encodeURIComponent(JSON.stringify(output));
       };
 
       // Insert the hidden input into the html
@@ -66,10 +64,6 @@ const runAtomicStructureWidget =
           height = node.clientWidth / heightToWidthRatio;
         }
 
-        // if (height > maxHeight) {
-        //   height = maxHeight
-        // };
-
         return height;
       };
 
@@ -81,8 +75,7 @@ const runAtomicStructureWidget =
       // Define the p5 sketch methods
       const sketch = (p) => {
         p.preload = () => {
-          p.periodicTableData =
-              p.loadJSON('assets/js/periodic-table-lookup.json');
+          p.periodicTableData = p.loadJSON('assets/js/periodic-table-lookup.json');
         };
 
         p.setup = () => {
@@ -487,7 +480,8 @@ class AtomicStructureWidget {
         break;
     }
 
-    this.particleButtons.forEach(adjuster => adjuster.updateLabelCount());
+    // update the document output
+    this.exportModelState();
   }
 
   subtractElement(element, tracking = true) {
@@ -535,7 +529,25 @@ class AtomicStructureWidget {
         if (tracking) this.userActions.push('subtractElectron');
         break;
     }
-    this.particleButtons.forEach(adjuster => adjuster.updateLabelCount());
+    // update the document model output
+    this.exportModelState();
+  }
+
+  exportModelState() {
+    let electronsPerShell = [];
+    for (let shell = 0; shell < this.activeShells; shell++) {
+      let currentShellElectrons = this.shellParticles.filter(
+          electron => {return electron.shell == shell + 1});
+      electronsPerShell.push(currentShellElectrons.length);
+    }
+
+    const modelState = {
+      protons: this.activeProtons,
+      neutrons: this.activeNeutrons,
+      shells: electronsPerShell
+    };
+
+    this.updateHiddenInputs(modelState);
   }
 
   shrinkAtom() {
