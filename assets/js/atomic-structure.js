@@ -274,15 +274,16 @@ class AtomicStructureWidget {
     paletteCenter.y += paletteElementSpacing;
     // particles
     this.paletteProton = new PaletteParticle(
-        paletteCenter.copy(), paletteElementDims, 'Protons: ', 'proton', this);
+        paletteCenter.copy(), paletteElementDims, 'Protons: ', 'proton',
+        this.particleInteractivity.protons, this);
     paletteCenter.y += paletteElementSpacing;
     this.paletteNeutron = new PaletteParticle(
         paletteCenter.copy(), paletteElementDims, 'Neutrons: ', 'neutron',
-        this);
+        this.particleInteractivity.neutrons, this);
     paletteCenter.y += paletteElementSpacing;
     this.paletteElectron = new PaletteParticle(
         paletteCenter.copy(), paletteElementDims, 'Electrons: ', 'electron',
-        this);
+        this.particleInteractivity.electrons, this);
     paletteCenter.y += paletteElementSpacing - paletteElementDims.y * 0.2;
     this.particleButtons =
         [this.paletteProton, this.paletteNeutron, this.paletteElectron];
@@ -440,19 +441,22 @@ class AtomicStructureWidget {
       case 'proton':
       case 'neutron':
         let color;
+        let interactivity;
         if (element == 'proton') {
           color = this.atomColors.protonColor;
+          interactivity = this.particleInteractivity.protons;
           this.activeProtons++;
           if (tracking) this.userActions.push('addProton');
         } else {
           color = this.atomColors.neutronColor;
+          interactivity = this.particleInteractivity.neutrons;
           this.activeNeutrons++;
           if (tracking) this.userActions.push('addNeutron');
         }
         // create new particle
         particle = new AtomicParticle(
             this.p.createVector(this.p.mouseX, this.p.mouseY),
-            this.particleSize, color, true, this.p);
+            this.particleSize, color, interactivity, this.p);
         // calculate rest position
         particle.targetPos =
             this.indexToRestPosition(this.nucleusParticles.length);
@@ -463,8 +467,8 @@ class AtomicStructureWidget {
         // create new particle
         particle = new AtomicParticle(
             this.p.createVector(this.p.mouseX, this.p.mouseY),
-            this.particleSize * 0.66, this.atomColors.electronColor, true,
-            this.p);
+            this.particleSize * 0.66, this.atomColors.electronColor,
+            this.particleInteractivity.electrons, this.p);
         particle.calculateShell(
             this.atomCenter, this.minShellRadius(), this.particleSize,
             this.activeShells);
@@ -867,7 +871,7 @@ class AtomicParticle {
   }
 
   clickWithin(mouseVec) {
-    return mouseVec.dist(this.pos) < this.size / 2;
+    return this.interactive && mouseVec.dist(this.pos) < this.size / 2;
   }
 }
 
@@ -959,19 +963,21 @@ class ShellAdjuster {
   }
 
   mouseOnSubtract(mouseVec) {
-    return this.p.abs(mouseVec.x - this.leftCapCenter.x) < this.capDims.x / 2 &&
+    return this.widgetController.particleInteractivity.shells &&
+        this.p.abs(mouseVec.x - this.leftCapCenter.x) < this.capDims.x / 2 &&
         this.p.abs(mouseVec.y - this.leftCapCenter.y) < this.capDims.y / 2;
   }
 
   mouseOnAdd(mouseVec) {
-    return this.p.abs(mouseVec.x - this.rightCapCenter.x) <
-        this.capDims.x / 2 &&
+    return this.widgetController.particleInteractivity.shells &&
+        this.p.abs(mouseVec.x - this.rightCapCenter.x) < this.capDims.x / 2 &&
         this.p.abs(mouseVec.y - this.rightCapCenter.y) < this.capDims.y / 2;
   }
 }
 
 class PaletteParticle {
-  constructor(centerPos, dims, labelText, particleType, widgetController) {
+  constructor(
+      centerPos, dims, labelText, particleType, interactive, widgetController) {
     // link to controller
     this.widgetController = widgetController;
     this.p = widgetController.p;
@@ -1005,6 +1011,7 @@ class PaletteParticle {
     this.hoverColor.setAlpha(40);
     this.keyboardFocused = false;
     this.mouseFocused = false;
+    this.interactive = interactive;
 
     // label
     this.particleType = particleType;
@@ -1016,7 +1023,7 @@ class PaletteParticle {
   draw() {
     this.p.push();
     this.p.rectMode(this.p.CENTER);
-    if (this.mouseFocused || this.keyboardFocused) {
+    if ((this.mouseFocused || this.keyboardFocused) && this.interactive) {
       this.p.fill(this.hoverColor)
     } else {
       this.p.noFill();
@@ -1065,7 +1072,8 @@ class PaletteParticle {
   }
 
   mouseOnButton(mouseVec) {
-    return this.p.abs(mouseVec.x - this.centerPos.x) < this.dims.x / 2 &&
+    return this.interactive &&
+        this.p.abs(mouseVec.x - this.centerPos.x) < this.dims.x / 2 &&
         this.p.abs(mouseVec.y - this.centerPos.y) < this.dims.y / 2;
   }
 }
