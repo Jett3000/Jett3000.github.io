@@ -1031,7 +1031,6 @@ class PaletteParticle {
         this.particlePos.x, this.particlePos.y,
         this.widgetController.particleSize);
 
-
     // draw the label
     this.p.textSize(this.dims.y / 4);
     this.p.textAlign(this.p.LEFT, this.p.CENTER);
@@ -1128,8 +1127,9 @@ class AtomicDataCard {
   }
 
   draw(protonCount) {
-    // if not protons are in the model, skip displaying
-    if (protonCount <= 0) return;
+    // if no protons are in the model, or element doesen't exist
+    // skip displaying
+    if (protonCount <= 0 || protonCount >= 120) return;
 
     // extract the periodic table data
     let elementID = this.p.periodicTableData.order[protonCount - 1];
