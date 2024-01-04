@@ -75,7 +75,8 @@ const runAtomicStructureWidget =
       // Define the p5 sketch methods
       const sketch = (p) => {
         p.preload = () => {
-          p.periodicTableData = p.loadJSON('assets/js/periodic-table-lookup.json');
+          p.periodicTableData =
+              p.loadJSON('assets/js/periodic-table-lookup.json');
         };
 
         p.setup = () => {
@@ -202,10 +203,24 @@ class AtomicStructureWidget {
     this.lastInputWasAdjuster = false;
     this.mouseVec = this.p.createVector();
     this.keyboardFocusIndex = -1;
-    this.keyboardFocusableElements = [
-      'subtractShell', 'addShell', 'addProton', 'addNeutron', 'addElectron',
-      'undo', 'reset'
-    ];
+    this.keyboardFocusableActions = [];
+    /* full set:
+    ['subtractShell', 'addShell', 'addProton', 'addNeutron', 'addElectron',
+    'undo', 'reset'] */
+
+    if (this.particleInteractivity.shells) {
+      this.keyboardFocusableActions.push('subtractShell');
+      this.keyboardFocusableActions.push('addShell');
+    }
+    if (this.particleInteractivity.protons)
+      this.keyboardFocusableActions.push('addProton');
+    if (this.particleInteractivity.neutrons)
+      this.keyboardFocusableActions.push('addNeutron');
+    if (this.particleInteractivity.electrons)
+      this.keyboardFocusableActions.push('addElectron');
+    this.keyboardFocusableActions.push('undo');
+    this.keyboardFocusableActions.push('reset');
+
 
     // initialize particle arrays & model history
     this.activeProtons = 0;
@@ -773,12 +788,12 @@ class AtomicStructureWidget {
 
     // increment the focused element index
     this.keyboardFocusIndex++;
-    if (this.keyboardFocusIndex >= this.keyboardFocusableElements.length) {
+    if (this.keyboardFocusIndex >= this.keyboardFocusableActions.length) {
       this.keyboardFocusIndex = -1;
       return;
     }
 
-    switch (this.keyboardFocusableElements[this.keyboardFocusIndex]) {
+    switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
       case 'subtractShell':
         this.shellAdjuster.subtractKeyboardFocused = true;
         break;
@@ -805,11 +820,11 @@ class AtomicStructureWidget {
 
   handleEnter() {
     if (this.keyboardFocusIndex < 0 ||
-        this.keyboardFocusIndex >= this.keyboardFocusableElements.length) {
+        this.keyboardFocusIndex >= this.keyboardFocusableActions.length) {
       return;
     }
 
-    switch (this.keyboardFocusableElements[this.keyboardFocusIndex]) {
+    switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
       case 'subtractShell':
         this.subtractElement('shell');
         break;
