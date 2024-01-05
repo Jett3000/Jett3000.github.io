@@ -48,7 +48,7 @@ a:hover {
   color: #bc9eca;
 }
 
-canvas, #sketch-container {
+canvas {
   position: fixed;
   top: 0;
   left: 0;
