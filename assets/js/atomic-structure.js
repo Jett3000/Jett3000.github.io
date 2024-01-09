@@ -341,7 +341,7 @@ class AtomicStructureWidget {
     this.shellAdjuster.draw();
     this.undoButton.draw();
     this.resetButton.draw();
-    if(this.atomData.atomCard) this.atomicDataCard.draw(this.activeProtons);
+    if (this.atomData.atomCard) this.atomicDataCard.draw(this.activeProtons);
 
     // draw the protons and neutrons that have been added to the scene
     this.nucleusParticles.forEach(particle => particle.draw());
@@ -592,6 +592,8 @@ class AtomicStructureWidget {
     this.shells = [];
     this.shellParticles = [];
     this.shellParticleCounts = [];
+    // reset user actions
+    this.userActions = [];
 
     // set the particle size and spread factor
     this.particleSize = this.p.width * 0.05;
