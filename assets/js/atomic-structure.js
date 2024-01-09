@@ -341,7 +341,7 @@ class AtomicStructureWidget {
     this.shellAdjuster.draw();
     this.undoButton.draw();
     this.resetButton.draw();
-    this.atomicDataCard.draw(this.activeProtons);
+    if(this.atomData.atomCard) this.atomicDataCard.draw(this.activeProtons);
 
     // draw the protons and neutrons that have been added to the scene
     this.nucleusParticles.forEach(particle => particle.draw());
