@@ -99,6 +99,9 @@ const runAtomicStructureWidget =
         };
 
         p.touchMoved = (e) => {
+          // prevent scrolling when the widget is being interacted with
+          if (!e.cancelable) return;
+
           let anyParticleInGrasp = false;
           for (const particle of p.widgetObject.nucleusParticles) {
             if (particle.inUserGrasp) {
@@ -112,8 +115,6 @@ const runAtomicStructureWidget =
               break;
             }
           }
-          // prevent scrolling when the widget is being interacted with
-          if (!e.cancelable) return;
           if (anyParticleInGrasp) return false;
         };
 
