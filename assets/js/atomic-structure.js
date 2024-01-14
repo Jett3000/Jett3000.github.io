@@ -119,11 +119,11 @@ const runAtomicStructureWidget =
         };
 
         p.mousePressed = () => {
-          p.widgetObject.handleClickStart(p.createVector(p.mouseX, p.mouseY));
+          p.widgetObject.handleClickStart();
         };
 
         p.mouseReleased = () => {
-          p.widgetObject.handleClickEnd(p.createVector(p.mouseX, p.mouseY));
+          p.widgetObject.handleClickEnd();
         };
 
         p.keyPressed = () => {
@@ -231,6 +231,7 @@ class AtomicStructureWidget {
     this.nucleusParticles = [];
     this.shellParticles = [];
     this.userActions = [];
+    this.particlesInDeletion = [];
 
     // initialize size dependent variables
     this.atomCenter;
@@ -324,19 +325,34 @@ class AtomicStructureWidget {
     this.atomicDataCard = new AtomicDataCard(
         dataCardCenter, buttonDims.copy().add(0, buttonDims.y), this.p);
 
-
-    // particle spread, and positioning
+    // particle spread positioning, and deletion positions
     for (const particle of this.nucleusParticles) {
       particle.size = this.particleSize;
+      if (particle.color == this.atomColors.protonColor) {
+        particle.deletionPos = this.paletteProton.particlePos.copy();
+      } else {
+        particle.deletionPos = this.paletteNeutron.particlePos.copy();
+      }
     }
     for (const electron of this.shellParticles) {
       electron.size = this.particleSize * 0.66;
+      electron.deletionPos = this.paletteElectron.particlePos.copy();
     }
     this.nucleusSpreadFactor = this.particleSize * 0.5;
     this.remapNucleus();
   }
 
   draw() {
+    // draw particles leaving the scene
+    this.particlesInDeletion.forEach(particle => particle.draw());
+    // remove particles that have left the scene
+    this.particlesInDeletion = this.particlesInDeletion.filter(particle => {
+      return particle.pos.dist(particle.targetPos) > 1;
+    });
+
+    // draw the protons and neutrons in the nucleus
+    this.nucleusParticles.forEach(particle => particle.draw());
+
     // draw the ui elements
     this.particleButtons.forEach(pb => pb.draw());
     this.shellAdjuster.draw();
@@ -344,10 +360,9 @@ class AtomicStructureWidget {
     this.resetButton.draw();
     if (this.atomData.atomCard) this.atomicDataCard.draw(this.activeProtons);
 
-    // draw the protons and neutrons that have been added to the scene
-    this.nucleusParticles.forEach(particle => particle.draw());
 
-    // draw electron shells & distribute electrons
+    // draw electrons and orbital rings
+    // set the highlighted shell when user is holding electron
     let highlightedShell = -1;
     for (const electron of this.shellParticles) {
       if (electron.inUserGrasp) {
@@ -357,13 +372,22 @@ class AtomicStructureWidget {
         break;
       }
     }
+    // draw orbital rings
+    let maxShellRadius =
+        this.minShellRadius() + this.activeShells * this.particleSize;
+    if (maxShellRadius > this.atomCenter.y) {
+      this.resizeAtom(0.9);
+      return;
+    } else if (
+        maxShellRadius < this.atomCenter.y * 0.9 &&
+        this.particleSize < this.p.width * 0.05) {
+      this.resizeAtom(1.1);
+      return;
+    }
+
     for (let shellIndex = 0; shellIndex < this.activeShells; shellIndex++) {
-      // draw orbital path
       let shellRadius = this.minShellRadius() + shellIndex * this.particleSize;
-      if (shellRadius + this.particleSize > this.atomCenter.y) {
-        this.shrinkAtom();
-        return;
-      }
+
       this.p.push();
       this.p.noFill();
       this.p.stroke(0);
@@ -457,21 +481,24 @@ class AtomicStructureWidget {
       case 'proton':
       case 'neutron':
         let color;
+        let endPos;
         let interactivity;
         if (element == 'proton') {
           color = this.atomColors.protonColor;
           interactivity = this.particleInteractivity.protons;
+          endPos = this.paletteProton.particlePos.copy();
           this.activeProtons++;
           if (tracking) this.userActions.push('addProton');
         } else {
           color = this.atomColors.neutronColor;
           interactivity = this.particleInteractivity.neutrons;
+          endPos = this.paletteNeutron.particlePos.copy();
           this.activeNeutrons++;
           if (tracking) this.userActions.push('addNeutron');
         }
         // create new particle
         particle = new AtomicParticle(
-            this.p.createVector(this.p.mouseX, this.p.mouseY),
+            this.p.createVector(this.p.mouseX, this.p.mouseY), endPos,
             this.particleSize, color, interactivity, this.p);
         // calculate rest position
         particle.targetPos =
@@ -483,8 +510,9 @@ class AtomicStructureWidget {
         // create new particle
         particle = new AtomicParticle(
             this.p.createVector(this.p.mouseX, this.p.mouseY),
-            this.particleSize * 0.66, this.atomColors.electronColor,
-            this.particleInteractivity.electrons, this.p);
+            this.paletteElectron.particlePos.copy(), this.particleSize * 0.66,
+            this.atomColors.electronColor, this.particleInteractivity.electrons,
+            this.p);
         particle.calculateShell(
             this.atomCenter, this.minShellRadius(), this.particleSize,
             this.activeShells);
@@ -532,19 +560,22 @@ class AtomicStructureWidget {
         }
         for (let i = this.nucleusParticles.length - 1; i >= 0; i--) {
           if (this.nucleusParticles[i].color == targetColor) {
+            // set particle for deletion
+            this.nucleusParticles[i].delete();
             // remove from the model
-            this.nucleusParticles.splice(i, 1);
+            this.particlesInDeletion = this.particlesInDeletion.concat(
+                this.nucleusParticles.splice(i, 1));
             // remap rest positions
-            this.nucleusParticles.forEach((p, i) => {
-              p.targetPos = this.indexToRestPosition(i);
-            });
+            this.remapNucleus();
             break;
           }
         }
         break;
       case 'electron':
         if (this.activeElectrons <= 0) return;
-        this.shellParticles.pop();
+        let lastElectron = this.shellParticles.pop();
+        lastElectron.delete();
+        this.particlesInDeletion.push(lastElectron);
         this.activeElectrons--;
         if (tracking) this.userActions.push('subtractElectron');
         break;
@@ -570,13 +601,13 @@ class AtomicStructureWidget {
     this.updateHiddenInputs(modelState);
   }
 
-  shrinkAtom() {
-    this.particleSize *= 0.9;
+  resizeAtom(resizeFactor = 1) {
+    // update size and spread factor
+    this.particleSize *= resizeFactor;
     this.nucleusSpreadFactor = this.particleSize * 0.5;
 
     this.nucleusParticles.forEach((particle, i) => {
       particle.size = this.particleSize;
-      particle.targetPos = this.indexToRestPosition(i);
     });
     this.shellParticles.forEach((particle, i) => {
       particle.size = this.particleSize * 0.66;
@@ -593,6 +624,7 @@ class AtomicStructureWidget {
     this.shells = [];
     this.shellParticles = [];
     this.shellParticleCounts = [];
+    this.particlesInDeletion = [];
     // reset user actions
     this.userActions = [];
 
@@ -743,6 +775,7 @@ class AtomicStructureWidget {
       // update nucleus particle count
       for (const particle of this.nucleusParticles) {
         if (particle.inUserGrasp) {
+          particle.delete();
           if (particle.color == this.atomColors.protonColor) {
             this.activeProtons--;
             this.userActions.push('subtractProton');
@@ -750,18 +783,29 @@ class AtomicStructureWidget {
             this.activeNeutrons--;
             this.userActions.push('subtractNeutron');
           }
+          break;
         }
       }
       // delete nucleus particles under the mouse
+      this.particlesInDeletion = this.particlesInDeletion.concat(
+          this.nucleusParticles.filter(p => {return p.inDeletion}));
       this.nucleusParticles =
-          this.nucleusParticles.filter(p => {return !p.inUserGrasp});
-      this.nucleusParticles.forEach((p, i) => {
-        p.targetPos = this.indexToRestPosition(i);
-      });
+          this.nucleusParticles.filter(p => {return !p.inDeletion});
+      this.remapNucleus();
+
 
       // delete shell particles under the mouse
+      for (const electron of this.shellParticles) {
+        if (electron.inUserGrasp) {
+          electron.delete();
+          break;
+        }
+      }
+
+      this.particlesInDeletion = this.particlesInDeletion.concat(
+          this.shellParticles.filter(p => {return p.inDeletion}));
       this.shellParticles =
-          this.shellParticles.filter(p => {return !p.inUserGrasp});
+          this.shellParticles.filter(p => {return !p.inDeletion});
     }
 
     // release any dragged particles
@@ -855,15 +899,18 @@ class AtomicStructureWidget {
 }
 
 class AtomicParticle {
-  constructor(pos, size, color, interactive, p) {
+  constructor(pos, deletionPos, size, color, interactive, p) {
     this.pos = pos;
     this.targetPos = pos.copy();
+    this.deletionPos = deletionPos;
     this.shell = 0;
     this.size = size;
     this.color = color;
     this.interactive = interactive;
     this.p = p;
     this.inUserGrasp = false;
+    this.inDeletion = false;
+    this.finishedDeleting = false;
   }
 
   draw() {
@@ -879,6 +926,12 @@ class AtomicParticle {
     this.p.stroke(0);
     this.p.ellipse(this.pos.x, this.pos.y, this.size);
     this.p.pop();
+  }
+
+  delete() {
+    this.inDeletion = true;
+    this.inUserGrasp = false;
+    this.targetPos = this.deletionPos;
   }
 
   calculateShell(atomCenter, minShellRadius, particleSize, activeShells) {
@@ -904,13 +957,14 @@ class ShellAdjuster {
     this.dims = dims;
     this.capDims = dims.copy();
     this.capDims.x = this.dims.x / 3;
+    this.capDims.x = this.p.min(this.capDims.x, dims.y);
     this.leftCapCenter = this.p.createVector(
         this.centerPos.x - (this.dims.x - this.capDims.x) / 2,
         this.centerPos.y);
     this.rightCapCenter = this.p.createVector(
         this.centerPos.x + (this.dims.x - this.capDims.x) / 2,
         this.centerPos.y);
-    this.labelPos = this.centerPos.copy().sub(0, dims.y / 4);
+    this.labelPos = this.centerPos.copy().sub(0, this.dims.y / 3);
     this.countPos = this.centerPos.copy().add(0, dims.y / 4);
 
     // hover and keyboard focused display
@@ -922,27 +976,28 @@ class ShellAdjuster {
 
   draw() {
     this.p.push();
-    this.p.rectMode(this.p.CENTER);
 
+    // draw buttons
+    this.p.rectMode(this.p.CENTER);
+    this.p.noStroke();
     // draw minus button
-    this.p.stroke(0);
     if (this.subtractMouseFocused || this.subtractKeyboardFocused) {
-      this.p.fill(this.widgetController.atomColors.buttonFocusColor)
+      this.p.fill(this.widgetController.atomColors.buttonFocusedColor)
     } else {
-      this.p.noFill();
+      this.p.fill(this.widgetController.atomColors.buttonUnfocusedColor)
     };
     this.p.rect(
         this.leftCapCenter.x, this.leftCapCenter.y, this.capDims.x,
-        this.capDims.y, 10);
+        this.capDims.y, 6);
     // draw plus button
     if (this.addMouseFocused || this.addKeyboardFocused) {
-      this.p.fill(this.widgetController.atomColors.buttonFocusColor)
+      this.p.fill(this.widgetController.atomColors.buttonFocusedColor)
     } else {
-      this.p.noFill();
+      this.p.fill(this.widgetController.atomColors.buttonUnfocusedColor)
     };
     this.p.rect(
         this.rightCapCenter.x, this.rightCapCenter.y, this.capDims.x,
-        this.capDims.y, 10);
+        this.capDims.y, 6);
 
     // draw the -/+ signs
     this.p.stroke(0);
@@ -964,11 +1019,11 @@ class ShellAdjuster {
     this.p.noStroke();
     this.p.textSize(this.dims.y / 3);
     this.p.textAlign(this.p.CENTER, this.p.TOP);
-    this.p.text('Shells', this.centerPos.x, this.centerPos.y - this.dims.y);
+    this.p.text('Shells', this.labelPos.x, this.labelPos.y);
     this.p.textAlign(this.p.CENTER, this.p.CENTER);
 
     this.p.text(
-        this.widgetController.activeShells, this.centerPos.x, this.centerPos.y);
+        this.widgetController.activeShells, this.countPos.x, this.countPos.y);
     this.p.pop();
   }
 
@@ -1001,12 +1056,12 @@ class PaletteParticle {
     this.p = widgetController.p;
 
     // positioning
-    this.centerPos = centerPos;
     this.dims = dims;
-    this.particlePos = this.centerPos.copy().add(
-        widgetController.particleSize / 1.2 - dims.x / 2, 0);
-    this.labelPos =
-        this.particlePos.copy().add(widgetController.particleSize / 1.2, 0);
+    this.particleSize = dims.y * 2 / 3;
+    this.centerPos = centerPos;
+    this.particlePos =
+        this.centerPos.copy().add(this.particleSize / 1.2 - dims.x / 2, 0);
+    this.labelPos = this.particlePos.copy().add(this.particleSize / 1.2, 0);
     this.countPos = this.centerPos.copy().add(
         dims.x / 2 - widgetController.particleSize / 2, 0);
 
@@ -1048,13 +1103,11 @@ class PaletteParticle {
     }
     // draw outer container
     this.p.rect(
-        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 10);
+        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 6);
 
     // draw the particle
     this.p.fill(this.particleColor);
-    this.p.ellipse(
-        this.particlePos.x, this.particlePos.y,
-        this.widgetController.particleSize);
+    this.p.ellipse(this.particlePos.x, this.particlePos.y, this.dims.y * 2 / 3);
 
     // draw the label
     this.p.textSize(this.dims.y / 4);
@@ -1119,13 +1172,15 @@ class WidgetButton {
 
     // draw outer container
     this.p.rectMode(this.p.CENTER);
+    this.p.noStroke();
     if (this.mouseFocused || this.keyboardFocused) {
-      this.p.fill(this.widgetController.atomColors.buttonFocusColor);
+      this.p.fill(this.widgetController.atomColors.buttonFocusedColor);
     } else {
-      this.p.noFill();
-    }
+      this.p.fill(this.widgetController.atomColors.buttonUnfocusedColor)
+    };
+
     this.p.rect(
-        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 10);
+        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 6);
 
     // draw the label
     this.p.textSize(this.dims.y / 2);
@@ -1167,7 +1222,7 @@ class AtomicDataCard {
     this.p.rectMode(this.p.CENTER);
     this.p.noFill();
     this.p.rect(
-        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 10);
+        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 6);
 
     // text
     this.p.fill(0);

@@ -8,10 +8,11 @@ const atomicStructureConfig = {
   },
   atomData: {protons: 10, neutrons: 10, shells: [2, 4, 4], atomCard: true},
   atomColors: {
-    protonColor: '#4B0082',
-    neutronColor: '#6C6377',
-    electronColor: '#FFD700',
-    buttonFocusColor: '#DCEBFC'
+    protonColor: '#EF3F54',
+    neutronColor: '#8BC867',
+    electronColor: '#49C7EA',
+    buttonUnfocusedColor: '#DBF1FD',
+    buttonFocusedColor: '#BCE7FF'
   }
 };
 
