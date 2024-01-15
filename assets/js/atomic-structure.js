@@ -1084,10 +1084,10 @@ class PaletteParticle {
     this.widgetController = widgetController;
     this.p = widgetController.p;
 
-    // positioning
+    // positioning and sizing
     this.dims = dims;
-    this.particleSize = dims.y * 2 / 3;
     this.centerPos = centerPos;
+    this.particleSize = dims.y * 2 / 3;
     this.particlePos =
         this.centerPos.copy().add(this.particleSize / 1.2 - dims.x / 2, 0);
     this.labelPos = this.particlePos.copy().add(this.particleSize / 1.2, 0);
@@ -1139,8 +1139,20 @@ class PaletteParticle {
         this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 6);
 
     // draw the particle
+    this.p.strokeWeight(1.6);
     this.p.fill(this.particleColor);
-    this.p.ellipse(this.particlePos.x, this.particlePos.y, this.dims.y * 2 / 3);
+    this.p.ellipse(this.particlePos.x, this.particlePos.y, this.particleSize);
+    if (this.particleType == 'proton') {
+      // draw plus
+      this.p.line(this.particlePos.x, this.particlePos.y - this.particleSize / 4,
+        this.particlePos.x, this.particlePos.y + this.particleSize / 4);
+        this.p.line(this.particlePos.x- this.particleSize / 4, this.particlePos.y ,
+        this.particlePos.x + this.particleSize / 4, this.particlePos.y);
+    } else if (this.particleType == "electron") {
+      //draw minus
+      this.p.line(this.particlePos.x- this.particleSize / 4, this.particlePos.y ,
+      this.particlePos.x + this.particleSize / 4, this.particlePos.y);
+    }
 
     // draw the label
     this.p.textSize(this.dims.y / 4);
