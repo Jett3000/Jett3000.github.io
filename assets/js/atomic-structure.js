@@ -814,6 +814,7 @@ class AtomicStructureWidget {
       for (const electron of this.shellParticles) {
         if (electron.inUserGrasp) {
           electron.delete();
+          this.userActions.push('subtractElectron');
           break;
         }
       }
