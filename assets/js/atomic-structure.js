@@ -927,11 +927,20 @@ class AtomicParticle {
     this.inUserGrasp = false;
     this.mouseFocused = false;
     this.inDeletion = false;
+    this.framesHovered = 0;
   }
 
   draw() {
     let drawSize = this.size;
-    drawSize = this.mouseFocused ? this.size * 1.1 : drawSize;
+    // set size while hovering
+    if (this.mouseFocused) {
+      this.framesHovered++;
+      drawSize = this.p.lerp(this.size, this.size * 1.1, this.p.min(1, this.framesHovered / 10));
+    } else {
+      this.framesHovered = 0;
+    }
+
+    // set size and position user grasp
     if (this.inUserGrasp) {
       this.pos.x = this.p.mouseX;
       this.pos.y = this.p.mouseY;
@@ -1099,11 +1108,13 @@ class PaletteParticle {
     }
 
     // mouse and keyboard focus
+    this.clearColor = this.p.color(0, 0, 0, 0);
     this.hoverColor = this.p.color(this.particleColor);
-    this.hoverColor.setAlpha(40);
+    this.hoverColor.setAlpha(30);
     this.keyboardFocused = false;
     this.mouseFocused = false;
     this.interactive = interactive;
+    this.framesHovered = 0;
 
     // label
     this.particleType = particleType;
@@ -1116,8 +1127,10 @@ class PaletteParticle {
     this.p.push();
     this.p.rectMode(this.p.CENTER);
     if ((this.mouseFocused || this.keyboardFocused) && this.interactive) {
-      this.p.fill(this.hoverColor)
+      this.framesHovered++;
+      this.p.fill(this.p.lerpColor(this.clearColor, this.hoverColor, this.p.min(1, this.framesHovered/20)))
     } else {
+      this.framesHovered = 0;
       this.p.noFill();
     }
     // draw outer container
