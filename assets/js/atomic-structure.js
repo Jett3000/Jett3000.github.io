@@ -343,6 +343,9 @@ class AtomicStructureWidget {
   }
 
   draw() {
+     // visually respond to the mouse
+     this.updateHoverEffects();
+
     // draw particles leaving the scene
     this.particlesInDeletion.forEach(particle => particle.draw());
     // remove particles that have left the scene
@@ -410,8 +413,11 @@ class AtomicStructureWidget {
     // draw electrons
     this.shellParticles.forEach(particle => particle.draw());
 
-    // visually respond to the mouse
-    this.updateHoverEffects();
+    // draw grapsed particle(s)
+    let grapsedParticles = this.nucleusParticles.filter(particle => particle.inUserGrasp);
+    grapsedParticles = grapsedParticles.concat(this.shellParticles.filter(particle => particle.inUserGrasp));
+    grapsedParticles.forEach(particle => particle.draw());
+   
   }
 
   updateHoverEffects() {
@@ -427,20 +433,30 @@ class AtomicStructureWidget {
     this.paletteElectron.mouseFocused = false;
     this.undoButton.mouseFocused = false;
     this.resetButton.mouseFocused = false;
-
-    // check draggable particles for hand cursor
-    // nucleus particles
     for (const particle of this.nucleusParticles) {
-      if (particle.clickWithin(this.mouseVec)) {
-        this.p.cursor(this.p.HAND)
-        return;
-      }
+      particle.mouseFocused = false;
     }
-    // electrons
     for (const particle of this.shellParticles) {
-      if (particle.clickWithin(this.mouseVec)) {
-        this.p.cursor(this.p.HAND)
-        return;
+      particle.mouseFocused = false;
+    }
+    
+    // check draggable particles for hovering
+    if (!this.nucleusParticles.some(particle => particle.inUserGrasp)) {
+      // nucleus particles
+      for (const particle of this.nucleusParticles) {
+        if (particle.clickWithin(this.mouseVec)) {
+          particle.mouseFocused = true;
+          this.p.cursor(this.p.HAND)
+          return;
+        }
+      }
+      // electrons
+      for (const particle of this.shellParticles) {
+        if (particle.clickWithin(this.mouseVec)) {
+          particle.mouseFocused = true;
+          this.p.cursor(this.p.HAND)
+          return;
+        }
       }
     }
     // check ui elements for hover effects + hand cursor
@@ -909,14 +925,17 @@ class AtomicParticle {
     this.interactive = interactive;
     this.p = p;
     this.inUserGrasp = false;
+    this.mouseFocused = false;
     this.inDeletion = false;
-    this.finishedDeleting = false;
   }
 
   draw() {
+    let drawSize = this.size;
+    drawSize = this.mouseFocused ? this.size * 1.1 : drawSize;
     if (this.inUserGrasp) {
       this.pos.x = this.p.mouseX;
       this.pos.y = this.p.mouseY;
+      drawSize = this.size * 1.5;
     } else {
       this.pos.lerp(this.targetPos, 0.08);
     }
@@ -924,7 +943,7 @@ class AtomicParticle {
     this.p.push();
     this.p.fill(this.color);
     this.p.stroke(0);
-    this.p.ellipse(this.pos.x, this.pos.y, this.size);
+    this.p.ellipse(this.pos.x, this.pos.y, drawSize);
     this.p.pop();
   }
 
