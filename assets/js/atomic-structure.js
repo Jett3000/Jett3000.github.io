@@ -141,13 +141,25 @@ const runAtomicStructureWidget =
         p.keyPressed = () => {
           if (!p.focused) return true;
 
-          if (p.keyCode == p.TAB) {
+          if (p.keyCode == p.SHIFT) {
+            p.widgetObject.shiftDown = true;
+            return false;
+          } else if (p.keyCode == p.TAB) {
             p.widgetObject.handleTab();
             return false;
           } else if (p.keyCode == p.ENTER) {
             p.widgetObject.handleEnter();
           }
         };
+        p.keyReleased = () => {
+          if (!p.focused) return true;
+
+          if (p.keyCode == p.SHIFT) {
+            p.widgetObject.shiftDown = false;
+            return false;
+          }
+        };
+
 
         p.windowResized = () => {
           p.resizeCanvas(0, 0);
@@ -221,6 +233,7 @@ class AtomicStructureWidget {
     this.mouseVec = this.p.createVector();
     this.keyboardFocusIndex = -1;
     this.keyboardFocusableActions = [];
+    this.shiftDown = false;
     /* full set:
     ['subtractShell', 'addShell', 'addProton', 'addNeutron', 'addElectron',
     'undo', 'reset'] */
@@ -907,11 +920,20 @@ class AtomicStructureWidget {
     if (unfocusAll) return;
 
     // increment the focused element index
-    this.keyboardFocusIndex++;
-    if (this.keyboardFocusIndex >= this.keyboardFocusableActions.length) {
-      this.keyboardFocusIndex = -1;
-      return;
+    if (this.shiftDown) {
+      this.keyboardFocusIndex--;
+      if (this.keyboardFocusIndex < -1) {
+        this.keyboardFocusIndex = this.keyboardFocusableActions.length - 1;
+      }
+    } else {
+      this.keyboardFocusIndex++;
+      if (this.keyboardFocusIndex >= this.keyboardFocusableActions.length) {
+        this.keyboardFocusIndex = -1;
+        return;
+      }
     }
+
+
 
     switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
       case 'subtractShell':
