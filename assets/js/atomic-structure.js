@@ -1080,6 +1080,12 @@ class ShellAdjuster {
     this.subtractKeyboardFocused = false;
     this.addMouseFocused = false;
     this.addKeyboardFocused = false;
+    this.subtractFramesHovered = 0;
+    this.addFramesHovered = 0;
+    this.unfocusedColor =
+        this.p.color(this.widgetController.atomColors.buttonUnfocusedColor);
+    this.focusedColor =
+        this.p.color(this.widgetController.atomColors.buttonFocusedColor);
   }
 
   draw() {
@@ -1089,20 +1095,30 @@ class ShellAdjuster {
     this.p.rectMode(this.p.CENTER);
     this.p.noStroke();
     // draw minus button
+    // set button fill color
     if (this.subtractMouseFocused || this.subtractKeyboardFocused) {
-      this.p.fill(this.widgetController.atomColors.buttonFocusedColor)
+      this.subtractFramesHovered++;
+      let hoverProgress = this.p.min(1, this.subtractFramesHovered / 20);
+      this.p.fill(this.p.lerpColor(
+          this.unfocusedColor, this.focusedColor, hoverProgress));
     } else {
-      this.p.fill(this.widgetController.atomColors.buttonUnfocusedColor)
-    };
+      this.subtractFramesHovered = 0;
+      this.p.fill(this.unfocusedColor)
+    }
     this.p.rect(
         this.leftCapCenter.x, this.leftCapCenter.y, this.capDims.x,
         this.capDims.y, 6);
     // draw plus button
+    // set button fill color
     if (this.addMouseFocused || this.addKeyboardFocused) {
-      this.p.fill(this.widgetController.atomColors.buttonFocusedColor)
+      this.addFramesHovered++;
+      let hoverProgress = this.p.min(1, this.addFramesHovered / 20);
+      this.p.fill(this.p.lerpColor(
+          this.unfocusedColor, this.focusedColor, hoverProgress));
     } else {
-      this.p.fill(this.widgetController.atomColors.buttonUnfocusedColor)
-    };
+      this.addFramesHovered = 0;
+      this.p.fill(this.unfocusedColor)
+    }
     this.p.rect(
         this.rightCapCenter.x, this.rightCapCenter.y, this.capDims.x,
         this.capDims.y, 6);
@@ -1190,9 +1206,10 @@ class PaletteParticle {
     }
 
     // mouse and keyboard focus
-    this.clearColor = this.p.color(0, 0, 0, 0);
+    this.clearColor = this.p.color(this.particleColor);
+    this.clearColor.setAlpha(0);
     this.hoverColor = this.p.color(this.particleColor);
-    this.hoverColor.setAlpha(30);
+    this.hoverColor.setAlpha(35);
     this.keyboardFocused = false;
     this.mouseFocused = false;
     this.interactive = interactive;
@@ -1205,7 +1222,7 @@ class PaletteParticle {
 
   draw() {
     this.p.push();
-    // this.p.rectMode(this.p.CENTER);
+    // set the fill color
     if ((this.mouseFocused || this.keyboardFocused) && this.interactive) {
       this.framesHovered++;
       this.p.fill(this.p.lerpColor(
@@ -1215,6 +1232,7 @@ class PaletteParticle {
       this.framesHovered = 0;
       this.p.noFill();
     }
+
     // draw outer container
     this.p.rect(
         this.topLeftCorner.x, this.topLeftCorner.y, this.dims.x, this.dims.y,
@@ -1302,19 +1320,28 @@ class WidgetButton {
     // hover and keyboard focusing
     this.mouseFocused = false;
     this.keyboardFocused = false;
+    this.framesHovered = 0;
+    this.unfocusedColor =
+        this.p.color(this.widgetController.atomColors.buttonUnfocusedColor);
+    this.focusedColor =
+        this.p.color(this.widgetController.atomColors.buttonFocusedColor);
   }
 
   draw() {
     this.p.push();
+    // set the fill color
+    if (this.mouseFocused || this.keyboardFocused) {
+      this.framesHovered++;
+      let hoverProgress = this.p.min(1, this.framesHovered / 20);
+      this.p.fill(this.p.lerpColor(
+          this.unfocusedColor, this.focusedColor, hoverProgress));
+    } else {
+      this.framesHovered = 0;
+      this.p.fill(this.unfocusedColor)
+    }
 
     // draw outer container
     this.p.noStroke();
-    if (this.mouseFocused || this.keyboardFocused) {
-      this.p.fill(this.widgetController.atomColors.buttonFocusedColor);
-    } else {
-      this.p.fill(this.widgetController.atomColors.buttonUnfocusedColor)
-    };
-
     this.p.rect(
         this.rectPos.x, this.rectPos.y, this.rectDims.x, this.rectDims.y, 6);
 
