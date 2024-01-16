@@ -362,6 +362,9 @@ class AtomicStructureWidget {
     }
     this.nucleusSpreadFactor = this.particleSize * 0.5;
     this.remapNucleus();
+
+    // atom tagline
+    this.textSize = paletteElementDims.y / 3;
   }
 
   draw() {
@@ -441,6 +444,15 @@ class AtomicStructureWidget {
     grapsedParticles = grapsedParticles.concat(
         this.shellParticles.filter(particle => particle.inUserGrasp));
     grapsedParticles.forEach(particle => particle.draw());
+
+    // draw tagline
+    this.p.textSize(this.textSize);
+    this.p.textAlign(this.p.CENTER, this.p.BOTTOM);
+    let taglineY = this.p.width > this.p.height ?
+        this.p.height - this.textSize / 2 :
+        this.textSize * 1.4;
+    this.p.text(
+        'Click on a particle to remove it', this.atomCenter.x, taglineY);
   }
 
   updateHoverEffects() {
@@ -668,7 +680,7 @@ class AtomicStructureWidget {
     this.userActions = [];
 
     // set the particle size and spread factor
-    // this.particleSize = this.p.width * 0.05;
+    this.particleSize = this.p.width * 0.05;
     this.nucleusSpreadFactor = this.particleSize * 0.5;
 
     // add shells and particles according to config
