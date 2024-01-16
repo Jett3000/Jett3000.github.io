@@ -252,8 +252,15 @@ class AtomicStructureWidget {
 
   // used for canvas-size-dependent elements
   resize() {
+    debugger;
     let paletteCenter;
-    let paletteElementDims;
+
+    let paletteX;
+    let paletteY;
+    let paletteWidth;
+    let paletteHeight;
+    let paletteElementHeight;
+    let paletteElementSpacing;
 
     if (this.p.width > this.p.height) {
       // landscape / desktop view
@@ -267,61 +274,66 @@ class AtomicStructureWidget {
       this.atomCenter = this.p.createVector(
           this.p.width - paletteElementDims.x, this.p.height / 2);
     } else {
-      // portrait / mobile view
-      // set the dimension and position of the palette
-      paletteElementDims =
-          this.p.createVector(this.p.width * 0.4, this.p.height * 0.07);
-      paletteCenter = this.p.createVector(
-          this.p.width / 2, this.p.height - paletteElementDims.y * 6);
+      /* portrait & mobile view */
       // set the center of the atom model
       this.atomCenter = this.p.createVector(
           this.p.width / 2,
           this.p.height / 4,
       )
+      // set the dimension and position of the palette
+      paletteWidth = this.p.width * 0.9;
+      paletteX = (this.p.width - paletteWidth) / 2;
+      paletteElementHeight = this.p.height * 0.07;
+      paletteElementSpacing = paletteElementHeight / 5;
+      paletteY =
+          this.p.height - (paletteElementSpacing + paletteElementHeight) * 6;
     }
 
     // set the particle size
     this.particleSize = this.p.width * 0.05;
-
+    debugger;
     // create adjuster UI elements for the model
-    let paletteElementSpacing = paletteElementDims.y * 1.1;
+    let paletteTLCorner = this.p.createVector(paletteX, paletteY);
+    let paletteElementDims =
+        this.p.createVector(paletteWidth, paletteElementHeight);
     // shells
-    this.shellAdjuster =
-        new ShellAdjuster(paletteCenter.copy(), paletteElementDims, this);
-    paletteCenter.y += paletteElementSpacing;
+
+    this.shellAdjuster = new ShellAdjuster(
+        paletteTLCorner.copy(), paletteElementDims.copy(), this);
+    paletteTLCorner.y += paletteElementHeight + paletteElementSpacing;
     // particles
     this.paletteProton = new PaletteParticle(
-        paletteCenter.copy(), paletteElementDims, 'Protons: ', 'proton',
+        paletteTLCorner.copy(), paletteElementDims.copy(), 'proton',
         this.particleInteractivity.protons, this);
-    paletteCenter.y += paletteElementSpacing;
+    paletteTLCorner.y += paletteElementHeight + paletteElementSpacing;
     this.paletteNeutron = new PaletteParticle(
-        paletteCenter.copy(), paletteElementDims, 'Neutrons: ', 'neutron',
-        this.particleInteractivity.neutrons, this);
-    paletteCenter.y += paletteElementSpacing;
+        paletteTLCorner.copy(), paletteElementDims.copy(), 'neutron',
+        this.particleInteractivity.protons, this);
+    paletteTLCorner.y += paletteElementHeight + paletteElementSpacing;
     this.paletteElectron = new PaletteParticle(
-        paletteCenter.copy(), paletteElementDims, 'Electrons: ', 'electron',
-        this.particleInteractivity.electrons, this);
-    paletteCenter.y += paletteElementSpacing - paletteElementDims.y * 0.2;
+        paletteTLCorner.copy(), paletteElementDims.copy(), 'electron',
+        this.particleInteractivity.protons, this);
+    paletteTLCorner.y += paletteElementHeight + paletteElementSpacing;
+
     this.particleButtons =
         [this.paletteProton, this.paletteNeutron, this.paletteElectron];
 
     // undo & reset buttons
-    let buttonDims = paletteElementDims.copy()
-    buttonDims.x *= 0.5;
-    buttonDims.y *= 0.6
+    let buttonGapSize = paletteWidth * 0.1;
+    let buttonDims = this.p.createVector(
+        (paletteWidth - buttonGapSize) / 2, paletteElementHeight);
+
     // undo
-    let undoCenter = paletteCenter.copy();
-    undoCenter.x -= paletteElementDims.x / 4;
-    this.undoButton = new WidgetButton(undoCenter, buttonDims, 'Undo', this);
+    this.undoButton =
+        new WidgetButton(paletteTLCorner.copy(), buttonDims, 'Undo', this);
     // reset
-    let resetCenter = paletteCenter.copy();
-    resetCenter.x += paletteElementDims.x / 4;
-    this.resetButton = new WidgetButton(resetCenter, buttonDims, 'Reset', this);
+    paletteTLCorner.x += buttonDims.x + buttonGapSize;
+    this.resetButton =
+        new WidgetButton(paletteTLCorner.copy(), buttonDims, 'Reset', this);
 
     // atomic data card
     let dataCardCenter =
-        this.p.createVector(paletteCenter.x, undoCenter.y + buttonDims.y * 1.6);
-    paletteCenter.y += buttonDims.y * 2;
+        this.p.createVector(this.atomCenter.x, this.atomCenter.y);
     this.atomicDataCard = new AtomicDataCard(
         dataCardCenter, buttonDims.copy().add(0, buttonDims.y), this.p);
 
@@ -343,8 +355,8 @@ class AtomicStructureWidget {
   }
 
   draw() {
-     // visually respond to the mouse
-     this.updateHoverEffects();
+    // visually respond to the mouse
+    this.updateHoverEffects();
 
     // draw particles leaving the scene
     this.particlesInDeletion.forEach(particle => particle.draw());
@@ -414,10 +426,11 @@ class AtomicStructureWidget {
     this.shellParticles.forEach(particle => particle.draw());
 
     // draw grapsed particle(s)
-    let grapsedParticles = this.nucleusParticles.filter(particle => particle.inUserGrasp);
-    grapsedParticles = grapsedParticles.concat(this.shellParticles.filter(particle => particle.inUserGrasp));
+    let grapsedParticles =
+        this.nucleusParticles.filter(particle => particle.inUserGrasp);
+    grapsedParticles = grapsedParticles.concat(
+        this.shellParticles.filter(particle => particle.inUserGrasp));
     grapsedParticles.forEach(particle => particle.draw());
-   
   }
 
   updateHoverEffects() {
@@ -439,7 +452,7 @@ class AtomicStructureWidget {
     for (const particle of this.shellParticles) {
       particle.mouseFocused = false;
     }
-    
+
     // check draggable particles for hovering
     if (!this.nucleusParticles.some(particle => particle.inUserGrasp)) {
       // nucleus particles
@@ -936,7 +949,8 @@ class AtomicParticle {
     // set size while hovering
     if (this.mouseFocused) {
       this.framesHovered++;
-      drawSize = this.p.lerp(this.size, this.size * 1.1, this.p.min(1, this.framesHovered / 10));
+      drawSize = this.p.lerp(
+          this.size, this.size * 1.1, this.p.min(1, this.framesHovered / 10));
     } else {
       this.framesHovered = 0;
     }
@@ -976,25 +990,25 @@ class AtomicParticle {
 }
 
 class ShellAdjuster {
-  constructor(centerPos, dims, widgetController) {
+  constructor(topLeftCorner, dims, widgetController) {
     // link to controller
     this.widgetController = widgetController;
     this.p = widgetController.p;
 
     // positioning
-    this.centerPos = centerPos;
+    this.topLeftCorner = topLeftCorner;
     this.dims = dims;
+    this.centerPos = topLeftCorner.copy().add(dims.x / 2, dims.y / 2);
     this.capDims = dims.copy();
-    this.capDims.x = this.dims.x / 4;
-    this.capDims.x = this.p.min(this.capDims.x, dims.y);
+    this.capDims.y *= 0.7;
+    this.capDims.x = this.capDims.y * 1.6;
     this.leftCapCenter = this.p.createVector(
-        this.centerPos.x - (this.dims.x - this.capDims.x) / 2,
+        this.centerPos.x - (this.dims.x - this.capDims.x * 2) / 2,
         this.centerPos.y);
     this.rightCapCenter = this.p.createVector(
-        this.centerPos.x + (this.dims.x - this.capDims.x) / 2,
+        this.centerPos.x + (this.dims.x - this.capDims.x * 2) / 2,
         this.centerPos.y);
-    this.labelPos = this.centerPos.copy().sub(0, this.dims.y / 3);
-    this.countPos = this.centerPos.copy().add(0, dims.y / 4);
+    this.labelPos = this.centerPos.copy();
 
     // hover and keyboard focused display
     this.subtractMouseFocused = false;
@@ -1033,22 +1047,23 @@ class ShellAdjuster {
     this.p.strokeWeight(1);
     // minus sign
     this.p.line(
-        this.leftCapCenter.x - this.capDims.x / 3, this.leftCapCenter.y,
-        this.leftCapCenter.x + this.capDims.x / 3, this.leftCapCenter.y);
+        this.leftCapCenter.x - this.capDims.x / 4, this.leftCapCenter.y,
+        this.leftCapCenter.x + this.capDims.x / 4, this.leftCapCenter.y);
     // plus sign
     this.p.line(
-        this.rightCapCenter.x - this.capDims.x / 3, this.rightCapCenter.y,
-        this.rightCapCenter.x + this.capDims.x / 3, this.rightCapCenter.y);
+        this.rightCapCenter.x - this.capDims.x / 4, this.rightCapCenter.y,
+        this.rightCapCenter.x + this.capDims.x / 4, this.rightCapCenter.y);
     this.p.line(
-        this.rightCapCenter.x, this.rightCapCenter.y - this.capDims.x / 3.5,
-        this.rightCapCenter.x, this.rightCapCenter.y + this.capDims.x / 3.5);
+        this.rightCapCenter.x, this.rightCapCenter.y - this.capDims.x / 5,
+        this.rightCapCenter.x, this.rightCapCenter.y + this.capDims.x / 5);
 
     // draw the label
+    debugger;
     this.p.fill(0);
     this.p.noStroke();
-    this.p.textSize(this.dims.y / 4);
+    this.p.textSize(this.dims.y / 3);
     this.p.textAlign(this.p.CENTER, this.p.CENTER);
-    this.p.text('Shells', this.centerPos.x, this.centerPos.y);
+    this.p.text('Shells', this.labelPos.x, this.labelPos.y);
 
     this.p.pop();
   }
@@ -1076,32 +1091,36 @@ class ShellAdjuster {
 
 class PaletteParticle {
   constructor(
-      centerPos, dims, labelText, particleType, interactive, widgetController) {
+      topLeftCorner, dims, particleType, interactive, widgetController) {
     // link to controller
     this.widgetController = widgetController;
     this.p = widgetController.p;
 
     // positioning and sizing
+    this.topLeftCorner = topLeftCorner;
     this.dims = dims;
-    this.centerPos = centerPos;
+    this.bottomRightCorner = topLeftCorner.copy().add(this.dims);
     this.particleSize = dims.y * 2 / 3;
     this.particlePos =
-        this.centerPos.copy().add(this.particleSize / 1.2 - dims.x / 2, 0);
-    this.labelPos = this.particlePos.copy().add(this.particleSize / 1.2, 0);
-    this.countPos = this.centerPos.copy().add(
-        dims.x / 2 - widgetController.particleSize / 2, 0);
+        this.topLeftCorner.copy().add(this.particleSize / 1.2, this.dims.y / 2);
+    this.labelPos =
+        this.topLeftCorner.copy().add(this.dims.x / 2, this.dims.y / 2);
+    this.countPos = this.topLeftCorner.copy().add(
+        dims.x - this.particleSize / 2, this.dims.y / 2);
 
     // particle
-    this.particleColor;
     switch (particleType) {
       case 'proton':
         this.particleColor = widgetController.atomColors.protonColor;
+        this.labelText = 'Protons';
         break;
       case 'neutron':
         this.particleColor = widgetController.atomColors.neutronColor;
+        this.labelText = 'Neutrons';
         break;
       case 'electron':
         this.particleColor = widgetController.atomColors.electronColor;
+        this.labelText = 'Electrons';
         break;
     }
 
@@ -1116,24 +1135,25 @@ class PaletteParticle {
 
     // label
     this.particleType = particleType;
-    this.labelText = labelText;
     this.labelCount = 0;
-    this.updateLabelCount();
   }
 
   draw() {
     this.p.push();
-    this.p.rectMode(this.p.CENTER);
+    // this.p.rectMode(this.p.CENTER);
     if ((this.mouseFocused || this.keyboardFocused) && this.interactive) {
       this.framesHovered++;
-      this.p.fill(this.p.lerpColor(this.clearColor, this.hoverColor, this.p.min(1, this.framesHovered/20)))
+      this.p.fill(this.p.lerpColor(
+          this.clearColor, this.hoverColor,
+          this.p.min(1, this.framesHovered / 20)))
     } else {
       this.framesHovered = 0;
       this.p.noFill();
     }
     // draw outer container
     this.p.rect(
-        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 6);
+        this.topLeftCorner.x, this.topLeftCorner.y, this.dims.x, this.dims.y,
+        6);
 
     // draw the particle
     this.p.strokeWeight(1.6);
@@ -1141,20 +1161,24 @@ class PaletteParticle {
     this.p.ellipse(this.particlePos.x, this.particlePos.y, this.particleSize);
     if (this.particleType == 'proton') {
       // draw plus
-      this.p.line(this.particlePos.x, this.particlePos.y - this.particleSize / 4,
-        this.particlePos.x, this.particlePos.y + this.particleSize / 4);
-        this.p.line(this.particlePos.x- this.particleSize / 4, this.particlePos.y ,
-        this.particlePos.x + this.particleSize / 4, this.particlePos.y);
-    } else if (this.particleType == "electron") {
-      //draw minus
-      this.p.line(this.particlePos.x- this.particleSize / 4, this.particlePos.y ,
-      this.particlePos.x + this.particleSize / 4, this.particlePos.y);
+      this.p.line(
+          this.particlePos.x, this.particlePos.y - this.particleSize / 4,
+          this.particlePos.x, this.particlePos.y + this.particleSize / 4);
+      this.p.line(
+          this.particlePos.x - this.particleSize / 4, this.particlePos.y,
+          this.particlePos.x + this.particleSize / 4, this.particlePos.y);
+    } else if (this.particleType == 'electron') {
+      // draw minus
+      this.p.line(
+          this.particlePos.x - this.particleSize / 4, this.particlePos.y,
+          this.particlePos.x + this.particleSize / 4, this.particlePos.y);
     }
 
     // draw the label
-    this.p.textSize(this.dims.y / 4);
-    this.p.textAlign(this.p.LEFT, this.p.CENTER);
+    this.p.textSize(this.dims.y / 3);
+    this.p.textAlign(this.p.CENTER, this.p.CENTER);
     this.p.fill(0);
+    this.p.noStroke();
     this.p.text(this.labelText, this.labelPos.x, this.labelPos.y);
 
     // draw the count
@@ -1185,24 +1209,30 @@ class PaletteParticle {
   }
 
   mouseOnButton(mouseVec) {
-    return this.interactive &&
-        this.p.abs(mouseVec.x - this.centerPos.x) < this.dims.x / 2 &&
-        this.p.abs(mouseVec.y - this.centerPos.y) < this.dims.y / 2;
+    return this.interactive && mouseVec.x > this.topLeftCorner.x &&
+        mouseVec.x < this.bottomRightCorner.x &&
+        mouseVec.y > this.topLeftCorner.y &&
+        mouseVec.y < this.bottomRightCorner.y;
   }
 }
 
 class WidgetButton {
-  constructor(centerPos, dims, labelText, widgetController) {
+  constructor(topLeftCorner, dims, labelText, widgetController) {
     // link to controller
     this.widgetController = widgetController;
     this.p = widgetController.p;
 
     // positioning
-    this.centerPos = centerPos;
-    this.dims = dims;
+    let reducedHeight = dims.y * 0.75;
+    let margin = (dims.y - reducedHeight) / 2;
+    this.rectPos = topLeftCorner.copy().add(0, margin);
+    this.rectDims = this.p.createVector(dims.x, reducedHeight);
+    this.rectBounds = this.rectPos.copy().add(this.rectDims);
 
     // label
     this.labelText = labelText;
+    this.labelPos = topLeftCorner.copy().add(dims.x / 2, dims.y / 2);
+    this.labelSize = dims.y / 3;
 
     // hover and keyboard focusing
     this.mouseFocused = false;
@@ -1213,7 +1243,6 @@ class WidgetButton {
     this.p.push();
 
     // draw outer container
-    this.p.rectMode(this.p.CENTER);
     this.p.noStroke();
     if (this.mouseFocused || this.keyboardFocused) {
       this.p.fill(this.widgetController.atomColors.buttonFocusedColor);
@@ -1222,20 +1251,20 @@ class WidgetButton {
     };
 
     this.p.rect(
-        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 6);
+        this.rectPos.x, this.rectPos.y, this.rectDims.x, this.rectDims.y, 6);
 
     // draw the label
-    this.p.textSize(this.dims.y / 2);
+    this.p.textSize(this.labelSize);
     this.p.textAlign(this.p.CENTER, this.p.CENTER);
     this.p.fill(0);
-    this.p.text(this.labelText, this.centerPos.x, this.centerPos.y);
+    this.p.text(this.labelText, this.labelPos.x, this.labelPos.y);
 
     this.p.pop();
   }
 
   mouseOnButton(mouseVec) {
-    return this.p.abs(mouseVec.x - this.centerPos.x) < this.dims.x / 2 &&
-        this.p.abs(mouseVec.y - this.centerPos.y) < this.dims.y / 2;
+    return mouseVec.x > this.rectPos.x && mouseVec.x < this.rectBounds.x &&
+        mouseVec.y > this.rectPos.y && mouseVec.y < this.rectBounds.y;
   }
 }
 
