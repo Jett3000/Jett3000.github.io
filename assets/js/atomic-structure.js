@@ -84,6 +84,17 @@ const runAtomicStructureWidget =
           // create the canvas
           p.createCanvas(dims.w, dims.h)
 
+          // load default colors if none are passed in
+          if (typeof atomColors === 'undefined' || atomColors == null) {
+            atomColors = {
+              protonColor: '#EF3F54',
+              neutronColor: '#8BC867',
+              electronColor: '#49C7EA',
+              buttonUnfocusedColor: '#DBF1FD',
+              buttonFocusedColor: '#BCE7FF'
+            }
+          }
+
           // Create the widget obejct
           p.widgetObject = new AtomicStructureWidget(
               {particleInteractivity, atomData, atomColors}, p,
@@ -173,6 +184,7 @@ class AtomicStructureWidget {
    * Instantiate an atomic structure widget
    * @param inputs
    * Inputs:
+   * @param widgetConfig object detailing:
    * - particleInteractivity:
    *    - Protons: boolean / display or hide
    *    - Electrons: boolean / display or hide
@@ -182,13 +194,16 @@ class AtomicStructureWidget {
    *    - protons: integer / number of protons
    *    - neutrons: integer / number of neutrons
    *    - shells: array / number of electrons per shell
-   *    - atomCard: boolean / show the atom's period table entry
+   *    - atomCard: boolean / show the atom's periodic table entry
    * - atomColors:
    *    - protonColor: string (hex code) / color of protons
    *    - neutronColor: string (hex code) / color of neutrons
    *    - electronColor: string (hex code) / color of electrons
+   *    - buttonUnfocusedColor: string (hex code) / color of unfocused buttons
    *    - buttonFocusColor: string (hex code) / color of focused buttons
    * @param {p5} p The p5.js sketch object
+   * @param updateHiddenInputs a function that exports data to input fields in
+   *     the document
    */
   constructor(widgetConfig, p, updateHiddenInputs) {
     // read configuration data
@@ -383,9 +398,15 @@ class AtomicStructureWidget {
 
     // draw the ui elements
     this.particleButtons.forEach(pb => pb.draw());
-    this.shellAdjuster.draw();
-    this.undoButton.draw();
-    this.resetButton.draw();
+    if (this.particleInteractivity.shells) this.shellAdjuster.draw();
+    if (this.particleInteractivity.shells ||
+        this.particleInteractivity.protons ||
+        this.particleInteractivity.neutrons ||
+        this.particleInteractivity.electrons) {
+      this.undoButton.draw();
+      this.resetButton.draw();
+    }
+
     if (this.atomData.atomCard) this.atomicDataCard.draw(this.activeProtons);
 
 
