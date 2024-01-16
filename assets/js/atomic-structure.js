@@ -985,7 +985,7 @@ class ShellAdjuster {
     this.centerPos = centerPos;
     this.dims = dims;
     this.capDims = dims.copy();
-    this.capDims.x = this.dims.x / 3;
+    this.capDims.x = this.dims.x / 4;
     this.capDims.x = this.p.min(this.capDims.x, dims.y);
     this.leftCapCenter = this.p.createVector(
         this.centerPos.x - (this.dims.x - this.capDims.x) / 2,
@@ -1046,13 +1046,10 @@ class ShellAdjuster {
     // draw the label
     this.p.fill(0);
     this.p.noStroke();
-    this.p.textSize(this.dims.y / 3);
-    this.p.textAlign(this.p.CENTER, this.p.TOP);
-    this.p.text('Shells', this.labelPos.x, this.labelPos.y);
+    this.p.textSize(this.dims.y / 4);
     this.p.textAlign(this.p.CENTER, this.p.CENTER);
+    this.p.text('Shells', this.centerPos.x, this.centerPos.y);
 
-    this.p.text(
-        this.widgetController.activeShells, this.countPos.x, this.countPos.y);
     this.p.pop();
   }
 
