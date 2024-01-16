@@ -64,6 +64,7 @@ const runAtomicStructureWidget =
           height = node.clientWidth / heightToWidthRatio;
         }
 
+
         return height;
       };
 
@@ -252,46 +253,54 @@ class AtomicStructureWidget {
 
   // used for canvas-size-dependent elements
   resize() {
-    debugger;
-    let paletteCenter;
-
     let paletteX;
     let paletteY;
     let paletteWidth;
-    let paletteHeight;
     let paletteElementHeight;
     let paletteElementSpacing;
+    let atomCardDims;
 
     if (this.p.width > this.p.height) {
-      // landscape / desktop view
+      /* landscape & desktop view */
       // set the dimension and position of the palette
-      paletteElementDims =
-          this.p.createVector(this.p.width * 0.3, this.p.height * .12);
-      paletteCenter = this.p.createVector(
-          paletteElementDims.x / 2 + 10,
-          this.p.height * 0.5 - paletteElementDims.y * 2);
+      paletteWidth = this.p.width * 0.3;
+      paletteX = 20;
+      paletteElementHeight = this.p.height * 0.1;
+      paletteElementSpacing = paletteElementHeight / 5;
+      paletteY =
+          this.p.height - (paletteElementSpacing + paletteElementHeight) * 6;
+
       // set the center of the atom model
-      this.atomCenter = this.p.createVector(
-          this.p.width - paletteElementDims.x, this.p.height / 2);
+      let atomX = this.p.width - (this.p.width - paletteWidth) / 2;
+      this.atomCenter = this.p.createVector(atomX, this.p.height / 2);
+
+      // set the atom data card size
+      atomCardDims =
+          this.p.createVector(this.p.width * 0.1, this.p.width * 0.1);
     } else {
       /* portrait & mobile view */
-      // set the center of the atom model
-      this.atomCenter = this.p.createVector(
-          this.p.width / 2,
-          this.p.height / 4,
-      )
       // set the dimension and position of the palette
       paletteWidth = this.p.width * 0.9;
       paletteX = (this.p.width - paletteWidth) / 2;
       paletteElementHeight = this.p.height * 0.07;
       paletteElementSpacing = paletteElementHeight / 5;
       paletteY =
-          this.p.height - (paletteElementSpacing + paletteElementHeight) * 6;
+          this.p.height - (paletteElementSpacing + paletteElementHeight) * 5;
+
+      // set the center of the atom model
+      this.atomCenter = this.p.createVector(
+          this.p.width / 2,
+          paletteY / 2,
+      );
+
+      // set the atom data card size
+      atomCardDims =
+          this.p.createVector(this.p.width * 0.16, this.p.width * 0.16);
     }
+
 
     // set the particle size
     this.particleSize = this.p.width * 0.05;
-    debugger;
     // create adjuster UI elements for the model
     let paletteTLCorner = this.p.createVector(paletteX, paletteY);
     let paletteElementDims =
@@ -332,10 +341,11 @@ class AtomicStructureWidget {
         new WidgetButton(paletteTLCorner.copy(), buttonDims, 'Reset', this);
 
     // atomic data card
+    let margin = atomCardDims.x / 10;
     let dataCardCenter =
-        this.p.createVector(this.atomCenter.x, this.atomCenter.y);
-    this.atomicDataCard = new AtomicDataCard(
-        dataCardCenter, buttonDims.copy().add(0, buttonDims.y), this.p);
+        this.p.createVector(this.p.width - atomCardDims.x - margin, margin);
+    this.atomicDataCard =
+        new AtomicDataCard(dataCardCenter, atomCardDims, this.p);
 
     // particle spread positioning, and deletion positions
     for (const particle of this.nucleusParticles) {
@@ -658,7 +668,7 @@ class AtomicStructureWidget {
     this.userActions = [];
 
     // set the particle size and spread factor
-    this.particleSize = this.p.width * 0.05;
+    // this.particleSize = this.p.width * 0.05;
     this.nucleusSpreadFactor = this.particleSize * 0.5;
 
     // add shells and particles according to config
@@ -1269,12 +1279,12 @@ class WidgetButton {
 }
 
 class AtomicDataCard {
-  constructor(centerPos, dims, p) {
+  constructor(topLeftCorner, dims, p) {
     // link to controller and p5 instance
     this.p = p;
 
     // size and positioning
-    this.centerPos = centerPos;
+    this.centerPos = topLeftCorner.copy().add(dims.x / 2, dims.y / 2);
     this.dims = dims;
   }
 
