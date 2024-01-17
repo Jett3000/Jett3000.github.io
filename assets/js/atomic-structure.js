@@ -1139,7 +1139,6 @@ class ShellAdjuster {
         this.rightCapCenter.x, this.rightCapCenter.y + this.capDims.x / 5);
 
     // draw the label
-    debugger;
     this.p.fill(0);
     this.p.noStroke();
     this.p.textSize(this.dims.y / 3);
@@ -1366,8 +1365,17 @@ class AtomicDataCard {
     this.p = p;
 
     // size and positioning
-    this.centerPos = topLeftCorner.copy().add(dims.x / 2, dims.y / 2);
+    this.topLeftCorner = topLeftCorner.copy();
     this.dims = dims;
+    this.nametabHeight = this.dims.y / 4;
+    this.nametabY = topLeftCorner.y + dims.y - this.nametabHeight;
+    this.symbolPosition =
+        topLeftCorner.copy().add(dims.x * 2 / 3, dims.y * 2 / 5);
+    this.namePosition = topLeftCorner.copy().add(
+        this.dims.x / 2, this.dims.y - this.nametabHeight / 2);
+    this.numberPosition =
+        topLeftCorner.copy().add(dims.x * 1 / 4, dims.y * 3 / 5);
+    this.molarPosition = topLeftCorner.copy().add(dims.x * 1 / 4, dims.y / 5)
   }
 
   draw(protonCount) {
@@ -1382,24 +1390,30 @@ class AtomicDataCard {
 
     this.p.push();
     // outer container
-    this.p.rectMode(this.p.CENTER);
     this.p.noFill();
     this.p.rect(
-        this.centerPos.x, this.centerPos.y, this.dims.x, this.dims.y, 6);
+        this.topLeftCorner.x, this.topLeftCorner.y, this.dims.x, this.dims.y,
+        6);
+    this.p.fill(200);
+    this.p.rect(
+        this.topLeftCorner.x, this.nametabY, this.dims.x, this.nametabHeight, 0,
+        0, 6, 6);
 
     // text
     this.p.fill(0);
     this.p.textAlign(this.p.CENTER, this.p.CENTER);
     this.p.textSize(this.dims.y / 5);
     this.p.text(
-        '' + elementData.number, this.centerPos.x,
-        this.centerPos.y - this.dims.y / 2 + this.p.textSize());
-    this.p.textSize(this.dims.y / 3);
-    this.p.text('' + elementData.symbol, this.centerPos.x, this.centerPos.y);
-    this.p.textSize(this.dims.y / 5);
+        '' + elementData.number, this.numberPosition.x, this.numberPosition.y);
     this.p.text(
-        '' + elementData.name, this.centerPos.x,
-        this.centerPos.y + this.dims.y / 2 - this.p.textSize());
+        '' + this.p.round(elementData.atomic_mass), this.molarPosition.x,
+        this.molarPosition.y);
+    this.p.text(
+        '' + elementData.name, this.namePosition.x, this.namePosition.y);
+    this.p.textSize(this.dims.y / 3);
+    this.p.text(
+        '' + elementData.symbol, this.symbolPosition.x, this.symbolPosition.y);
+
 
     this.p.pop();
   }
