@@ -265,6 +265,7 @@ class AtomicStructureWidget {
     // initialize size dependent variables
     this.atomCenter;
     this.particleSize;
+    this.maxParticleSize;
     this.nucleusSpreadFactor;
     this.paletteX;
     this.paletteY;
@@ -302,6 +303,9 @@ class AtomicStructureWidget {
       let atomX = this.p.width - (this.p.width - paletteWidth) / 2;
       this.atomCenter = this.p.createVector(atomX, this.p.height / 2);
 
+      // set the maximum particle size
+      this.maxParticleSize = this.p.width * 0.05;
+
       // set the atom data card size
       atomCardDims =
           this.p.createVector(this.p.width * 0.1, this.p.width * 0.1);
@@ -320,15 +324,16 @@ class AtomicStructureWidget {
           this.p.width / 2,
           paletteY / 2,
       );
+      // set the maximum particle size
+      this.maxParticleSize = this.p.width * 0.1;
 
       // set the atom data card size
       atomCardDims =
           this.p.createVector(this.p.width * 0.16, this.p.width * 0.16);
     }
 
-
-    // set the particle size
-    this.particleSize = this.p.width * 0.05;
+    // set the initial particle size
+    this.particleSize = this.maxParticleSize;
     // create adjuster UI elements for the model
     let paletteTLCorner = this.p.createVector(paletteX, paletteY);
     let paletteElementDims =
@@ -392,7 +397,7 @@ class AtomicStructureWidget {
     this.remapNucleus();
 
     // atom tagline
-    this.textSize = paletteElementDims.y / 3;
+    this.taglineSize = paletteElementDims.y / 3;
   }
 
   draw() {
@@ -442,7 +447,7 @@ class AtomicStructureWidget {
       return;
     } else if (
         maxShellRadius < this.atomCenter.y * 0.9 &&
-        this.particleSize < this.p.width * 0.05) {
+        this.particleSize < this.maxParticleSize) {
       this.resizeAtom(1.1);
       return;
     }
@@ -480,11 +485,11 @@ class AtomicStructureWidget {
     grapsedParticles.forEach(particle => particle.draw());
 
     // draw tagline
-    this.p.textSize(this.textSize);
+    this.p.textSize(this.taglineSize);
     this.p.textAlign(this.p.CENTER, this.p.BOTTOM);
     let taglineY = this.p.width > this.p.height ?
-        this.p.height - this.textSize / 2 :
-        this.textSize * 1.4;
+        this.p.height - this.taglineSize / 2 :
+        this.taglineSize * 1.4;
     this.p.text(
         'Click on a particle to remove it', this.atomCenter.x, taglineY);
   }
@@ -697,6 +702,8 @@ class AtomicStructureWidget {
     this.shellParticles.forEach((particle, i) => {
       particle.size = this.particleSize * 0.66;
     });
+
+    this.remapNucleus();
   }
 
   resetAtom() {
