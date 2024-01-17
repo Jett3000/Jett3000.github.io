@@ -218,6 +218,17 @@ class AtomicStructureWidget {
    *     the document
    */
   constructor(widgetConfig, p, updateHiddenInputs) {
+    /* begin control panel */
+    this.shellWeight = 1;              // line thickness in pixels
+    this.highlightedShellWeight = 2;   // line thickness in pixels
+    this.lowerButtonGapPercent = 0.2;  // gap size as % of palette width
+    this.electronSizePercent = 0.66;   // as % of nucleus particle size
+    this.spreadPercent = 0.5;  // controls the nucleus particle spread factor
+
+
+
+    /* end control panel */
+
     // read configuration data
     this.particleInteractivity = widgetConfig.particleInteractivity;
     this.atomData = widgetConfig.atomData;
@@ -390,10 +401,10 @@ class AtomicStructureWidget {
       }
     }
     for (const electron of this.shellParticles) {
-      electron.size = this.particleSize * 0.66;
+      electron.size = this.particleSize * this.electronSizePercent;
       electron.deletionPos = this.paletteElectron.particlePos.copy();
     }
-    this.nucleusSpreadFactor = this.particleSize * 0.5;
+    this.nucleusSpreadFactor = this.particleSize * this.spreadPercent;
     this.remapNucleus();
 
     // atom tagline
@@ -401,6 +412,19 @@ class AtomicStructureWidget {
   }
 
   draw() {
+    // resize the atom to fit the space
+    let maxShellRadius =
+        this.minShellRadius() + this.activeShells * this.particleSize;
+    if (maxShellRadius > this.atomCenter.y) {
+      this.resizeAtom(0.9);
+      return;
+    } else if (
+        maxShellRadius < this.atomCenter.y * 0.9 &&
+        this.particleSize < this.maxParticleSize) {
+      this.resizeAtom(1.1);
+      return;
+    }
+
     // visually respond to the mouse
     this.updateHoverEffects();
 
@@ -440,30 +464,18 @@ class AtomicStructureWidget {
       }
     }
     // draw orbital rings
-    let maxShellRadius =
-        this.minShellRadius() + this.activeShells * this.particleSize;
-    if (maxShellRadius > this.atomCenter.y) {
-      this.resizeAtom(0.9);
-      return;
-    } else if (
-        maxShellRadius < this.atomCenter.y * 0.9 &&
-        this.particleSize < this.maxParticleSize) {
-      this.resizeAtom(1.1);
-      return;
-    }
-
     for (let shellIndex = 0; shellIndex < this.activeShells; shellIndex++) {
       let shellRadius = this.minShellRadius() + shellIndex * this.particleSize;
 
       this.p.push();
       this.p.noFill();
       this.p.stroke(0);
-      this.p.strokeWeight(1);
-      if (highlightedShell == shellIndex) this.p.strokeWeight(2);
+      this.p.strokeWeight(this.shellWeight);
+      if (highlightedShell == shellIndex)
+        this.p.strokeWeight(this.highlightedShellWeight);
       this.p.ellipse(this.atomCenter.x, this.atomCenter.y, shellRadius * 2);
       this.p.pop();
-
-      // envenly distribute electrons on shells
+      //  envenly distribute electrons on shells
       let currentShellElectrons =
           this.shellParticles.filter(sp => {return sp.shell == shellIndex + 1});
       currentShellElectrons.forEach((electron, i) => {
@@ -600,7 +612,8 @@ class AtomicStructureWidget {
         // create new particle
         particle = new AtomicParticle(
             this.p.createVector(this.p.mouseX, this.p.mouseY),
-            this.paletteElectron.particlePos.copy(), this.particleSize * 0.66,
+            this.paletteElectron.particlePos.copy(),
+            this.particleSize * this.electronSizePercent,
             this.atomColors.electronColor, this.particleInteractivity.electrons,
             this.p);
         particle.calculateShell(
@@ -694,13 +707,13 @@ class AtomicStructureWidget {
   resizeAtom(resizeFactor = 1) {
     // update size and spread factor
     this.particleSize *= resizeFactor;
-    this.nucleusSpreadFactor = this.particleSize * 0.5;
+    this.nucleusSpreadFactor = this.particleSize * this.spreadPercent;
 
     this.nucleusParticles.forEach((particle, i) => {
       particle.size = this.particleSize;
     });
     this.shellParticles.forEach((particle, i) => {
-      particle.size = this.particleSize * 0.66;
+      particle.size = this.particleSize * this.electronSizePercent;
     });
 
     this.remapNucleus();
@@ -722,7 +735,7 @@ class AtomicStructureWidget {
 
     // set the particle size and spread factor
     this.particleSize = this.p.width * 0.05;
-    this.nucleusSpreadFactor = this.particleSize * 0.5;
+    this.nucleusSpreadFactor = this.particleSize * this.spreadPercent;
 
     // add shells and particles according to config
     // protons
@@ -787,7 +800,7 @@ class AtomicStructureWidget {
   }
 
   indexToRestPosition(i) {
-    // based on sunflower seed dispersal pattern
+    // based on sunflower seed dispersal pattern & golden ratio
     let theta = (i + 1) * this.p.TAU / (1.618 * 1.618);
     let r = this.nucleusSpreadFactor * this.p.sqrt(i);
 
@@ -1002,14 +1015,20 @@ class AtomicStructureWidget {
 
 class AtomicParticle {
   constructor(pos, deletionPos, size, color, interactive, p) {
+    // positioning
     this.pos = pos;
     this.targetPos = pos.copy();
     this.deletionPos = deletionPos;
     this.shell = 0;
+    // appearance
     this.size = size;
     this.color = color;
-    this.interactive = interactive;
+
+    // link to sketch instance
     this.p = p;
+
+    // interactivity
+    this.interactive = interactive;
     this.inUserGrasp = false;
     this.mouseFocused = false;
     this.inDeletion = false;
