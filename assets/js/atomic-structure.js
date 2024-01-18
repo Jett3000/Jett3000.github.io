@@ -988,29 +988,43 @@ class AtomicStructureWidget {
       return;
     }
 
-    switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
-      case 'subtractShell':
-        this.subtractElement('shell');
-        break;
-      case 'addShell':
-        this.addElement('shell');
-        break;
-      case 'addProton':
-        this.addElement('proton');
-        break;
-      case 'addNeutron':
-        this.addElement('neutron');
-        break;
-      case 'addElectron':
-        this.addElement('electron');
-        // this.handleClickEnd();
-        break;
-      case 'undo':
-        this.undoLastAction();
-        break;
-      case 'reset':
-        this.resetAtom();
-        break;
+    if (this.shiftDown) {
+      // remove particles with shift-enter on particle palette
+      switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
+        case 'addProton':
+          this.subtractElement('proton');
+          break;
+        case 'addNeutron':
+          this.subtractElement('neutron');
+          break;
+        case 'addElectron':
+          this.subtractElement('electron');
+          break;
+      }
+    } else {
+      switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
+        case 'subtractShell':
+          this.subtractElement('shell');
+          break;
+        case 'addShell':
+          this.addElement('shell');
+          break;
+        case 'addProton':
+          this.addElement('proton');
+          break;
+        case 'addNeutron':
+          this.addElement('neutron');
+          break;
+        case 'addElectron':
+          this.addElement('electron');
+          break;
+        case 'undo':
+          this.undoLastAction();
+          break;
+        case 'reset':
+          this.resetAtom();
+          break;
+      }
     }
   }
 }
