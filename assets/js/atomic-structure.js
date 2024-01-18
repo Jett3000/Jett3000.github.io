@@ -219,14 +219,21 @@ class AtomicStructureWidget {
    */
   constructor(widgetConfig, p, updateHiddenInputs) {
     /* begin control panel */
-    this.shellWeight = 1;              // line thickness in pixels
-    this.highlightedShellWeight = 2;   // line thickness in pixels
-    this.lowerButtonGapPercent = 0.2;  // gap size as % of palette width
-    this.electronSizePercent = 0.66;   // as % of nucleus particle size
+    // shells and particles
+    this.shellWeight = 1;             // line thickness in pixels
+    this.highlightedShellWeight = 2;  // line thickness in pixels
+    this.electronSizePercent = 0.66;  // as % of nucleus particle size
     this.spreadPercent = 0.5;  // controls the nucleus particle spread factor
+    this.particleHoverScale = 1.1;  // amount to scale hovered particles by
+    this.particleSpeed = 0.08;  // interpolation to target position per frame
 
+    // UI palette
+    this.lowerButtonGapPercent = 0.2;       // gap size as % of palette width
+    this.hoverEffectDuration = 10;          // effect duration in frames
+    this.paletteParticleHoverOpacity = 35;  // opacity of fill on hover, 0-255
 
-
+    // atom card
+    this.atomCardMarginPercent = 0.1;  // margin as percent of the card's width
     /* end control panel */
 
     // read configuration data
@@ -281,8 +288,11 @@ class AtomicStructureWidget {
     this.paletteX;
     this.paletteY;
     this.paletteWidth;
+    this.paletteElementHeight;
+    this.paletteElementSpacing;
     this.paletteHeight;
     this.paletteLabelOffset;
+    this.atomCardDims;
 
     // complete size dependent setup
     this.resize();
@@ -293,88 +303,81 @@ class AtomicStructureWidget {
 
   // used for canvas-size-dependent elements
   resize() {
-    let paletteX;
-    let paletteY;
-    let paletteWidth;
-    let paletteElementHeight;
-    let paletteElementSpacing;
-    let atomCardDims;
-
     if (this.p.width > this.p.height) {
       /* landscape & desktop view */
       // set the dimension and position of the palette
-      paletteWidth = this.p.width * 0.3;
-      paletteX = 20;
-      paletteElementHeight = this.p.height * 0.1;
-      paletteElementSpacing = paletteElementHeight / 5;
-      paletteY =
-          this.p.height - (paletteElementSpacing + paletteElementHeight) * 6;
+      this.paletteWidth = this.p.width * 0.3;
+      this.paletteX = 20;
+      this.paletteElementHeight = this.p.height * 0.1;
+      this.paletteElementSpacing = this.paletteElementHeight / 5;
+      this.paletteY = this.p.height -
+          (this.paletteElementSpacing + this.paletteElementHeight) * 6;
 
       // set the center of the atom model
-      let atomX = this.p.width - (this.p.width - paletteWidth) / 2;
+      let atomX = this.p.width - (this.p.width - this.paletteWidth) / 2;
       this.atomCenter = this.p.createVector(atomX, this.p.height / 2);
 
       // set the maximum particle size
       this.maxParticleSize = this.p.width * 0.05;
 
       // set the atom data card size
-      atomCardDims =
+      this.atomCardDims =
           this.p.createVector(this.p.width * 0.1, this.p.width * 0.1);
     } else {
       /* portrait & mobile view */
       // set the dimension and position of the palette
-      paletteWidth = this.p.width * 0.9;
-      paletteX = (this.p.width - paletteWidth) / 2;
-      paletteElementHeight = this.p.height * 0.07;
-      paletteElementSpacing = paletteElementHeight / 5;
-      paletteY =
-          this.p.height - (paletteElementSpacing + paletteElementHeight) * 5;
+      this.paletteWidth = this.p.width * 0.9;
+      this.paletteX = (this.p.width - this.paletteWidth) / 2;
+      this.paletteElementHeight = this.p.height * 0.07;
+      this.paletteElementSpacing = this.paletteElementHeight / 5;
+      this.paletteY = this.p.height -
+          (this.paletteElementSpacing + this.paletteElementHeight) * 5;
 
       // set the center of the atom model
       this.atomCenter = this.p.createVector(
           this.p.width / 2,
-          paletteY / 2,
+          this.paletteY / 2,
       );
       // set the maximum particle size
       this.maxParticleSize = this.p.width * 0.1;
 
       // set the atom data card size
-      atomCardDims =
+      this.atomCardDims =
           this.p.createVector(this.p.width * 0.16, this.p.width * 0.16);
     }
 
     // set the initial particle size
     this.particleSize = this.maxParticleSize;
     // create adjuster UI elements for the model
-    let paletteTLCorner = this.p.createVector(paletteX, paletteY);
+    let paletteTLCorner = this.p.createVector(this.paletteX, this.paletteY);
     let paletteElementDims =
-        this.p.createVector(paletteWidth, paletteElementHeight);
-    // shells
+        this.p.createVector(this.paletteWidth, this.paletteElementHeight);
 
+    // shells
     this.shellAdjuster = new ShellAdjuster(
         paletteTLCorner.copy(), paletteElementDims.copy(), this);
-    paletteTLCorner.y += paletteElementHeight + paletteElementSpacing;
+    paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
     // particles
     this.paletteProton = new PaletteParticle(
         paletteTLCorner.copy(), paletteElementDims.copy(), 'proton',
         this.particleInteractivity.protons, this);
-    paletteTLCorner.y += paletteElementHeight + paletteElementSpacing;
+    paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
     this.paletteNeutron = new PaletteParticle(
         paletteTLCorner.copy(), paletteElementDims.copy(), 'neutron',
         this.particleInteractivity.protons, this);
-    paletteTLCorner.y += paletteElementHeight + paletteElementSpacing;
+    paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
     this.paletteElectron = new PaletteParticle(
         paletteTLCorner.copy(), paletteElementDims.copy(), 'electron',
         this.particleInteractivity.protons, this);
-    paletteTLCorner.y += paletteElementHeight + paletteElementSpacing;
+    paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
 
     this.particleButtons =
         [this.paletteProton, this.paletteNeutron, this.paletteElectron];
 
     // undo & reset buttons
-    let buttonGapSize = paletteWidth * 0.1;
+    let buttonGapSize = this.paletteWidth * this.lowerButtonGapPercent;
     let buttonDims = this.p.createVector(
-        (paletteWidth - buttonGapSize) / 2, paletteElementHeight);
+        (this.paletteWidth - buttonGapSize) / 2, this.paletteElementHeight);
 
     // undo
     this.undoButton =
@@ -385,11 +388,11 @@ class AtomicStructureWidget {
         new WidgetButton(paletteTLCorner.copy(), buttonDims, 'Reset', this);
 
     // atomic data card
-    let margin = atomCardDims.x / 10;
-    let dataCardCenter =
-        this.p.createVector(this.p.width - atomCardDims.x - margin, margin);
+    let margin = this.atomCardDims.x * this.atomCardMarginPercent;  // panel add
+    let dataCardCenter = this.p.createVector(
+        this.p.width - this.atomCardDims.x - margin, margin);
     this.atomicDataCard =
-        new AtomicDataCard(dataCardCenter, atomCardDims, this.p);
+        new AtomicDataCard(dataCardCenter, this.atomCardDims, this.p);
 
     // particle spread positioning, and deletion positions
     for (const particle of this.nucleusParticles) {
@@ -415,13 +418,13 @@ class AtomicStructureWidget {
     // resize the atom to fit the space
     let maxShellRadius =
         this.minShellRadius() + this.activeShells * this.particleSize;
-    if (maxShellRadius > this.atomCenter.y) {
-      this.resizeAtom(0.9);
+    if (maxShellRadius > this.atomCenter.y * 0.95) {
+      this.resizeAtom(0.95);
       return;
     } else if (
         maxShellRadius < this.atomCenter.y * 0.9 &&
         this.particleSize < this.maxParticleSize) {
-      this.resizeAtom(1.1);
+      this.resizeAtom(1.05);
       return;
     }
 
@@ -450,7 +453,6 @@ class AtomicStructureWidget {
     }
 
     if (this.atomData.atomCard) this.atomicDataCard.draw(this.activeProtons);
-
 
     // draw electrons and orbital rings
     // set the highlighted shell when user is holding electron
@@ -498,10 +500,10 @@ class AtomicStructureWidget {
 
     // draw tagline
     this.p.textSize(this.taglineSize);
-    this.p.textAlign(this.p.CENTER, this.p.BOTTOM);
+    this.p.textAlign(this.p.CENTER, this.p.TOP);
     let taglineY = this.p.width > this.p.height ?
-        this.p.height - this.taglineSize / 2 :
-        this.taglineSize * 1.4;
+        this.p.height - this.taglineSize :
+        this.paletteY - this.taglineSize / 2;
     this.p.text(
         'Click on a particle to remove it', this.atomCenter.x, taglineY);
   }
@@ -601,7 +603,7 @@ class AtomicStructureWidget {
         // create new particle
         particle = new AtomicParticle(
             this.p.createVector(this.p.mouseX, this.p.mouseY), endPos,
-            this.particleSize, color, interactivity, this.p);
+            this.particleSize, color, interactivity, this, this.p);
         // calculate rest position
         particle.targetPos =
             this.indexToRestPosition(this.nucleusParticles.length);
@@ -615,7 +617,7 @@ class AtomicStructureWidget {
             this.paletteElectron.particlePos.copy(),
             this.particleSize * this.electronSizePercent,
             this.atomColors.electronColor, this.particleInteractivity.electrons,
-            this.p);
+            this, this.p);
         particle.calculateShell(
             this.atomCenter, this.minShellRadius(), this.particleSize,
             this.activeShells);
@@ -1014,7 +1016,7 @@ class AtomicStructureWidget {
 }
 
 class AtomicParticle {
-  constructor(pos, deletionPos, size, color, interactive, p) {
+  constructor(pos, deletionPos, size, color, interactive, widgetController, p) {
     // positioning
     this.pos = pos;
     this.targetPos = pos.copy();
@@ -1026,6 +1028,7 @@ class AtomicParticle {
 
     // link to sketch instance
     this.p = p;
+    this.widgetController = widgetController;
 
     // interactivity
     this.interactive = interactive;
@@ -1041,7 +1044,10 @@ class AtomicParticle {
     if (this.mouseFocused) {
       this.framesHovered++;
       drawSize = this.p.lerp(
-          this.size, this.size * 1.1, this.p.min(1, this.framesHovered / 10));
+          this.size, this.size * this.widgetController.particleHoverScale,
+          this.p.min(
+              1,
+              this.framesHovered / this.widgetController.hoverEffectDuration));
     } else {
       this.framesHovered = 0;
     }
@@ -1052,7 +1058,7 @@ class AtomicParticle {
       this.pos.y = this.p.mouseY;
       drawSize = this.size * 1.5;
     } else {
-      this.pos.lerp(this.targetPos, 0.08);
+      this.pos.lerp(this.targetPos, this.widgetController.particleSpeed);
     }
 
     this.p.push();
@@ -1124,7 +1130,10 @@ class ShellAdjuster {
     // set button fill color
     if (this.subtractMouseFocused || this.subtractKeyboardFocused) {
       this.subtractFramesHovered++;
-      let hoverProgress = this.p.min(1, this.subtractFramesHovered / 20);
+      let hoverProgress = this.p.min(
+          1,
+          this.subtractFramesHovered /
+              this.widgetController.hoverEffectDuration);
       this.p.fill(this.p.lerpColor(
           this.unfocusedColor, this.focusedColor, hoverProgress));
     } else {
@@ -1234,7 +1243,7 @@ class PaletteParticle {
     this.clearColor = this.p.color(this.particleColor);
     this.clearColor.setAlpha(0);
     this.hoverColor = this.p.color(this.particleColor);
-    this.hoverColor.setAlpha(35);
+    this.hoverColor.setAlpha(this.widgetController.paletteParticleHoverOpacity);
     this.keyboardFocused = false;
     this.mouseFocused = false;
     this.interactive = interactive;
@@ -1252,7 +1261,9 @@ class PaletteParticle {
       this.framesHovered++;
       this.p.fill(this.p.lerpColor(
           this.clearColor, this.hoverColor,
-          this.p.min(1, this.framesHovered / 20)))
+          this.p.min(
+              1,
+              this.framesHovered / this.widgetController.hoverEffectDuration)))
     } else {
       this.framesHovered = 0;
       this.p.noFill();
@@ -1357,7 +1368,8 @@ class WidgetButton {
     // set the fill color
     if (this.mouseFocused || this.keyboardFocused) {
       this.framesHovered++;
-      let hoverProgress = this.p.min(1, this.framesHovered / 20);
+      let hoverProgress = this.p.min(
+          1, this.framesHovered / this.widgetController.hoverEffectDuration);
       this.p.fill(this.p.lerpColor(
           this.unfocusedColor, this.focusedColor, hoverProgress));
     } else {
@@ -1434,6 +1446,10 @@ class AtomicDataCard {
     this.p.text(
         '' + this.p.round(elementData.atomic_mass), this.molarPosition.x,
         this.molarPosition.y);
+    // prevent text overflow on element name
+    while (this.p.textWidth('' + elementData.name) > this.dims.x * 0.9) {
+      this.p.textSize(this.p.textSize() - 1);
+    };
     this.p.text(
         '' + elementData.name, this.namePosition.x, this.namePosition.y);
     this.p.textSize(this.dims.y / 3);
