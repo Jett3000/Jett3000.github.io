@@ -421,12 +421,10 @@ class AtomicStructureWidget {
         this.minShellRadius() + this.activeShells * this.particleSize;
     if (maxShellRadius > this.atomCenter.y * 0.95) {
       this.resizeAtom(0.95);
-      return;
     } else if (
         maxShellRadius < this.atomCenter.y * 0.9 &&
         this.particleSize < this.maxParticleSize) {
       this.resizeAtom(1.05);
-      return;
     }
 
     // visually respond to the mouse
