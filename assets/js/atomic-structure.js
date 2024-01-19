@@ -225,6 +225,7 @@ class AtomicStructureWidget {
     this.electronSizePercent = 0.66;  // as % of nucleus particle size
     this.spreadPercent = 0.5;  // controls the nucleus particle spread factor
     this.particleHoverScale = 1.1;  // amount to scale hovered particles by
+    this.particleGraspScale = 1.5;  // amount to scale grapsed particles by
     this.particleSpeed = 0.08;  // interpolation to target position per frame
 
     // UI palette
@@ -1070,7 +1071,7 @@ class AtomicParticle {
     if (this.inUserGrasp) {
       this.pos.x = this.p.mouseX;
       this.pos.y = this.p.mouseY;
-      drawSize = this.size * 1.5;
+      drawSize = this.size * this.widgetController.particleGraspScale;
     } else {
       this.pos.lerp(this.targetPos, this.widgetController.particleSpeed);
     }
