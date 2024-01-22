@@ -71,7 +71,8 @@ const runSelectableAreasWidget =
         }
 
 
-        return height;
+
+        return Math.min(maxHeight, height);
       };
 
       let dims = {
@@ -81,6 +82,7 @@ const runSelectableAreasWidget =
 
       // Define the p5 sketch methods
       let backgroundImage;
+      let points = [];
       const sketch = (p) => {
         p.preload = () => {
           backgroundImage = p.loadImage(imagePath);
@@ -118,7 +120,9 @@ const runSelectableAreasWidget =
         };
 
         p.mousePressed = () => {
-          p.widgetObject.handleClickStart();
+          points.push([p.mouseX / p.width, p.mouseY / p.height])
+          console.log(JSON.stringify(points));
+          // p.widgetObject.handleClickStart();
         };
 
         p.mouseReleased = () => {
@@ -233,16 +237,12 @@ class SelectableAreasWidget {
 
 
     // resize background
-    console.log(backgroundImage);
-    this.backgroundImage.resize(this.p.width, 0);
-    if (this.backgroundImage.height > this.p.height) {
-      this.backgroundImage = backgroundImage.resize(0, this.p.height)
-    }
+    this.backgroundImage.resize(this.p.width, this.p.height);
+
 
     // create selectable area objects
     this.selectableAreas = [];
     for (const hotspot of this.hotspots) {
-      console.log(hotspot);
       this.selectableAreas.push(new SelectableArea(
           hotspot.area, hotspot.iconMark, hotspot.color, this));
     };
@@ -368,10 +368,11 @@ class SelectableAreasWidget {
     // draw the background image
     this.p.imageMode(this.p.CENTER);
     this.p.image(
-        this.backgroundImage, this.p.width / 2, this.p.height / 2,
-        this.backgroundImage.width, this.backgroundImage.height);
+        this.backgroundImage, this.p.width / 2, this.p.height / 2, this.p.width,
+        this.p.height);
 
     // draw the selectable areas
+    // debugger;
     for (const selectableArea of this.selectableAreas) {
       selectableArea.draw();
     }
@@ -623,34 +624,45 @@ class SelectableArea {
     this.p = this.widgetController.p;
 
     // load the shape and features
-    console.log(vertices);
     this.vertices = vertices.map(v => {
       return {x: v[0] * this.p.width, y: v[1] * this.p.height};
     });
     this.iconMark = iconMark;
 
     // set the stylings
+    let colorCode;
     switch (color) {
       case 'blue':
-        this.color = '#3277BD';
+        colorCode = '#3277BD';
         break;
       case 'red':
-        this.color = '#FF1616';
+        colorCode = '#FF1616';
         break;
       case 'green':
-        this.color = '#63C616';
+        colorCode = '#63C616';
         break;
       case 'orange':
-        this.color = '#FF5C00';
+        colorCode = '#FF5C00';
         break;
     }
+
+    this.color = this.p.color(colorCode);
+    this.color.setAlpha(50);
   }
 
   draw() {
     this.p.push();
 
+    // styling
     this.p.strokeWeight(this.widgetController.areaStrokeWeight);
-    this.p.fill(this.color);
+    this.p.stroke(this.p.color);
+    if (this.hoveredOn) {
+      this.p.fill(this.color);
+    } else {
+      this.p.noFill();
+    }
+
+    // draw shape
     this.p.beginShape();
     for (const areaVertex of this.vertices) {
       this.p.vertex(areaVertex.x, areaVertex.y);
