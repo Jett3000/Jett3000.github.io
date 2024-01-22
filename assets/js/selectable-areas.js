@@ -120,9 +120,7 @@ const runSelectableAreasWidget =
         };
 
         p.mousePressed = () => {
-          points.push([p.mouseX / p.width, p.mouseY / p.height])
-          console.log(JSON.stringify(points));
-          // p.widgetObject.handleClickStart();
+          p.widgetObject.handleClickStart();
         };
 
         p.mouseReleased = () => {
@@ -235,11 +233,6 @@ class SelectableAreasWidget {
     this.keyboardFocusableActions = [];
     this.shiftDown = false;
 
-
-    // resize background
-    this.backgroundImage.resize(this.p.width, this.p.height);
-
-
     // create selectable area objects
     this.selectableAreas = [];
     for (const hotspot of this.hotspots) {
@@ -250,126 +243,23 @@ class SelectableAreasWidget {
 
   // used for canvas-size-dependent elements
   resize() {
-    if (this.p.width > this.p.height) {
-      /* landscape & desktop view */
-      // set the dimension and position of the palette
-      this.paletteWidth = this.p.width * 0.3;
-      this.paletteX = 20;
-      this.paletteElementHeight = this.p.height * 0.1;
-      this.paletteElementSpacing = this.paletteElementHeight / 5;
-      this.paletteY = this.p.height -
-          (this.paletteElementSpacing + this.paletteElementHeight) * 6;
-
-      // set the center of the atom model
-      let atomX = this.p.width - (this.p.width - this.paletteWidth) / 2;
-      this.atomCenter = this.p.createVector(atomX, this.p.height / 2);
-
-      // set the maximum particle size
-      this.maxParticleSize = this.p.width * 0.05;
-
-      // set the atom data card size
-      this.atomCardDims =
-          this.p.createVector(this.p.width * 0.1, this.p.width * 0.1);
-    } else {
-      /* portrait & mobile view */
-      // set the dimension and position of the palette
-      this.paletteWidth = this.p.width * 0.9;
-      this.paletteX = (this.p.width - this.paletteWidth) / 2;
-      this.paletteElementHeight = this.p.height * 0.07;
-      this.paletteElementSpacing = this.paletteElementHeight / 5;
-      this.paletteY = this.p.height -
-          (this.paletteElementSpacing + this.paletteElementHeight) * 5;
-
-      // set the center of the atom model
-      this.atomCenter = this.p.createVector(
-          this.p.width / 2,
-          this.paletteY / 2,
-      );
-      // set the maximum particle size
-      this.maxParticleSize = this.p.width * 0.1;
-
-      // set the atom data card size
-      this.atomCardDims =
-          this.p.createVector(this.p.width * 0.16, this.p.width * 0.16);
-    }
-
-    // set the initial particle size
-    this.particleSize = this.maxParticleSize;
-    // create adjuster UI elements for the model
-    let paletteTLCorner = this.p.createVector(this.paletteX, this.paletteY);
-    let paletteElementDims =
-        this.p.createVector(this.paletteWidth, this.paletteElementHeight);
-
-    // shells
-    this.shellAdjuster = new ShellAdjuster(
-        paletteTLCorner.copy(), paletteElementDims.copy(), this);
-    paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
-    // particles
-    this.paletteProton = new PaletteParticle(
-        paletteTLCorner.copy(), paletteElementDims.copy(), 'proton',
-        this.particleInteractivity.protons, this);
-    paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
-    this.paletteNeutron = new PaletteParticle(
-        paletteTLCorner.copy(), paletteElementDims.copy(), 'neutron',
-        this.particleInteractivity.protons, this);
-    paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
-    this.paletteElectron = new PaletteParticle(
-        paletteTLCorner.copy(), paletteElementDims.copy(), 'electron',
-        this.particleInteractivity.protons, this);
-    paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
-
-    this.particleButtons =
-        [this.paletteProton, this.paletteNeutron, this.paletteElectron];
-
-    // undo & reset buttons
-    let buttonGapSize = this.paletteWidth * this.lowerButtonGapPercent;
-    let buttonDims = this.p.createVector(
-        (this.paletteWidth - buttonGapSize) / 2, this.paletteElementHeight);
-
-    // undo
-    this.undoButton =
-        new WidgetButton(paletteTLCorner.copy(), buttonDims, 'Undo', this);
-    // reset
-    paletteTLCorner.x += buttonDims.x + buttonGapSize;
-    this.resetButton =
-        new WidgetButton(paletteTLCorner.copy(), buttonDims, 'Reset', this);
-
-    // atomic data card
-    let margin = this.atomCardDims.x * this.atomCardMarginPercent;  // panel add
-    let dataCardCenter = this.p.createVector(
-        this.p.width - this.atomCardDims.x - margin, margin);
-    this.atomicDataCard =
-        new AtomicDataCard(dataCardCenter, this.atomCardDims, this.p);
-
-    // particle spread positioning, and deletion positions
-    for (const particle of this.nucleusParticles) {
-      particle.size = this.particleSize;
-      if (particle.color == this.atomColors.protonColor) {
-        particle.deletionPos = this.paletteProton.particlePos.copy();
-      } else {
-        particle.deletionPos = this.paletteNeutron.particlePos.copy();
-      }
-    }
-    for (const electron of this.shellParticles) {
-      electron.size = this.particleSize * this.electronSizePercent;
-      electron.deletionPos = this.paletteElectron.particlePos.copy();
-    }
-    this.nucleusSpreadFactor = this.particleSize * this.spreadPercent;
-    this.remapNucleus();
-
-    // atom tagline
-    this.taglineSize = paletteElementDims.y / 3;
+    // create selectable area objects
+    this.selectableAreas = [];
+    for (const hotspot of this.hotspots) {
+      this.selectableAreas.push(new SelectableArea(
+          hotspot.area, hotspot.iconMark, hotspot.color, this));
+    };
   }
 
   draw() {
-    // respond to the mosue
-    this.updateHoverEffects();
-
     // draw the background image
     this.p.imageMode(this.p.CENTER);
     this.p.image(
         this.backgroundImage, this.p.width / 2, this.p.height / 2, this.p.width,
         this.p.height);
+
+    // respond to the mosue
+    this.updateHoverEffects();
 
     // draw the selectable areas
     // debugger;
@@ -383,16 +273,18 @@ class SelectableAreasWidget {
     this.mouseVec.x = this.p.mouseX;
     this.mouseVec.y = this.p.mouseY;
 
-    // clear all hover effects
-
-
-    // check selectable areas for hovering
+    // check each area
+    for (const selectableArea of this.selectableAreas) {
+      selectableArea.focused = selectableArea.mouseWithin(this.mouseVec);
+    };
+    if (this.selectableAreas.some(s => s.focused)) {
+      this.p.cursor(this.p.HAND);
+      return
+    };
 
     // if nothing is hovered on, set back to arrow cursor
     this.p.cursor(this.p.ARROW);
   }
-
-
 
   exportModelState() {
     let electronsPerShell = [];
@@ -410,8 +302,6 @@ class SelectableAreasWidget {
 
     this.updateHiddenInputs(modelState);
   }
-
-
 
   handleClickStart() {
     // register click with widget state
@@ -654,11 +544,12 @@ class SelectableArea {
     this.p.push();
 
     // styling
-    this.p.strokeWeight(this.widgetController.areaStrokeWeight);
-    this.p.stroke(this.p.color);
-    if (this.hoveredOn) {
+    this.p.stroke(this.color);
+    if (this.focused) {
+      this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
       this.p.fill(this.color);
     } else {
+      this.p.strokeWeight(this.widgetController.areaStrokeWeight);
       this.p.noFill();
     }
 
@@ -669,7 +560,6 @@ class SelectableArea {
     }
     this.p.endShape(this.p.CLOSE);
 
-
     this.p.pop();
   }
 
@@ -677,33 +567,25 @@ class SelectableArea {
     // test via casting a ray to the edge of the sketch and counting the
     // intersections with area boundary lines
     let mouseP0 = mouseVec;
-    let mouseP1 = this.p.createVector(0, mouseVec.y);
+    let mouseP1 = mouseVec.copy();
+    mouseP1.y = 0;
 
     let intersections = 0;
     for (let i = 0; i < this.vertices.length; i++) {
       let p0 = this.vertices[i];
       let p1 = this.vertices[(i + 1) % this.vertices.length];
-
-      if (this.intersects(
-              mouseP0.x, mouseP0.y, mouseP1.x, mouseP1.y, p0.x, p0.y, p1.x,
-              p1.y)) {
+      if (this.isIntersecting(mouseP0, mouseP1, p0, p1)) {
         intersections++;
       };
-
-      return intersections % 2 == 1;
     }
-  }
-
-  // returns true if the line from (a,b)->(c,d) intersects with (p,q)->(r,s)
-  intersects(a, b, c, d, p, q, r, s) {
-    var det, gamma, lambda;
-    det = (c - a) * (s - q) - (r - p) * (d - b);
-    if (det === 0) {
-      return false;
-    } else {
-      lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
-      gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
-      return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
-    }
+    return intersections % 2 == 1;
   };
+
+  isIntersecting(p1, p2, p3, p4) {
+    function CCW(p1, p2, p3) {
+      return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
+    }
+    return (CCW(p1, p3, p4) != CCW(p2, p3, p4)) &&
+        (CCW(p1, p2, p3) != CCW(p1, p2, p4));
+  }
 }
