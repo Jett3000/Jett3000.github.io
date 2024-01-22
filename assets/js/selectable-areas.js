@@ -309,103 +309,22 @@ class SelectableAreasWidget {
     this.mouseVec.x = this.p.mouseX;
     this.mouseVec.y = this.p.mouseY;
 
-    // reset button
-    if (this.resetButton.mouseOnButton(this.mouseVec)) {
-      this.resetAtom();
-      this.lastInputWasAdjuster = true;
-    }
-
-    // undo button
-    if (this.undoButton.mouseOnButton(this.mouseVec)) {
-      this.undoLastAction();
-      this.lastInputWasAdjuster = true;
-    }
-
-    // check if user clicked on adjuster
-    this.lastInputWasAdjuster = false;
-    for (const adjuster of this.particleButtons) {
-      if (adjuster.mouseOnButton(this.mouseVec)) {
-        adjuster.addElement();
-        this.lastInputWasAdjuster = true;
-      }
-    };
-    if (this.shellAdjuster.mouseOnAdd(this.mouseVec)) {
-      this.shellAdjuster.addElement();
-    } else if (this.shellAdjuster.mouseOnSubtract(this.mouseVec)) {
-      this.shellAdjuster.subtractElement();
-    }
-
-    // if the user clicked an electron or nuclear particle, add it to their
-    // grasp
-    for (const particle of this.nucleusParticles) {
-      if (particle.clickWithin(this.mouseVec)) {
-        particle.inUserGrasp = true;
-        return;
-      }
-    }
-    for (const particle of this.shellParticles) {
-      if (particle.clickWithin(this.mouseVec)) {
-        particle.inUserGrasp = true;
-        particle.shell = 0;
-        return;
+    // toggle selection on clicked selectable areas
+    let currSelectedAreaCount =
+        this.selectableAreas.filter(s => s.selected).length;
+    for (const selectableArea of this.selectableAreas) {
+      if (selectableArea.mouseWithin(this.mouseVec)) {
+        selectableArea.selected = !selectableArea.selected;
+        if (selectableArea.selected &&
+            currSelectedAreaCount == this.selecbleAreaCount) {
+          selectableArea.selected = false;
+        }
       }
     }
   }
 
   handleClickEnd() {
-    // delete quickly clicked particles
-    if (this.p.frameCount - this.lastInputFrame < 10 &&
-        !this.lastInputWasAdjuster &&
-        !this.undoButton.mouseOnButton(this.mouseVec)) {
-      // update nucleus particle count
-      for (const particle of this.nucleusParticles) {
-        if (particle.inUserGrasp) {
-          particle.delete();
-          if (particle.color == this.atomColors.protonColor) {
-            this.activeProtons--;
-            this.userActions.push('subtractProton');
-          } else {
-            this.activeNeutrons--;
-            this.userActions.push('subtractNeutron');
-          }
-          break;
-        }
-      }
-      // delete nucleus particles under the mouse
-      this.particlesInDeletion = this.particlesInDeletion.concat(
-          this.nucleusParticles.filter(p => {return p.inDeletion}));
-      this.nucleusParticles =
-          this.nucleusParticles.filter(p => {return !p.inDeletion});
-      this.remapNucleus();
-
-
-      // delete shell particles under the mouse
-      for (const electron of this.shellParticles) {
-        if (electron.inUserGrasp) {
-          electron.delete();
-          this.userActions.push('subtractElectron');
-          break;
-        }
-      }
-
-      this.particlesInDeletion = this.particlesInDeletion.concat(
-          this.shellParticles.filter(p => {return p.inDeletion}));
-      this.shellParticles =
-          this.shellParticles.filter(p => {return !p.inDeletion});
-    }
-
-    // release any dragged particles
-    for (const particle of this.nucleusParticles) {
-      particle.inUserGrasp = false;
-    }
-    for (const particle of this.shellParticles) {
-      if (particle.inUserGrasp) {
-        particle.calculateShell(
-            this.atomCenter, this.minShellRadius(), this.particleSize,
-            this.activeShells);
-      }
-      particle.inUserGrasp = false;
-    }
+    return true;
   }
 
   handleTab(unfocusAll = false) {
@@ -513,6 +432,11 @@ class SelectableArea {
     this.widgetController = widgetController;
     this.p = this.widgetController.p;
 
+    // interactivity
+    this.focusedFrames = 0;
+    this.focused = false;
+    this.selected = false;
+
     // load the shape and features
     this.vertices = vertices.map(v => {
       return {x: v[0] * this.p.width, y: v[1] * this.p.height};
@@ -535,7 +459,6 @@ class SelectableArea {
         colorCode = '#FF5C00';
         break;
     }
-
     this.color = this.p.color(colorCode);
     this.color.setAlpha(50);
   }
@@ -545,12 +468,15 @@ class SelectableArea {
 
     // styling
     this.p.stroke(this.color);
+    this.p.strokeWeight(this.widgetController.areaStrokeWeight);
+    this.p.noFill();
     if (this.focused) {
       this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
       this.p.fill(this.color);
-    } else {
-      this.p.strokeWeight(this.widgetController.areaStrokeWeight);
-      this.p.noFill();
+    }
+    if (this.selected) {
+      this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
+      this.p.fill(255, 0, 255, 90);
     }
 
     // draw shape
