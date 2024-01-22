@@ -230,6 +230,15 @@ class SelectableAreasWidget {
     this.keyboardFocusIndex = -1;
     this.keyboardFocusableActions = [];
     this.shiftDown = false;
+
+
+    // create selectable area objects
+    this.selectableAreas = [];
+    for (const hotspot of this.hotspots) {
+      console.log(hotspot);
+      this.selectableAreas.push(new SelectableArea(
+          hotspot.area, hotspot.iconMark, hotspot.color, this));
+    };
   }
 
   // used for canvas-size-dependent elements
@@ -345,7 +354,15 @@ class SelectableAreasWidget {
     this.taglineSize = paletteElementDims.y / 3;
   }
 
-  draw() {}
+  draw() {
+    // respond to the mosue
+    this.updateHoverEffects();
+
+    // draw the selectable areas
+    for (const selectableArea of this.selectableAreas) {
+      selectableArea.draw();
+    }
+  }
 
   updateHoverEffects() {
     // update mouse vector object
@@ -593,23 +610,39 @@ class SelectableArea {
     this.p = this.widgetController.p;
 
     // load the shape and features
+    console.log(vertices);
     this.vertices = vertices.map(v => {
       return {x: v[0] * this.p.width, y: v[1] * this.p.height};
     });
     this.iconMark = iconMark;
 
     // set the stylings
-    this.color = color;
+    switch (color) {
+      case 'blue':
+        this.color = '#3277BD';
+        break;
+      case 'red':
+        this.color = '#FF1616';
+        break;
+      case 'green':
+        this.color = '#63C616';
+        break;
+      case 'orange':
+        this.color = '#FF5C00';
+        break;
+    }
   }
 
   draw() {
     this.p.push();
 
+    this.p.strokeWeight(this.widgetController.areaStrokeWeight);
+    this.p.fill(this.color);
     this.p.beginShape();
     for (const areaVertex of this.vertices) {
-      this.p.vertex(areaVertex.x * this.p.width, areaVertex.y * this.p.height);
+      this.p.vertex(areaVertex.x, areaVertex.y);
     }
-    this.p.endShape();
+    this.p.endShape(this.p.CLOSE);
 
 
     this.p.pop();
