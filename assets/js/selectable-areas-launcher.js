@@ -4,7 +4,7 @@ const widgetConfig = {
   imagePath: 'assets/img/solar-system.png',
   imageWidth: 100,
   maxImageHeight: 50,
-  selecbleAreaCount: 3,
+  maxSelections: 3,
   hotspots: [
     {
       area: [

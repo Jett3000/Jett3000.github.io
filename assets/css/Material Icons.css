@@ -1,0 +1,10 @@
+@font-face {
+	font-family: 'Material Icons';
+	src: url(../../assets/fonts/Material%20Icons-6d021076b9ee09c7e5bb4351b8cded35.eot) format('embedded-opentype'),
+	url(../../assets/fonts/Material%20Icons-71272e83a0f8b1bb9ce9528a68457e23.woff2) format('woff2'),
+	url(../../assets/fonts/Material%20Icons-92d0a89597f2068520e4aebd8f104408.woff) format('woff'),
+	url(../../assets/fonts/Material%20Icons-df779eea2bb3ea52bbda6afc7659e06c.ttf) format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: auto;
+}

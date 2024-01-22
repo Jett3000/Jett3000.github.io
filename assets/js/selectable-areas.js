@@ -6,7 +6,7 @@ const runSelectableAreasWidget =
       imagePath,
       imageWidth,
       maxImageHeight,
-      selecbleAreaCount,
+      maxSelections,
       hotspots
     }) => {
       const getThemeColors =
@@ -99,7 +99,7 @@ const runSelectableAreasWidget =
                 backgroundImage,
                 imageWidth,
                 maxImageHeight,
-                selecbleAreaCount,
+                maxSelections,
                 hotspots
               },
               p, updateHiddenInputs);
@@ -204,7 +204,7 @@ class SelectableAreasWidget {
         backgroundImage,
         imageWidth,
         maxImageHeight,
-        selecbleAreaCount,
+        maxSelections,
         hotspots
       },
       p, updateHiddenInputs) {
@@ -219,7 +219,7 @@ class SelectableAreasWidget {
     this.backgroundImage = backgroundImage;
     this.imageWidth = imageWidth;
     this.maxImageHeight = maxImageHeight;
-    this.selecbleAreaCount = selecbleAreaCount;
+    this.maxSelections = maxSelections;
     this.hotspots = hotspots;
 
     // link to the sketch instance and document input/outputs
@@ -317,7 +317,7 @@ class SelectableAreasWidget {
       if (selectableArea.mouseWithin(this.mouseVec)) {
         selectableArea.selected = !selectableArea.selected;
         if (selectableArea.selected &&
-            currSelectedAreaCount == this.selecbleAreaCount) {
+            currSelectedAreaCount == this.maxSelections) {
           selectableArea.selected = false;
         }
       }

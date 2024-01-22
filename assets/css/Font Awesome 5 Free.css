@@ -1,0 +1,25 @@
+@font-face {
+	font-family: 'Font Awesome 5 Free';
+	src: url(../../assets/fonts/Font%20Awesome%205%20Free-f1dbdd0bf37a0d9687eda089864d83d4.eot) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-f1dbdd0bf37a0d9687eda089864d83d4.eot) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-8e8e823d881baff0906c988166f58d8a.woff2) format('woff2'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-6a0bea2bcec836e6f8b37902192ebd62.woff) format('woff'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-91a98c203dcffabcf0167e9d3ef8e68e.ttf) format('truetype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-2f302fc0229941bf1185fbaaf7c6a38c.svg) format('svg');
+	font-weight: 400;
+	font-style: normal;
+	font-display: auto;
+}
+
+@font-face {
+	font-family: 'Font Awesome 5 Free';
+	src: url(../../assets/fonts/Font%20Awesome%205%20Free-64c0cd4ca3bf3efeab4797c797b237c4.eot) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-64c0cd4ca3bf3efeab4797c797b237c4.eot) format('embedded-opentype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-248050ff9219522e7c46bac152fc9b97.woff2) format('woff2'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-46afaa6204296890a6bbbc2511e84942.woff) format('woff'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-c8a3c1f9e3d7493ddbaedd4b9db825b2.ttf) format('truetype'),
+	url(../../assets/fonts/Font%20Awesome%205%20Free-f33e67b304e7d3895539bc939f74d49e.svg) format('svg');
+	font-weight: 900;
+	font-style: normal;
+	font-display: auto;
+}
