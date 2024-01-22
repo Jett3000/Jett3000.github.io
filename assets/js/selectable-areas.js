@@ -80,10 +80,10 @@ const runSelectableAreasWidget =
       };
 
       // Define the p5 sketch methods
-      let loadedImage;
+      let backgroundImage;
       const sketch = (p) => {
         p.preload = () => {
-          loadedImage = p.loadImage(imagePath);
+          backgroundImage = p.loadImage(imagePath);
         };
 
         p.setup = () => {
@@ -94,7 +94,7 @@ const runSelectableAreasWidget =
           p.widgetObject = new SelectableAreasWidget(
               {
                 interactive,
-                loadedImage,
+                backgroundImage,
                 imageWidth,
                 maxImageHeight,
                 selecbleAreaCount,
@@ -199,7 +199,7 @@ class SelectableAreasWidget {
   constructor(
       {
         interactive,
-        imagePath,
+        backgroundImage,
         imageWidth,
         maxImageHeight,
         selecbleAreaCount,
@@ -214,7 +214,7 @@ class SelectableAreasWidget {
 
     // read configuration data
     this.interactive = interactive;
-    this.imagePath = imagePath;
+    this.backgroundImage = backgroundImage;
     this.imageWidth = imageWidth;
     this.maxImageHeight = maxImageHeight;
     this.selecbleAreaCount = selecbleAreaCount;
@@ -231,6 +231,13 @@ class SelectableAreasWidget {
     this.keyboardFocusableActions = [];
     this.shiftDown = false;
 
+
+    // resize background
+    console.log(backgroundImage);
+    this.backgroundImage.resize(this.p.width, 0);
+    if (this.backgroundImage.height > this.p.height) {
+      this.backgroundImage = backgroundImage.resize(0, this.p.height)
+    }
 
     // create selectable area objects
     this.selectableAreas = [];
@@ -357,6 +364,12 @@ class SelectableAreasWidget {
   draw() {
     // respond to the mosue
     this.updateHoverEffects();
+
+    // draw the background image
+    this.p.imageMode(this.p.CENTER);
+    this.p.image(
+        this.backgroundImage, this.p.width / 2, this.p.height / 2,
+        this.backgroundImage.width, this.backgroundImage.height);
 
     // draw the selectable areas
     for (const selectableArea of this.selectableAreas) {
