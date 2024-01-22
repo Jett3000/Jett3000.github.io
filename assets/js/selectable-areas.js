@@ -209,9 +209,9 @@ class SelectableAreasWidget {
       },
       p, updateHiddenInputs) {
     /* begin control panel */
-    this.areaStrokeWeight = 1;          // line thickness in pixels
-    this.hoveredAreaStrokeWeight = 2;   // line thickness in pixels
-    this.selectedAreaStrokeWeight = 2;  // line thickness in pixels
+    this.areaStrokeWeight = 3;          // line thickness in pixels
+    this.hoveredAreaStrokeWeight = 3;   // line thickness in pixels
+    this.selectedAreaStrokeWeight = 3;  // line thickness in pixels
     /* end control panel */
 
     // read configuration data
@@ -309,9 +309,10 @@ class SelectableAreasWidget {
     this.mouseVec.x = this.p.mouseX;
     this.mouseVec.y = this.p.mouseY;
 
+    debugger;
     // toggle selection on clicked selectable areas
     let currSelectedAreaCount =
-        this.selectableAreas.filter(s => s.selected).length;
+        this.selectableAreas.filter(s => {return s.selected}).length;
     for (const selectableArea of this.selectableAreas) {
       if (selectableArea.mouseWithin(this.mouseVec)) {
         selectableArea.selected = !selectableArea.selected;
@@ -447,7 +448,7 @@ class SelectableArea {
     let colorCode;
     switch (color) {
       case 'blue':
-        colorCode = '#3277BD';
+        colorCode = '#50DFFF';
         break;
       case 'red':
         colorCode = '#FF1616';
@@ -459,24 +460,29 @@ class SelectableArea {
         colorCode = '#FF5C00';
         break;
     }
-    this.color = this.p.color(colorCode);
-    this.color.setAlpha(50);
+    this.strokeColor = this.p.color(colorCode);
+    this.fillColor = this.p.color(colorCode);
+    this.fillColor.setAlpha(50);
   }
 
   draw() {
     this.p.push();
 
     // styling
-    this.p.stroke(this.color);
+    this.p.stroke(this.strokeColor);
     this.p.strokeWeight(this.widgetController.areaStrokeWeight);
     this.p.noFill();
-    if (this.focused) {
-      this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
-      this.p.fill(this.color);
-    }
-    if (this.selected) {
-      this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
-      this.p.fill(255, 0, 255, 90);
+    if (!this.focused && !this.selected) {
+      this.p.drawingContext.setLineDash([5, 5]);
+    } else {
+      this.p.drawingContext.setLineDash([]);
+      if (this.focused) {
+        this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
+      }
+      if (this.selected) {
+        this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
+        this.p.fill(this.fillColor)
+      }
     }
 
     // draw shape
