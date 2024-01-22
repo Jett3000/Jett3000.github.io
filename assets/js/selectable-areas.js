@@ -585,3 +585,67 @@ class SelectableAreasWidget {
     }
   }
 }
+
+class SelectableArea {
+  constructor(vertices, iconMark, color, widgetController) {
+    // link to the widgetController
+    this.widgetController = widgetController;
+    this.p = this.widgetController.p;
+
+    // load the shape and features
+    this.vertices = vertices.map(v => {
+      return {x: v[0] * this.p.width, y: v[1] * this.p.height};
+    });
+    this.iconMark = iconMark;
+
+    // set the stylings
+    this.color = color;
+  }
+
+  draw() {
+    this.p.push();
+
+    this.p.beginShape();
+    for (const areaVertex of this.vertices) {
+      this.p.vertex(areaVertex.x * this.p.width, areaVertex.y * this.p.height);
+    }
+    this.p.endShape();
+
+
+    this.p.pop();
+  }
+
+  mouseWithin(mouseVec) {
+    // test via casting a ray to the edge of the sketch and counting the
+    // intersections with area boundary lines
+    let mouseP0 = mouseVec;
+    let mouseP1 = this.p.createVector(0, mouseVec.y);
+
+    let intersections = 0;
+    for (let i = 0; i < this.vertices.length; i++) {
+      let p0 = this.vertices[i];
+      let p1 = this.vertices[(i + 1) % this.vertices.length];
+
+      if (this.intersects(
+              mouseP0.x, mouseP0.y, mouseP1.x, mouseP1.y, p0.x, p0.y, p1.x,
+              p1.y)) {
+        intersections++;
+      };
+
+      return intersections % 2 == 1;
+    }
+  }
+
+  // returns true if the line from (a,b)->(c,d) intersects with (p,q)->(r,s)
+  intersects(a, b, c, d, p, q, r, s) {
+    var det, gamma, lambda;
+    det = (c - a) * (s - q) - (r - p) * (d - b);
+    if (det === 0) {
+      return false;
+    } else {
+      lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+      gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+      return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+    }
+  };
+}
