@@ -142,6 +142,7 @@ const runSelectableAreasWidget =
             p.widgetObject.handleEnter();
           }
         };
+
         p.keyReleased = () => {
           if (!p.focused) return true;
 
@@ -233,21 +234,18 @@ class SelectableAreasWidget {
     this.lastInputFrame = 0;
     this.mouseVec = this.p.createVector();
     this.keyboardFocusIndex = -1;
-    this.keyboardFocusableActions = [];
+    this.keyboardFocusableAreas = [];
     this.shiftDown = false;
 
-    // create selectable area objects
-    this.selectableAreas = [];
-    for (const hotspot of this.hotspots) {
-      this.selectableAreas.push(new SelectableArea(
-          hotspot.area, hotspot.iconMark, hotspot.color, this));
-    };
+    // complete setup in the resize function
+    this.resize();
   }
 
   // used for canvas-size-dependent elements
   resize() {
     // create selectable area objects
     this.selectableAreas = [];
+    this.keyboardFocusableAreas = [];
     for (const hotspot of this.hotspots) {
       this.selectableAreas.push(new SelectableArea(
           hotspot.area, hotspot.iconMark, hotspot.color, this));
@@ -265,7 +263,6 @@ class SelectableAreasWidget {
     this.updateHoverEffects();
 
     // draw the selectable areas
-    // debugger;
     for (const selectableArea of this.selectableAreas) {
       selectableArea.draw();
     }
@@ -278,7 +275,7 @@ class SelectableAreasWidget {
 
     // check each area
     for (const selectableArea of this.selectableAreas) {
-      selectableArea.focused = selectableArea.mouseWithin(this.mouseVec);
+      selectableArea.mouseFocused = selectableArea.mouseWithin(this.mouseVec);
     };
     if (this.selectableAreas.some(s => s.focused)) {
       this.p.cursor(this.p.HAND);
@@ -290,20 +287,13 @@ class SelectableAreasWidget {
   }
 
   exportModelState() {
-    let electronsPerShell = [];
-    for (let shell = 0; shell < this.activeShells; shell++) {
-      let currentShellElectrons = this.shellParticles.filter(
-          electron => {return electron.shell == shell + 1});
-      electronsPerShell.push(currentShellElectrons.length);
+    let selectedIndices = [];
+    for (const [index, area] of this.selectableAreas.entries()) {
+      if (area.selected) {
+        selectedIndices.push(index);
+      }
     }
-
-    const modelState = {
-      protons: this.activeProtons,
-      neutrons: this.activeNeutrons,
-      shells: electronsPerShell
-    };
-
-    this.updateHiddenInputs(modelState);
+    this.updateHiddenInputs(selectedIndices);
   }
 
   handleClickStart() {
@@ -312,17 +302,10 @@ class SelectableAreasWidget {
     this.mouseVec.x = this.p.mouseX;
     this.mouseVec.y = this.p.mouseY;
 
-    debugger;
-    // toggle selection on clicked selectable areas
-    let currSelectedAreaCount =
-        this.selectableAreas.filter(s => {return s.selected}).length;
     for (const selectableArea of this.selectableAreas) {
       if (selectableArea.mouseWithin(this.mouseVec)) {
-        selectableArea.selected = !selectableArea.selected;
-        if (selectableArea.selected &&
-            currSelectedAreaCount == this.maxSelections) {
-          selectableArea.selected = false;
-        }
+        this.toggleSelection(selectableArea);
+        break;
       }
     }
   }
@@ -331,98 +314,48 @@ class SelectableAreasWidget {
     return true;
   }
 
-  handleTab(unfocusAll = false) {
-    // clear all focuses
-    this.shellAdjuster.subtractKeyboardFocused = false;
-    this.shellAdjuster.addKeyboardFocused = false;
-    this.paletteProton.keyboardFocused = false;
-    this.paletteNeutron.keyboardFocused = false;
-    this.paletteElectron.keyboardFocused = false;
-    this.undoButton.keyboardFocused = false;
-    this.resetButton.keyboardFocused = false;
-    if (unfocusAll) return;
-
+  handleTab() {
     // increment the focused element index
     if (this.shiftDown) {
       this.keyboardFocusIndex--;
       if (this.keyboardFocusIndex < -1) {
-        this.keyboardFocusIndex = this.keyboardFocusableActions.length - 1;
+        this.keyboardFocusIndex = this.selectableAreas.length - 1;
       }
     } else {
       this.keyboardFocusIndex++;
-      if (this.keyboardFocusIndex >= this.keyboardFocusableActions.length) {
+      if (this.keyboardFocusIndex >= this.selectableAreas.length) {
         this.keyboardFocusIndex = -1;
-        return;
       }
     }
 
-    switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
-      case 'subtractShell':
-        this.shellAdjuster.subtractKeyboardFocused = true;
-        break;
-      case 'addShell':
-        this.shellAdjuster.addKeyboardFocused = true;
-        break;
-      case 'addProton':
-        this.paletteProton.keyboardFocused = true;
-        break;
-      case 'addNeutron':
-        this.paletteNeutron.keyboardFocused = true;
-        break;
-      case 'addElectron':
-        this.paletteElectron.keyboardFocused = true;
-        break;
-      case 'undo':
-        this.undoButton.keyboardFocused = true;
-        break;
-      case 'reset':
-        this.resetButton.keyboardFocused = true;
-        break;
+    // update the focus
+    for (const [index, area] of this.selectableAreas.entries()) {
+      area.keyboardFocused = index == this.keyboardFocusIndex;
     }
   }
 
   handleEnter() {
+    // return if the focus index is out of bounds
     if (this.keyboardFocusIndex < 0 ||
-        this.keyboardFocusIndex >= this.keyboardFocusableActions.length) {
+        this.keyboardFocusIndex >= this.selectableAreas.length) {
       return;
     }
 
-    if (this.shiftDown) {
-      // remove particles with shift-enter on particle palette
-      switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
-        case 'addProton':
-          this.subtractElement('proton');
-          break;
-        case 'addNeutron':
-          this.subtractElement('neutron');
-          break;
-        case 'addElectron':
-          this.subtractElement('electron');
-          break;
-      }
+    this.toggleSelection(this.selectableAreas[this.keyboardFocusIndex]);
+  }
+
+  toggleSelection(selectableArea) {
+    // toggle selection on clicked selectable areas
+    let currSelectedAreaCount =
+        this.selectableAreas.filter(s => {return s.selected}).length;
+
+    if (selectableArea.selected) {
+      selectableArea.selected = false;
     } else {
-      switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
-        case 'subtractShell':
-          this.subtractElement('shell');
-          break;
-        case 'addShell':
-          this.addElement('shell');
-          break;
-        case 'addProton':
-          this.addElement('proton');
-          break;
-        case 'addNeutron':
-          this.addElement('neutron');
-          break;
-        case 'addElectron':
-          this.addElement('electron');
-          break;
-        case 'undo':
-          this.undoLastAction();
-          break;
-        case 'reset':
-          this.resetAtom();
-          break;
+      if (currSelectedAreaCount < this.maxSelections) {
+        selectableArea.selected = true;
+      } else {
+        alert('Please deselect an area before selecting more.')
       }
     }
   }
@@ -436,6 +369,8 @@ class SelectableArea {
 
     // interactivity
     this.focusedFrames = 0;
+    this.mouseFocused = false;
+    this.keyboardFocused = false;
     this.focused = false;
     this.selected = false;
 
@@ -473,13 +408,18 @@ class SelectableArea {
     this.p.stroke(this.strokeColor);
     this.p.strokeWeight(this.widgetController.areaStrokeWeight);
     this.p.noFill();
-    if (!this.focused && !this.selected) {
+    if (!this.mouseFocused && !this.keyboardFocused && !this.selected) {
       this.p.drawingContext.setLineDash([5, 5]);
     } else {
       this.p.drawingContext.setLineDash([]);
-      if (this.focused) {
+      if (this.mouseFocused) {
         this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
       }
+
+      if (this.keyboardFocused) {
+        this.p.stroke('#FFA500');
+      }
+
       if (this.selected) {
         this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
         this.p.fill(this.fillColor)
