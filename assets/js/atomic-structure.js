@@ -631,11 +631,14 @@ class AtomicStructureWidget {
         // add to the model
         this.shellParticles.push(particle);
         this.activeElectrons++;
-        if (tracking) this.userActions.push('addElectron');
 
         // if there are no shells yet, create one
         if (this.activeShells < 1) {
           this.activeShells++;
+          if (tracking)
+            this.userActions.push({action: 'addElectron', addedShellToo: true});
+        } else {
+          if (tracking) this.userActions.push('addElectron');
         }
         break;
     }
@@ -841,6 +844,10 @@ class AtomicStructureWidget {
           while (counter--) {
             this.addElement('electron', false);
           }
+          break;
+        case 'addElectron':
+          this.subtractElement('electron', false);
+          this.subtractElement('shell', false);
           break;
       }
     }
