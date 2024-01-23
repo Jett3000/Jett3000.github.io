@@ -6,6 +6,7 @@ const atomicStructureConfig = {
     neutrons: true,
     shells: true,
   },
+  maxElements: 20,
   atomData: {protons: 10, neutrons: 10, shells: [2, 4, 4], atomCard: true},
   atomColors: {
     protonColor: '#EF3F54',

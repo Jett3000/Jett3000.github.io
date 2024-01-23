@@ -1,5 +1,5 @@
 const runAtomicStructureWidget =
-    ({container, particleInteractivity, atomData, atomColors}) => {
+    ({container, particleInteractivity, maxElements, atomData, atomColors}) => {
       const getThemeColors =
           (theme) => {
             // Edit these colors to change the colors
@@ -96,7 +96,7 @@ const runAtomicStructureWidget =
 
           // Create the widget obejct
           p.widgetObject = new AtomicStructureWidget(
-              {particleInteractivity, atomData, atomColors}, p,
+              {particleInteractivity, maxElements, atomData, atomColors}, p,
               updateHiddenInputs);
         };
 
@@ -238,6 +238,7 @@ class AtomicStructureWidget {
 
     // read configuration data
     this.particleInteractivity = widgetConfig.particleInteractivity;
+    this.maxElements = widgetConfig.maxElements;
     this.atomData = widgetConfig.atomData;
     this.atomColors = widgetConfig.atomColors;
 
@@ -581,6 +582,7 @@ class AtomicStructureWidget {
     let particle;
     switch (element) {
       case 'shell':
+        if (this.activeShells >= this.maxElements) return;
         this.activeShells++;
         if (tracking) this.userActions.push('addShell');
         break;
@@ -590,12 +592,14 @@ class AtomicStructureWidget {
         let endPos;
         let interactivity;
         if (element == 'proton') {
+          if (this.activeProtons >= this.maxElements) return;
           color = this.atomColors.protonColor;
           interactivity = this.particleInteractivity.protons;
           endPos = this.paletteProton.particlePos.copy();
           this.activeProtons++;
           if (tracking) this.userActions.push('addProton');
         } else {
+          if (this.activeNeutrons >= this.maxElements) return;
           color = this.atomColors.neutronColor;
           interactivity = this.particleInteractivity.neutrons;
           endPos = this.paletteNeutron.particlePos.copy();
@@ -613,6 +617,7 @@ class AtomicStructureWidget {
         this.nucleusParticles.push(particle);
         break;
       case 'electron':
+        if (this.activeElectrons >= this.maxElements) return;
         // create new particle
         particle = new AtomicParticle(
             this.p.createVector(this.p.mouseX, this.p.mouseY),
