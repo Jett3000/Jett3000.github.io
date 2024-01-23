@@ -634,7 +634,7 @@ class AtomicStructureWidget {
         break;
     }
 
-    // update the document output
+    // update the document model hidden input field
     this.exportModelState();
   }
 
@@ -686,7 +686,7 @@ class AtomicStructureWidget {
         if (tracking) this.userActions.push('subtractElectron');
         break;
     }
-    // update the document model output
+    // update the document model hidden input field
     this.exportModelState();
   }
 
@@ -929,6 +929,9 @@ class AtomicStructureWidget {
       }
       particle.inUserGrasp = false;
     }
+
+    // update the document model hidden input field
+    this.exportModelState();
   }
 
   handleTab(unfocusAll = false) {
