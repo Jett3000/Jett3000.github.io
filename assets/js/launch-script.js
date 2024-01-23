@@ -2,8 +2,8 @@ const atomicStructureConfig = {
   container: 'sketch-container',
   particleInteractivity: {
     protons: true,
-    electrons: true,
     neutrons: true,
+    electrons: true,
     shells: true,
   },
   maxElements: 20,
