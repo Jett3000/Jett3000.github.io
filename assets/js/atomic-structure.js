@@ -492,12 +492,13 @@ class AtomicStructureWidget {
     // draw electrons
     this.shellParticles.forEach(particle => particle.draw());
 
-    // draw grapsed particle(s)
-    let grapsedParticles =
-        this.nucleusParticles.filter(particle => particle.inUserGrasp);
-    grapsedParticles = grapsedParticles.concat(
-        this.shellParticles.filter(particle => particle.inUserGrasp));
-    grapsedParticles.forEach(particle => particle.draw());
+    // draw grapsed or hovered particles
+    let allParticles = this.nucleusParticles.concat(this.shellParticles);
+    for (const particle of allParticles) {
+      if (particle.mouseFocused || particle.inUserGrasp) {
+        particle.draw();
+      }
+    }
 
     // draw tagline
     this.p.textSize(this.taglineSize);
