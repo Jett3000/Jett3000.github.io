@@ -650,11 +650,23 @@ class AtomicStructureWidget {
         if (this.activeShells <= 0) return;
 
         // remove shell particles on the outermost shell
+        let deletedElectrons = this.shellParticles.filter(
+            e => {return e.shell == this.activeShells});
         this.shellParticles = this.shellParticles.filter(
             e => {return e.shell != this.activeShells});
 
         this.activeShells--;
-        if (tracking) this.userActions.push('subtractShell');
+        this.activeElectrons -= deletedElectrons.length;
+        if (tracking) {
+          if (deletedElectrons.length == 0) {
+            this.userActions.push('subtractShell');
+          } else {
+            this.userActions.push({
+              action: 'subtractShell',
+              shellElectrons: deletedElectrons.length
+            });
+          }
+        }
         break;
       case 'proton':
       case 'neutron':
@@ -822,6 +834,13 @@ class AtomicStructureWidget {
               this.shellParticles[this.shellParticles.length - 1];
           revivedParticle.shell = userAction.shell;
           revivedParticle.inUserGrasp = false;
+          break;
+        case 'subtractShell':
+          this.addElement('shell', false);
+          let counter = userAction.shellElectrons;
+          while (counter--) {
+            this.addElement('electron', false);
+          }
           break;
       }
     }
