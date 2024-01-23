@@ -1,4 +1,3 @@
-
 const runSelectableAreasWidget =
     ({
       container,
@@ -75,12 +74,9 @@ const runSelectableAreasWidget =
         return Math.min(maxHeight, height);
       };
 
-      let dims = {
-        w: node.clientWidth,
-        h: getHeightOfCanvas(),
-      };
 
       // Define the p5 sketch methods
+      let dims;
       let backgroundImage;
       let points = [];
       const sketch = (p) => {
@@ -90,6 +86,12 @@ const runSelectableAreasWidget =
 
         p.setup = () => {
           // create the canvas
+          dims = {
+            w: node.clientWidth,
+            h: node.clientWidth *
+                (backgroundImage.height / backgroundImage.width)
+          };
+
           p.createCanvas(dims.w, dims.h);
 
           // Create the widget obejct
@@ -155,7 +157,8 @@ const runSelectableAreasWidget =
 
           dims = {
             w: node.clientWidth,
-            h: getHeightOfCanvas(),
+            h: node.clientWidth *
+                (backgroundImage.height / backgroundImage.width)
           };
 
           p.resizeCanvas(dims.w, dims.h);
@@ -352,8 +355,6 @@ class SelectableAreasWidget {
         return;
       }
     }
-
-
 
     switch (this.keyboardFocusableActions[this.keyboardFocusIndex]) {
       case 'subtractShell':
