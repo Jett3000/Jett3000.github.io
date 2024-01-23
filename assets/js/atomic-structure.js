@@ -788,32 +788,42 @@ class AtomicStructureWidget {
   }
 
   undoLastAction() {
-    let action = this.userActions.pop();
-    switch (action) {
-      case 'addShell':
-        this.subtractElement('shell', false);
-        break;
-      case 'addProton':
-        this.subtractElement('proton', false);
-        break;
-      case 'addNeutron':
-        this.subtractElement('neutron', false);
-        break;
-      case 'addElectron':
-        this.subtractElement('electron', false);
-        break;
-      case 'subtractShell':
-        this.addElement('shell', false);
-        break;
-      case 'subtractProton':
-        this.addElement('proton', false);
-        break;
-      case 'subtractNeutron':
-        this.addElement('neutron', false);
-        break;
-      case 'subtractElectron':
-        this.addElement('electron', false);
-        break;
+    let userAction = this.userActions.pop();
+    if (typeof userAction === 'string') {
+      switch (userAction) {
+        case 'addShell':
+          this.subtractElement('shell', false);
+          break;
+        case 'addProton':
+          this.subtractElement('proton', false);
+          break;
+        case 'addNeutron':
+          this.subtractElement('neutron', false);
+          break;
+        case 'addElectron':
+          this.subtractElement('electron', false);
+          break;
+        case 'subtractShell':
+          this.addElement('shell', false);
+          break;
+        case 'subtractProton':
+          this.addElement('proton', false);
+          break;
+        case 'subtractNeutron':
+          this.addElement('neutron', false);
+          break;
+      }
+    } else {
+      debugger;
+      switch (userAction.action) {
+        case 'subtractElectron':
+          this.addElement('electron', false);
+          let revivedParticle =
+              this.shellParticles[this.shellParticles.length - 1];
+          revivedParticle.shell = userAction.shell;
+          revivedParticle.inUserGrasp = false;
+          break;
+      }
     }
   }
 
@@ -851,12 +861,14 @@ class AtomicStructureWidget {
     if (this.resetButton.mouseOnButton(this.mouseVec)) {
       this.resetAtom();
       this.lastInputWasAdjuster = true;
+      return;
     }
 
     // undo button
     if (this.undoButton.mouseOnButton(this.mouseVec)) {
       this.undoLastAction();
       this.lastInputWasAdjuster = true;
+      return;
     }
 
     // check if user clicked on adjuster
@@ -909,7 +921,7 @@ class AtomicStructureWidget {
           // set particle for deletion
           particle.delete();
 
-          // if its the last particle, simply remove
+          // if it's the last particle, simply remove
           if (i == this.nucleusParticles.length - 1) {
             this.particlesInDeletion = this.particlesInDeletion.concat(
                 this.nucleusParticles.splice(i, 1));
@@ -929,7 +941,8 @@ class AtomicStructureWidget {
       for (const electron of this.shellParticles) {
         if (electron.inUserGrasp) {
           electron.delete();
-          this.userActions.push('subtractElectron');
+          this.userActions.push(
+              {action: 'subtractElectron', shell: electron.shell});
           break;
         }
       }
