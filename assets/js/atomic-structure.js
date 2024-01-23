@@ -1,4 +1,3 @@
-
 const runAtomicStructureWidget =
     ({container, particleInteractivity, atomData, atomColors}) => {
       const getThemeColors =
@@ -348,7 +347,10 @@ class AtomicStructureWidget {
     }
 
     // set the initial particle size
-    this.particleSize = this.maxParticleSize;
+    if (typeof this.particleSize === 'undefined') {
+      this.particleSize = this.maxParticleSize;
+    }
+
     // create adjuster UI elements for the model
     let paletteTLCorner = this.p.createVector(this.paletteX, this.paletteY);
     let paletteElementDims =
