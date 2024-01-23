@@ -1140,10 +1140,8 @@ class ShellAdjuster {
 
   draw() {
     this.p.push();
-
-    // draw buttons
     this.p.rectMode(this.p.CENTER);
-    this.p.noStroke();
+
     // draw minus button
     // set button fill color
     if (this.subtractMouseFocused || this.subtractKeyboardFocused) {
@@ -1158,6 +1156,13 @@ class ShellAdjuster {
       this.subtractFramesHovered = 0;
       this.p.fill(this.unfocusedColor)
     }
+    // set button stroke
+    if (this.subtractKeyboardFocused) {
+      this.p.stroke('#FFA500');
+      this.p.strokeWeight(3);
+    } else {
+      this.p.noStroke();
+    }
     this.p.rect(
         this.leftCapCenter.x, this.leftCapCenter.y, this.capDims.x,
         this.capDims.y, 6);
@@ -1171,6 +1176,13 @@ class ShellAdjuster {
     } else {
       this.addFramesHovered = 0;
       this.p.fill(this.unfocusedColor)
+    }
+    // set button stroke
+    if (this.addKeyboardFocused) {
+      this.p.stroke('#FFA500');
+      this.p.strokeWeight(3);
+    } else {
+      this.p.noStroke();
     }
     this.p.rect(
         this.rightCapCenter.x, this.rightCapCenter.y, this.capDims.x,
@@ -1287,12 +1299,19 @@ class PaletteParticle {
       this.p.noFill();
     }
 
+    // set the stroke
+    if (this.keyboardFocused) {
+      this.p.stroke('#FFA500');
+      this.p.strokeWeight(3);
+    }
+
     // draw outer container
     this.p.rect(
         this.topLeftCorner.x, this.topLeftCorner.y, this.dims.x, this.dims.y,
         6);
 
     // draw the particle
+    this.p.stroke(0);
     this.p.strokeWeight(1.6);
     this.p.fill(this.particleColor);
     this.p.ellipse(this.particlePos.x, this.particlePos.y, this.particleSize);
@@ -1383,7 +1402,7 @@ class WidgetButton {
 
   draw() {
     this.p.push();
-    // set the fill color
+    // set the fill color for hover
     if (this.mouseFocused || this.keyboardFocused) {
       this.framesHovered++;
       let hoverProgress = this.p.min(
@@ -1395,12 +1414,20 @@ class WidgetButton {
       this.p.fill(this.unfocusedColor)
     }
 
+    // set the stroke for keyboard focus
+    if (this.keyboardFocused) {
+      this.p.stroke('#FFA500');
+      this.p.strokeWeight(3);
+    } else {
+      this.p.noStroke();
+    }
+
     // draw outer container
-    this.p.noStroke();
     this.p.rect(
         this.rectPos.x, this.rectPos.y, this.rectDims.x, this.rectDims.y, 6);
 
     // draw the label
+    this.p.noStroke();
     this.p.textSize(this.labelSize);
     this.p.textAlign(this.p.CENTER, this.p.CENTER);
     this.p.fill(0);
