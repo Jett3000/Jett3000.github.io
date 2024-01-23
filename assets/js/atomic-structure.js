@@ -113,6 +113,13 @@ const runAtomicStructureWidget =
           // prevent scrolling when the widget is being interacted with
           if (!e.cancelable) return;
 
+          // test at home
+          // let touchVec = p.touches[0];
+          // if (touchVec.x > 1 && touchVec.x < p.width && touchVec.y > 1 &&
+          //     touchVec.y < height) {
+          //   return false;
+          // };
+
           let anyParticleInGrasp = false;
           for (const particle of p.widgetObject.nucleusParticles) {
             if (particle.inUserGrasp) {
@@ -921,13 +928,15 @@ class AtomicStructureWidget {
     for (const particle of this.shellParticles) {
       if (particle.clickWithin(this.mouseVec)) {
         particle.inUserGrasp = true;
-        particle.shell = 0;
         return;
       }
     }
   }
 
   handleClickEnd() {
+    this.mouseVec.x = this.p.mouseX;
+    this.mouseVec.y = this.p.mouseY;
+
     // delete quickly clicked particles
     if (this.p.frameCount - this.lastInputFrame < 10 &&
         !this.lastInputWasAdjuster &&
