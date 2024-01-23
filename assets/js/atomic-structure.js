@@ -368,11 +368,11 @@ class AtomicStructureWidget {
     paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
     this.paletteNeutron = new PaletteParticle(
         paletteTLCorner.copy(), paletteElementDims.copy(), 'neutron',
-        this.particleInteractivity.protons, this);
+        this.particleInteractivity.neutrons, this);
     paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
     this.paletteElectron = new PaletteParticle(
         paletteTLCorner.copy(), paletteElementDims.copy(), 'electron',
-        this.particleInteractivity.protons, this);
+        this.particleInteractivity.electrons, this);
     paletteTLCorner.y += this.paletteElementHeight + this.paletteElementSpacing;
 
     this.particleButtons =
@@ -829,7 +829,6 @@ class AtomicStructureWidget {
           break;
       }
     } else {
-      debugger;
       switch (userAction.action) {
         case 'subtractElectron':
           this.addElement('electron', false);
