@@ -669,9 +669,18 @@ class AtomicStructureWidget {
           if (this.nucleusParticles[i].color == targetColor) {
             // set particle for deletion
             this.nucleusParticles[i].delete();
-            // remove from the model
-            this.particlesInDeletion = this.particlesInDeletion.concat(
-                this.nucleusParticles.splice(i, 1));
+
+            // if its the last particle, simply remove
+            if (i == this.nucleusParticles.length - 1) {
+              this.particlesInDeletion = this.particlesInDeletion.concat(
+                  this.nucleusParticles.splice(i, 1));
+            } else {
+              // otherwise replace with the last particle
+              let endParticle = this.nucleusParticles.pop();
+              let deletedParticle = this.nucleusParticles[i];
+              this.nucleusParticles[i] = endParticle;
+              this.particlesInDeletion.push(deletedParticle);
+            }
             // remap rest positions
             this.remapNucleus();
             break;
@@ -881,10 +890,9 @@ class AtomicStructureWidget {
     if (this.p.frameCount - this.lastInputFrame < 10 &&
         !this.lastInputWasAdjuster &&
         !this.undoButton.mouseOnButton(this.mouseVec)) {
-      // update nucleus particle count
-      for (const particle of this.nucleusParticles) {
+      // delete nucleus particles under the mouse
+      for (const [i, particle] of this.nucleusParticles.entries()) {
         if (particle.inUserGrasp) {
-          particle.delete();
           if (particle.color == this.atomColors.protonColor) {
             this.activeProtons--;
             this.userActions.push('subtractProton');
@@ -892,16 +900,25 @@ class AtomicStructureWidget {
             this.activeNeutrons--;
             this.userActions.push('subtractNeutron');
           }
+
+          // set particle for deletion
+          particle.delete();
+
+          // if its the last particle, simply remove
+          if (i == this.nucleusParticles.length - 1) {
+            this.particlesInDeletion = this.particlesInDeletion.concat(
+                this.nucleusParticles.splice(i, 1));
+          } else {
+            // otherwise replace with the last particle
+            let endParticle = this.nucleusParticles.pop();
+            this.nucleusParticles[i] = endParticle;
+            this.particlesInDeletion.push(particle);
+          }
+          // remap rest positions
+          this.remapNucleus();
           break;
         }
       }
-      // delete nucleus particles under the mouse
-      this.particlesInDeletion = this.particlesInDeletion.concat(
-          this.nucleusParticles.filter(p => {return p.inDeletion}));
-      this.nucleusParticles =
-          this.nucleusParticles.filter(p => {return !p.inDeletion});
-      this.remapNucleus();
-
 
       // delete shell particles under the mouse
       for (const electron of this.shellParticles) {
