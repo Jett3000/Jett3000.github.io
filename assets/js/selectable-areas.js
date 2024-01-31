@@ -3,8 +3,8 @@ const runSelectableAreasWidget =
       container,
       interactive,
       imagePath,
-      imageWidth,
-      maxImageHeight,
+      imageWidthFactor,
+      imageMaxHeightFactor,
       maxSelections,
       hotspots
     }) => {
@@ -57,54 +57,49 @@ const runSelectableAreasWidget =
       // Insert the hidden input into the html
       if (interactive) node.append(answerHiddenInput);
 
-      const heightToWidthRatio = 5 / 8;
+      const getSketchDims =
+          (backgroundImage) => {
+            let imageAspectRatio =
+                backgroundImage.height / backgroundImage.width;
 
-      const getHeightOfCanvas = () => {
-        const windowHeight = window.innerHeight ||
-            document.documentElement.clientHeight || document.body.clientHeight;
-        const maxHeight = windowHeight * (0.55);
+            let sketchWidth = node.clientWidth * imageWidthFactor;
+            let sketchHeight = sketchWidth * imageAspectRatio;
 
-        let height = node.clientWidth * heightToWidthRatio;
-        if (window.innerHeight > window.innerWidth) {
-          height = node.clientWidth / heightToWidthRatio;
-        }
+            if (sketchHeight > window.innerHeight * imageMaxHeightFactor) {
+              sketchHeight = window.innerHeight * imageMaxHeightFactor;
+              sketchWidth = sketchHeight / imageAspectRatio;
+            }
 
 
-
-        return Math.min(maxHeight, height);
-      };
-
+            return {w: sketchWidth, h: sketchHeight};
+          }
 
       // Define the p5 sketch methods
-      let dims;
-      let backgroundImage;
-      let points = [];
       const sketch = (p) => {
+        let backgroundImage;
+
         p.preload = () => {
           backgroundImage = p.loadImage(imagePath);
         };
 
         p.setup = () => {
           // create the canvas
-          dims = {
-            w: node.clientWidth,
-            h: node.clientWidth *
-                (backgroundImage.height / backgroundImage.width)
-          };
-
+          let dims = getSketchDims(backgroundImage);
+          // console.log(dims);
           p.createCanvas(dims.w, dims.h);
 
           // Create the widget obejct
           p.widgetObject = new SelectableAreasWidget(
-              {
-                interactive,
-                backgroundImage,
-                imageWidth,
-                maxImageHeight,
-                maxSelections,
-                hotspots
-              },
-              p, updateHiddenInputs);
+              {interactive, backgroundImage, maxSelections, hotspots}, p,
+              updateHiddenInputs);
+        };
+
+        p.windowResized = () => {
+          p.resizeCanvas(0, 0);
+
+          let dims = getSketchDims(backgroundImage);
+          p.resizeCanvas(dims.w, dims.h);
+          p.widgetObject.resize();
         };
 
         p.draw = () => {
@@ -151,20 +146,6 @@ const runSelectableAreasWidget =
             return false;
           }
         };
-
-
-        p.windowResized = () => {
-          p.resizeCanvas(0, 0);
-
-          dims = {
-            w: node.clientWidth,
-            h: node.clientWidth *
-                (backgroundImage.height / backgroundImage.width)
-          };
-
-          p.resizeCanvas(dims.w, dims.h);
-          p.widgetObject.resize();
-        };
       };  // end sketch instance methods
 
       // Create the canvas and run the sketch in the html node.
@@ -203,26 +184,18 @@ class SelectableAreasWidget {
                                 input fields
    */
   constructor(
-      {
-        interactive,
-        backgroundImage,
-        imageWidth,
-        maxImageHeight,
-        maxSelections,
-        hotspots
-      },
-      p, updateHiddenInputs) {
+      {interactive, backgroundImage, maxSelections, hotspots}, p,
+      updateHiddenInputs) {
     /* begin control panel */
-    this.areaStrokeWeight = 3;          // line thickness in pixels
-    this.hoveredAreaStrokeWeight = 3;   // line thickness in pixels
-    this.selectedAreaStrokeWeight = 3;  // line thickness in pixels
+    this.areaStrokeWeight = 3;  // line thickness in pixels
+    this.hoveredAreaStrokeWeight = 3;
+    this.keyboardFocusedAreaStrokeWeight = 4;
+    this.selectedAreaStrokeWeight = 3;
     /* end control panel */
 
     // read configuration data
     this.interactive = interactive;
     this.backgroundImage = backgroundImage;
-    this.imageWidth = imageWidth;
-    this.maxImageHeight = maxImageHeight;
     this.maxSelections = maxSelections;
     this.hotspots = hotspots;
 
@@ -234,7 +207,6 @@ class SelectableAreasWidget {
     this.lastInputFrame = 0;
     this.mouseVec = this.p.createVector();
     this.keyboardFocusIndex = -1;
-    this.keyboardFocusableAreas = [];
     this.shiftDown = false;
 
     // complete setup in the resize function
@@ -245,10 +217,10 @@ class SelectableAreasWidget {
   resize() {
     // create selectable area objects
     this.selectableAreas = [];
-    this.keyboardFocusableAreas = [];
     for (const hotspot of this.hotspots) {
       this.selectableAreas.push(new SelectableArea(
-          hotspot.area, hotspot.iconMark, hotspot.color, this));
+          hotspot.area, hotspot.colorHexCode, hotspot.iconMarkVertexIndex,
+          hotspot.iconMarkType, this));
     };
   }
 
@@ -277,7 +249,7 @@ class SelectableAreasWidget {
     for (const selectableArea of this.selectableAreas) {
       selectableArea.mouseFocused = selectableArea.mouseWithin(this.mouseVec);
     };
-    if (this.selectableAreas.some(s => s.focused)) {
+    if (this.selectableAreas.some(s => s.mouseFocused)) {
       this.p.cursor(this.p.HAND);
       return
     };
@@ -355,14 +327,23 @@ class SelectableAreasWidget {
       if (currSelectedAreaCount < this.maxSelections) {
         selectableArea.selected = true;
       } else {
-        alert('Please deselect an area before selecting more.')
+        Swal.fire({
+          title: 'Maximum Selections Exceeded',
+          text: 'Please unselect an area before selecting another.',
+          icon: 'warning'
+        });
       }
     }
+
+    // update the outputted selections
+    this.exportModelState();
   }
 }
 
 class SelectableArea {
-  constructor(vertices, iconMark, color, widgetController) {
+  constructor(
+      vertices, colorHexCode, iconMarkVertexIndex, iconMarkType,
+      widgetController) {
     // link to the widgetController
     this.widgetController = widgetController;
     this.p = this.widgetController.p;
@@ -371,33 +352,18 @@ class SelectableArea {
     this.focusedFrames = 0;
     this.mouseFocused = false;
     this.keyboardFocused = false;
-    this.focused = false;
     this.selected = false;
 
     // load the shape and features
     this.vertices = vertices.map(v => {
       return {x: v[0] * this.p.width, y: v[1] * this.p.height};
     });
-    this.iconMark = iconMark;
+    this.iconMarkVertexIndex = iconMarkVertexIndex;
+    this.iconMarkType = iconMarkType;
 
     // set the stylings
-    let colorCode;
-    switch (color) {
-      case 'blue':
-        colorCode = '#50DFFF';
-        break;
-      case 'red':
-        colorCode = '#FF1616';
-        break;
-      case 'green':
-        colorCode = '#63C616';
-        break;
-      case 'orange':
-        colorCode = '#FF5C00';
-        break;
-    }
-    this.strokeColor = this.p.color(colorCode);
-    this.fillColor = this.p.color(colorCode);
+    this.strokeColor = this.p.color(colorHexCode);
+    this.fillColor = this.p.color(colorHexCode);
     this.fillColor.setAlpha(50);
   }
 
@@ -417,6 +383,8 @@ class SelectableArea {
       }
 
       if (this.keyboardFocused) {
+        this.p.strokeWeight(
+            this.widgetController.keyboardFocusedAreaStrokeWeight);
         this.p.stroke('#FFA500');
       }
 

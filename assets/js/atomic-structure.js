@@ -109,6 +109,11 @@ const runAtomicStructureWidget =
           return true;  // prevents touches firing twice on mobile
         };
 
+        // test at home
+        // p.touchEnded = () => {
+        //   return true;
+        // };
+
         p.touchMoved = (e) => {
           // prevent scrolling when the widget is being interacted with
           if (!e.cancelable) return;
@@ -537,6 +542,7 @@ class AtomicStructureWidget {
     for (const particle of this.shellParticles) {
       particle.mouseFocused = false;
     }
+
 
     // check draggable particles for hovering
     if (!this.nucleusParticles.some(particle => particle.inUserGrasp)) {

@@ -1,9 +1,15 @@
+// color codes from figma
+// blue   '#50DFFF'
+// red    '#FF1616'
+// green  '#63C616'
+// orange '#FF5C00'
+
 const widgetConfig = {
   container: 'sketch-container',
   interactive: true,
   imagePath: 'assets/img/solar-system.png',
-  imageWidth: 100,
-  maxImageHeight: 50,
+  imageWidthFactor: 1,
+  imageMaxHeightFactor: 0.5,
   maxSelections: 3,
   hotspots: [
     {
@@ -12,8 +18,10 @@ const widgetConfig = {
         [0.451875, 0.37423071663019697], [0.425625, 0.4508171498905908],
         [0.361875, 0.43987623085339167], [0.346875, 0.3764189004376368]
       ],
-      iconMark: [0.75, 0.25],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
+
     },
     {
       area: [
@@ -22,8 +30,9 @@ const widgetConfig = {
         [0.634375, 0.5799199945295405], [0.561875, 0.5186508479212254],
         [0.543125, 0.38954800328227573], [0.578125, 0.310773386214442]
       ],
-      iconMark: [0.75, 0.25],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
     },
     {
       area: [
@@ -35,8 +44,9 @@ const widgetConfig = {
         [0.7870111731843575, 0.6762000820568927],
         [0.7981843575418994, 0.6149309354485777]
       ],
-      iconMark: [],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
     },
     {
       area: [
@@ -49,8 +59,9 @@ const widgetConfig = {
         [0.8428770949720671, 0.2779506291028447],
         [0.854050279329609, 0.2057405634573304]
       ],
-      iconMark: [],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
     },
     {
       area: [
@@ -65,8 +76,9 @@ const widgetConfig = {
         [0.8107541899441341, 0.2473160557986871],
         [0.7297486033519553, 0.26263334245076586]
       ],
-      iconMark: [],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
     },
     {
       area: [
@@ -80,8 +92,9 @@ const widgetConfig = {
         [0.5034916201117319, 0.7090228391684902],
         [0.5146648044692738, 0.6937055525164114]
       ],
-      iconMark: [],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
     },
     {
       area: [
@@ -92,8 +105,9 @@ const widgetConfig = {
         [0.9350558659217877, 0.4311234956236324],
         [0.9420391061452514, 0.47269898796498905]
       ],
-      iconMark: [],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
     },
     {
       area: [
@@ -106,8 +120,9 @@ const widgetConfig = {
         [0.4420391061452514, 0.6586946115973742],
         [0.42248603351955305, 0.5252153993435449]
       ],
-      iconMark: [],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
     },
     {
       area: [
@@ -119,8 +134,9 @@ const widgetConfig = {
         [0.2702513966480447, 0.6521300601750547],
         [0.2842178770949721, 0.6346245897155361]
       ],
-      iconMark: [],
-      color: 'blue'
+      colorHexCode: '#50DFFF',
+      iconMarkVertexIndex: 1,
+      iconMarkType: 'correct'
     }
   ]
 };
