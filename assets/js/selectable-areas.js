@@ -187,10 +187,16 @@ class SelectableAreasWidget {
       {interactive, backgroundImage, maxSelections, hotspots}, p,
       updateHiddenInputs) {
     /* begin control panel */
-    this.areaStrokeWeight = 3;  // line thickness in pixels
+    // stroke weights are set by line thickness in pixels
+    this.areaStrokeWeight = 3;
     this.hoveredAreaStrokeWeight = 3;
     this.keyboardFocusedAreaStrokeWeight = 4;
     this.selectedAreaStrokeWeight = 3;
+
+    this.hoverEffectDuration = 20;   // number of frames
+    this.selectedFillOpacity = 150;  // 0-255, 0 is clear and 255 fully opaque
+    this.lineDashLength = 5;         // length in pixels
+    this.lineGapLength = 5;          // length in pixels
     /* end control panel */
 
     // read configuration data
@@ -364,34 +370,46 @@ class SelectableArea {
     // set the stylings
     this.strokeColor = this.p.color(colorHexCode);
     this.fillColor = this.p.color(colorHexCode);
-    this.fillColor.setAlpha(50);
+    this.fillColor.setAlpha(this.widgetController.selectedFillOpacity);
   }
 
   draw() {
     this.p.push();
 
     // styling
-    this.p.stroke(this.strokeColor);
     this.p.strokeWeight(this.widgetController.areaStrokeWeight);
-    this.p.noFill();
-    if (!this.mouseFocused && !this.keyboardFocused && !this.selected) {
-      this.p.drawingContext.setLineDash([5, 5]);
+
+    // set the stroke color and weight for keyboard focus
+    if (this.keyboardFocused) {
+      this.p.stroke('#FFA500');
+      this.p.strokeWeight(
+          this.widgetController.keyboardFocusedAreaStrokeWeight);
     } else {
+      this.p.stroke(this.strokeColor);
+    }
+
+    // set the line dash
+    if (this.keyboardFocused || this.mouseFocused) {
+      this.focusedFrames = Math.min(
+          this.focusedFrames + 1, this.widgetController.hoverEffectDuration);
+    } else {
+      this.focusedFrames = Math.max(this.focusedFrames - 2, 0)
+    }
+    let progress =
+        this.focusedFrames / this.widgetController.hoverEffectDuration;
+    this.p.drawingContext.setLineDash([
+      this.widgetController.lineDashLength,
+      this.widgetController.lineGapLength -
+          (this.widgetController.lineGapLength * progress)
+    ]);
+
+    // set the fill color if selected
+    if (this.selected) {
+      this.p.strokeWeight(this.widgetController.selectedAreaStrokeWeight);
+      this.p.fill(this.fillColor);
       this.p.drawingContext.setLineDash([]);
-      if (this.mouseFocused) {
-        this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
-      }
-
-      if (this.keyboardFocused) {
-        this.p.strokeWeight(
-            this.widgetController.keyboardFocusedAreaStrokeWeight);
-        this.p.stroke('#FFA500');
-      }
-
-      if (this.selected) {
-        this.p.strokeWeight(this.widgetController.hoveredAreaStrokeWeight);
-        this.p.fill(this.fillColor)
-      }
+    } else {
+      this.p.noFill();
     }
 
     // draw shape
