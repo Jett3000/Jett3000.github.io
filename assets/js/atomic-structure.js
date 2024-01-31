@@ -240,7 +240,7 @@ class AtomicStructureWidget {
     this.particleSpeed = 0.08;  // interpolation to target position per frame
 
     // UI palette
-    this.lowerButtonGapPercent = 0.2;       // gap size as % of palette width
+    this.lowerButtonGapPercent = 0.03;      // gap size as % of palette width
     this.hoverEffectDuration = 10;          // effect duration in frames
     this.paletteParticleHoverOpacity = 35;  // opacity of fill on hover, 0-255
 
@@ -319,7 +319,7 @@ class AtomicStructureWidget {
     if (this.p.width > this.p.height) {
       /* landscape & desktop view */
       // set the dimension and position of the palette
-      this.paletteWidth = this.p.width * 0.3;
+      this.paletteWidth = this.p.width * 0.28;
       this.paletteX = 20;
       this.paletteElementHeight = this.p.height * 0.1;
       this.paletteElementSpacing = this.paletteElementHeight / 5;
@@ -1195,10 +1195,10 @@ class ShellAdjuster {
     this.capDims.y *= 0.7;
     this.capDims.x = this.capDims.y * 1.6;
     this.leftCapCenter = this.p.createVector(
-        this.centerPos.x - (this.dims.x - this.capDims.x * 2) / 2,
+        this.centerPos.x - (this.dims.x - this.capDims.x) / 2,
         this.centerPos.y);
     this.rightCapCenter = this.p.createVector(
-        this.centerPos.x + (this.dims.x - this.capDims.x * 2) / 2,
+        this.centerPos.x + (this.dims.x - this.capDims.x) / 2,
         this.centerPos.y);
     this.labelPos = this.centerPos.copy();
 
@@ -1395,16 +1395,16 @@ class PaletteParticle {
     if (this.particleType == 'proton') {
       // draw plus
       this.p.line(
-          this.particlePos.x, this.particlePos.y - this.particleSize / 4,
-          this.particlePos.x, this.particlePos.y + this.particleSize / 4);
+          this.particlePos.x, this.particlePos.y - this.particleSize / 5,
+          this.particlePos.x, this.particlePos.y + this.particleSize / 5);
       this.p.line(
-          this.particlePos.x - this.particleSize / 4, this.particlePos.y,
-          this.particlePos.x + this.particleSize / 4, this.particlePos.y);
+          this.particlePos.x - this.particleSize / 5, this.particlePos.y,
+          this.particlePos.x + this.particleSize / 5, this.particlePos.y);
     } else if (this.particleType == 'electron') {
       // draw minus
       this.p.line(
-          this.particlePos.x - this.particleSize / 4, this.particlePos.y,
-          this.particlePos.x + this.particleSize / 4, this.particlePos.y);
+          this.particlePos.x - this.particleSize / 5, this.particlePos.y,
+          this.particlePos.x + this.particleSize / 5, this.particlePos.y);
     }
 
     // draw the label
