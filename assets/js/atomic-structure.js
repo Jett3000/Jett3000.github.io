@@ -981,6 +981,7 @@ class AtomicStructureWidget {
       for (const electron of this.shellParticles) {
         if (electron.inUserGrasp) {
           electron.delete();
+          this.activeElectrons--;
           this.userActions.push(
               {action: 'subtractElectron', shell: electron.shell});
           break;
@@ -1266,18 +1267,18 @@ class ShellAdjuster {
 
     // draw the -/+ signs
     this.p.stroke(0);
-    this.p.strokeWeight(1);
+    this.p.strokeWeight(1.2);
     // minus sign
     this.p.line(
-        this.leftCapCenter.x - this.capDims.x / 4, this.leftCapCenter.y,
-        this.leftCapCenter.x + this.capDims.x / 4, this.leftCapCenter.y);
+        this.leftCapCenter.x - this.capDims.x / 7, this.leftCapCenter.y,
+        this.leftCapCenter.x + this.capDims.x / 7, this.leftCapCenter.y);
     // plus sign
     this.p.line(
-        this.rightCapCenter.x - this.capDims.x / 4, this.rightCapCenter.y,
-        this.rightCapCenter.x + this.capDims.x / 4, this.rightCapCenter.y);
+        this.rightCapCenter.x - this.capDims.x / 7, this.rightCapCenter.y,
+        this.rightCapCenter.x + this.capDims.x / 7, this.rightCapCenter.y);
     this.p.line(
-        this.rightCapCenter.x, this.rightCapCenter.y - this.capDims.x / 5,
-        this.rightCapCenter.x, this.rightCapCenter.y + this.capDims.x / 5);
+        this.rightCapCenter.x, this.rightCapCenter.y - this.capDims.x / 7,
+        this.rightCapCenter.x, this.rightCapCenter.y + this.capDims.x / 7);
 
     // draw the label
     this.p.fill(0);
