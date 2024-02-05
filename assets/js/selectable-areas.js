@@ -453,6 +453,7 @@ class SelectableArea {
 
   drawTooltip() {
     // track whether or not to display tooltip
+    if (typeof this.tooltipID === 'undefined') return;
     if (this.tooltipFrames < 0) return;
     if (this.tooltipFrames > this.widgetController.maxTooltipFrames) {
       this.tooltipFrames = -1;
