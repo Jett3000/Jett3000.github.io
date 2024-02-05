@@ -1,3 +1,507 @@
+const periodicTableData = {
+  'order': [
+    'hydrogen',    'helium',       'lithium',      'beryllium',
+    'boron',       'carbon',       'nitrogen',     'oxygen',
+    'fluorine',    'neon',         'sodium',       'magnesium',
+    'aluminium',   'silicon',      'phosphorus',   'sulfur',
+    'chlorine',    'argon',        'potassium',    'calcium',
+    'scandium',    'titanium',     'vanadium',     'chromium',
+    'manganese',   'iron',         'cobalt',       'nickel',
+    'copper',      'zinc',         'gallium',      'germanium',
+    'arsenic',     'selenium',     'bromine',      'krypton',
+    'rubidium',    'strontium',    'yttrium',      'zirconium',
+    'niobium',     'molybdenum',   'technetium',   'ruthenium',
+    'rhodium',     'palladium',    'silver',       'cadmium',
+    'indium',      'tin',          'antimony',     'tellurium',
+    'iodine',      'xenon',        'cesium',       'barium',
+    'lanthanum',   'cerium',       'praseodymium', 'neodymium',
+    'promethium',  'samarium',     'europium',     'gadolinium',
+    'terbium',     'dysprosium',   'holmium',      'erbium',
+    'thulium',     'ytterbium',    'lutetium',     'hafnium',
+    'tantalum',    'tungsten',     'rhenium',      'osmium',
+    'iridium',     'platinum',     'gold',         'mercury',
+    'thallium',    'lead',         'bismuth',      'polonium',
+    'astatine',    'radon',        'francium',     'radium',
+    'actinium',    'thorium',      'protactinium', 'uranium',
+    'neptunium',   'plutonium',    'americium',    'curium',
+    'berkelium',   'californium',  'einsteinium',  'fermium',
+    'mendelevium', 'nobelium',     'lawrencium',   'rutherfordium',
+    'dubnium',     'seaborgium',   'bohrium',      'hassium',
+    'meitnerium',  'darmstadtium', 'roentgenium',  'copernicium',
+    'nihonium',    'flerovium',    'moscovium',    'livermorium',
+    'tennessine',  'oganesson',    'ununennium'
+  ],
+  'hydrogen':
+      {'name': 'Hydrogen', 'atomic_mass': 1.008, 'number': 1, 'symbol': 'H'},
+  'helium':
+      {'name': 'Helium', 'atomic_mass': 4.0026022, 'number': 2, 'symbol': 'He'},
+  'lithium':
+      {'name': 'Lithium', 'atomic_mass': 6.94, 'number': 3, 'symbol': 'Li'},
+  'beryllium': {
+    'name': 'Beryllium',
+    'atomic_mass': 9.01218315,
+    'number': 4,
+    'symbol': 'Be'
+  },
+  'boron': {'name': 'Boron', 'atomic_mass': 10.81, 'number': 5, 'symbol': 'B'},
+  'carbon':
+      {'name': 'Carbon', 'atomic_mass': 12.011, 'number': 6, 'symbol': 'C'},
+  'nitrogen':
+      {'name': 'Nitrogen', 'atomic_mass': 14.007, 'number': 7, 'symbol': 'N'},
+  'oxygen':
+      {'name': 'Oxygen', 'atomic_mass': 15.999, 'number': 8, 'symbol': 'O'},
+  'fluorine': {
+    'name': 'Fluorine',
+    'atomic_mass': 18.9984031636,
+    'number': 9,
+    'symbol': 'F'
+  },
+  'neon':
+      {'name': 'Neon', 'atomic_mass': 20.17976, 'number': 10, 'symbol': 'Ne'},
+  'sodium': {
+    'name': 'Sodium',
+    'atomic_mass': 22.989769282,
+    'number': 11,
+    'symbol': 'Na'
+  },
+  'magnesium': {
+    'name': 'Magnesium',
+    'atomic_mass': 24.305,
+    'number': 12,
+    'symbol': 'Mg'
+  },
+  'aluminium': {
+    'name': 'Aluminium',
+    'atomic_mass': 26.98153857,
+    'number': 13,
+    'symbol': 'Al'
+  },
+  'silicon':
+      {'name': 'Silicon', 'atomic_mass': 28.085, 'number': 14, 'symbol': 'Si'},
+  'phosphorus': {
+    'name': 'Phosphorus',
+    'atomic_mass': 30.9737619985,
+    'number': 15,
+    'symbol': 'P'
+  },
+  'sulfur':
+      {'name': 'Sulfur', 'atomic_mass': 32.06, 'number': 16, 'symbol': 'S'},
+  'chlorine':
+      {'name': 'Chlorine', 'atomic_mass': 35.45, 'number': 17, 'symbol': 'Cl'},
+  'argon':
+      {'name': 'Argon', 'atomic_mass': 39.9481, 'number': 18, 'symbol': 'Ar'},
+  'potassium': {
+    'name': 'Potassium',
+    'atomic_mass': 39.09831,
+    'number': 19,
+    'symbol': 'K'
+  },
+  'calcium':
+      {'name': 'Calcium', 'atomic_mass': 40.0784, 'number': 20, 'symbol': 'Ca'},
+  'scandium': {
+    'name': 'Scandium',
+    'atomic_mass': 44.9559085,
+    'number': 21,
+    'symbol': 'Sc'
+  },
+  'titanium': {
+    'name': 'Titanium',
+    'atomic_mass': 47.8671,
+    'number': 22,
+    'symbol': 'Ti'
+  },
+  'vanadium': {
+    'name': 'Vanadium',
+    'atomic_mass': 50.94151,
+    'number': 23,
+    'symbol': 'V'
+  },
+  'chromium': {
+    'name': 'Chromium',
+    'atomic_mass': 51.99616,
+    'number': 24,
+    'symbol': 'Cr'
+  },
+  'manganese': {
+    'name': 'Manganese',
+    'atomic_mass': 54.9380443,
+    'number': 25,
+    'symbol': 'Mn'
+  },
+  'iron':
+      {'name': 'Iron', 'atomic_mass': 55.8452, 'number': 26, 'symbol': 'Fe'},
+  'cobalt': {
+    'name': 'Cobalt',
+    'atomic_mass': 58.9331944,
+    'number': 27,
+    'symbol': 'Co'
+  },
+  'nickel':
+      {'name': 'Nickel', 'atomic_mass': 58.69344, 'number': 28, 'symbol': 'Ni'},
+  'copper':
+      {'name': 'Copper', 'atomic_mass': 63.5463, 'number': 29, 'symbol': 'Cu'},
+  'zinc': {'name': 'Zinc', 'atomic_mass': 65.382, 'number': 30, 'symbol': 'Zn'},
+  'gallium':
+      {'name': 'Gallium', 'atomic_mass': 69.7231, 'number': 31, 'symbol': 'Ga'},
+  'germanium': {
+    'name': 'Germanium',
+    'atomic_mass': 72.6308,
+    'number': 32,
+    'symbol': 'Ge'
+  },
+  'arsenic': {
+    'name': 'Arsenic',
+    'atomic_mass': 74.9215956,
+    'number': 33,
+    'symbol': 'As'
+  },
+  'selenium': {
+    'name': 'Selenium',
+    'atomic_mass': 78.9718,
+    'number': 34,
+    'symbol': 'Se'
+  },
+  'bromine':
+      {'name': 'Bromine', 'atomic_mass': 79.904, 'number': 35, 'symbol': 'Br'},
+  'krypton':
+      {'name': 'Krypton', 'atomic_mass': 83.7982, 'number': 36, 'symbol': 'Kr'},
+  'rubidium': {
+    'name': 'Rubidium',
+    'atomic_mass': 85.46783,
+    'number': 37,
+    'symbol': 'Rb'
+  },
+  'strontium': {
+    'name': 'Strontium',
+    'atomic_mass': 87.621,
+    'number': 38,
+    'symbol': 'Sr'
+  },
+  'yttrium': {
+    'name': 'Yttrium',
+    'atomic_mass': 88.905842,
+    'number': 39,
+    'symbol': 'Y'
+  },
+  'zirconium': {
+    'name': 'Zirconium',
+    'atomic_mass': 91.2242,
+    'number': 40,
+    'symbol': 'Zr'
+  },
+  'niobium': {
+    'name': 'Niobium',
+    'atomic_mass': 92.906372,
+    'number': 41,
+    'symbol': 'Nb'
+  },
+  'molybdenum': {
+    'name': 'Molybdenum',
+    'atomic_mass': 95.951,
+    'number': 42,
+    'symbol': 'Mo'
+  },
+  'technetium':
+      {'name': 'Technetium', 'atomic_mass': 98, 'number': 43, 'symbol': 'Tc'},
+  'ruthenium': {
+    'name': 'Ruthenium',
+    'atomic_mass': 101.072,
+    'number': 44,
+    'symbol': 'Ru'
+  },
+  'rhodium': {
+    'name': 'Rhodium',
+    'atomic_mass': 102.905502,
+    'number': 45,
+    'symbol': 'Rh'
+  },
+  'palladium': {
+    'name': 'Palladium',
+    'atomic_mass': 106.421,
+    'number': 46,
+    'symbol': 'Pd'
+  },
+  'silver': {
+    'name': 'Silver',
+    'atomic_mass': 107.86822,
+    'number': 47,
+    'symbol': 'Ag'
+  },
+  'cadmium': {
+    'name': 'Cadmium',
+    'atomic_mass': 112.4144,
+    'number': 48,
+    'symbol': 'Cd'
+  },
+  'indium':
+      {'name': 'Indium', 'atomic_mass': 114.8181, 'number': 49, 'symbol': 'In'},
+  'tin': {'name': 'Tin', 'atomic_mass': 118.7107, 'number': 50, 'symbol': 'Sn'},
+  'antimony': {
+    'name': 'Antimony',
+    'atomic_mass': 121.7601,
+    'number': 51,
+    'symbol': 'Sb'
+  },
+  'tellurium': {
+    'name': 'Tellurium',
+    'atomic_mass': 127.603,
+    'number': 52,
+    'symbol': 'Te'
+  },
+  'iodine': {
+    'name': 'Iodine',
+    'atomic_mass': 126.904473,
+    'number': 53,
+    'symbol': 'I'
+  },
+  'xenon':
+      {'name': 'Xenon', 'atomic_mass': 131.2936, 'number': 54, 'symbol': 'Xe'},
+  'cesium': {
+    'name': 'Cesium',
+    'atomic_mass': 132.905451966,
+    'number': 55,
+    'symbol': 'Cs'
+  },
+  'barium':
+      {'name': 'Barium', 'atomic_mass': 137.3277, 'number': 56, 'symbol': 'Ba'},
+  'lanthanum': {
+    'name': 'Lanthanum',
+    'atomic_mass': 138.905477,
+    'number': 57,
+    'symbol': 'La'
+  },
+  'cerium':
+      {'name': 'Cerium', 'atomic_mass': 140.1161, 'number': 58, 'symbol': 'Ce'},
+  'praseodymium': {
+    'name': 'Praseodymium',
+    'atomic_mass': 140.907662,
+    'number': 59,
+    'symbol': 'Pr'
+  },
+  'neodymium': {
+    'name': 'Neodymium',
+    'atomic_mass': 144.2423,
+    'number': 60,
+    'symbol': 'Nd'
+  },
+  'promethium':
+      {'name': 'Promethium', 'atomic_mass': 145, 'number': 61, 'symbol': 'Pm'},
+  'samarium': {
+    'name': 'Samarium',
+    'atomic_mass': 150.362,
+    'number': 62,
+    'symbol': 'Sm'
+  },
+  'europium': {
+    'name': 'Europium',
+    'atomic_mass': 151.9641,
+    'number': 63,
+    'symbol': 'Eu'
+  },
+  'gadolinium': {
+    'name': 'Gadolinium',
+    'atomic_mass': 157.253,
+    'number': 64,
+    'symbol': 'Gd'
+  },
+  'terbium': {
+    'name': 'Terbium',
+    'atomic_mass': 158.925352,
+    'number': 65,
+    'symbol': 'Tb'
+  },
+  'dysprosium': {
+    'name': 'Dysprosium',
+    'atomic_mass': 162.5001,
+    'number': 66,
+    'symbol': 'Dy'
+  },
+  'holmium': {
+    'name': 'Holmium',
+    'atomic_mass': 164.930332,
+    'number': 67,
+    'symbol': 'Ho'
+  },
+  'erbium':
+      {'name': 'Erbium', 'atomic_mass': 167.2593, 'number': 68, 'symbol': 'Er'},
+  'thulium': {
+    'name': 'Thulium',
+    'atomic_mass': 168.934222,
+    'number': 69,
+    'symbol': 'Tm'
+  },
+  'ytterbium': {
+    'name': 'Ytterbium',
+    'atomic_mass': 173.0451,
+    'number': 70,
+    'symbol': 'Yb'
+  },
+  'lutetium': {
+    'name': 'Lutetium',
+    'atomic_mass': 174.96681,
+    'number': 71,
+    'symbol': 'Lu'
+  },
+  'hafnium':
+      {'name': 'Hafnium', 'atomic_mass': 178.492, 'number': 72, 'symbol': 'Hf'},
+  'tantalum': {
+    'name': 'Tantalum',
+    'atomic_mass': 180.947882,
+    'number': 73,
+    'symbol': 'Ta'
+  },
+  'tungsten':
+      {'name': 'Tungsten', 'atomic_mass': 183.841, 'number': 74, 'symbol': 'W'},
+  'rhenium': {
+    'name': 'Rhenium',
+    'atomic_mass': 186.2071,
+    'number': 75,
+    'symbol': 'Re'
+  },
+  'osmium':
+      {'name': 'Osmium', 'atomic_mass': 190.233, 'number': 76, 'symbol': 'Os'},
+  'iridium': {
+    'name': 'Iridium',
+    'atomic_mass': 192.2173,
+    'number': 77,
+    'symbol': 'Ir'
+  },
+  'platinum': {
+    'name': 'Platinum',
+    'atomic_mass': 195.0849,
+    'number': 78,
+    'symbol': 'Pt'
+  },
+  'gold': {
+    'name': 'Gold',
+    'atomic_mass': 196.9665695,
+    'number': 79,
+    'symbol': 'Au'
+  },
+  'mercury': {
+    'name': 'Mercury',
+    'atomic_mass': 200.5923,
+    'number': 80,
+    'symbol': 'Hg'
+  },
+  'thallium':
+      {'name': 'Thallium', 'atomic_mass': 204.38, 'number': 81, 'symbol': 'Tl'},
+  'lead': {'name': 'Lead', 'atomic_mass': 207.21, 'number': 82, 'symbol': 'Pb'},
+  'bismuth': {
+    'name': 'Bismuth',
+    'atomic_mass': 208.980401,
+    'number': 83,
+    'symbol': 'Bi'
+  },
+  'polonium':
+      {'name': 'Polonium', 'atomic_mass': 209, 'number': 84, 'symbol': 'Po'},
+  'astatine':
+      {'name': 'Astatine', 'atomic_mass': 210, 'number': 85, 'symbol': 'At'},
+  'radon': {'name': 'Radon', 'atomic_mass': 222, 'number': 86, 'symbol': 'Rn'},
+  'francium':
+      {'name': 'Francium', 'atomic_mass': 223, 'number': 87, 'symbol': 'Fr'},
+  'radium':
+      {'name': 'Radium', 'atomic_mass': 226, 'number': 88, 'symbol': 'Ra'},
+  'actinium':
+      {'name': 'Actinium', 'atomic_mass': 227, 'number': 89, 'symbol': 'Ac'},
+  'thorium': {
+    'name': 'Thorium',
+    'atomic_mass': 232.03774,
+    'number': 90,
+    'symbol': 'Th'
+  },
+  'protactinium': {
+    'name': 'Protactinium',
+    'atomic_mass': 231.035882,
+    'number': 91,
+    'symbol': 'Pa'
+  },
+  'uranium': {
+    'name': 'Uranium',
+    'atomic_mass': 238.028913,
+    'number': 92,
+    'symbol': 'U'
+  },
+  'neptunium':
+      {'name': 'Neptunium', 'atomic_mass': 237, 'number': 93, 'symbol': 'Np'},
+  'plutonium':
+      {'name': 'Plutonium', 'atomic_mass': 244, 'number': 94, 'symbol': 'Pu'},
+  'americium':
+      {'name': 'Americium', 'atomic_mass': 243, 'number': 95, 'symbol': 'Am'},
+  'curium':
+      {'name': 'Curium', 'atomic_mass': 247, 'number': 96, 'symbol': 'Cm'},
+  'berkelium':
+      {'name': 'Berkelium', 'atomic_mass': 247, 'number': 97, 'symbol': 'Bk'},
+  'californium':
+      {'name': 'Californium', 'atomic_mass': 251, 'number': 98, 'symbol': 'Cf'},
+  'einsteinium':
+      {'name': 'Einsteinium', 'atomic_mass': 252, 'number': 99, 'symbol': 'Es'},
+  'fermium':
+      {'name': 'Fermium', 'atomic_mass': 257, 'number': 100, 'symbol': 'Fm'},
+  'mendelevium': {
+    'name': 'Mendelevium',
+    'atomic_mass': 258,
+    'number': 101,
+    'symbol': 'Md'
+  },
+  'nobelium':
+      {'name': 'Nobelium', 'atomic_mass': 259, 'number': 102, 'symbol': 'No'},
+  'lawrencium':
+      {'name': 'Lawrencium', 'atomic_mass': 266, 'number': 103, 'symbol': 'Lr'},
+  'rutherfordium': {
+    'name': 'Rutherfordium',
+    'atomic_mass': 267,
+    'number': 104,
+    'symbol': 'Rf'
+  },
+  'dubnium':
+      {'name': 'Dubnium', 'atomic_mass': 268, 'number': 105, 'symbol': 'Db'},
+  'seaborgium':
+      {'name': 'Seaborgium', 'atomic_mass': 269, 'number': 106, 'symbol': 'Sg'},
+  'bohrium':
+      {'name': 'Bohrium', 'atomic_mass': 270, 'number': 107, 'symbol': 'Bh'},
+  'hassium':
+      {'name': 'Hassium', 'atomic_mass': 269, 'number': 108, 'symbol': 'Hs'},
+  'meitnerium':
+      {'name': 'Meitnerium', 'atomic_mass': 278, 'number': 109, 'symbol': 'Mt'},
+  'darmstadtium': {
+    'name': 'Darmstadtium',
+    'atomic_mass': 281,
+    'number': 110,
+    'symbol': 'Ds'
+  },
+  'roentgenium': {
+    'name': 'Roentgenium',
+    'atomic_mass': 282,
+    'number': 111,
+    'symbol': 'Rg'
+  },
+  'copernicium': {
+    'name': 'Copernicium',
+    'atomic_mass': 285,
+    'number': 112,
+    'symbol': 'Cn'
+  },
+  'nihonium':
+      {'name': 'Nihonium', 'atomic_mass': 286, 'number': 113, 'symbol': 'Nh'},
+  'flerovium':
+      {'name': 'Flerovium', 'atomic_mass': 289, 'number': 114, 'symbol': 'Fl'},
+  'moscovium':
+      {'name': 'Moscovium', 'atomic_mass': 289, 'number': 115, 'symbol': 'Mc'},
+  'livermorium': {
+    'name': 'Livermorium',
+    'atomic_mass': 293,
+    'number': 116,
+    'symbol': 'Lv'
+  },
+  'tennessine':
+      {'name': 'Tennessine', 'atomic_mass': 294, 'number': 117, 'symbol': 'Ts'},
+  'oganesson':
+      {'name': 'Oganesson', 'atomic_mass': 294, 'number': 118, 'symbol': 'Og'},
+  'ununennium':
+      {'name': 'Ununennium', 'atomic_mass': 315, 'number': 119, 'symbol': 'Uue'}
+};
+
 const runAtomicStructureWidget =
     ({container, particleInteractivity, maxElements, atomData, atomColors}) => {
       const getThemeColors =
@@ -74,11 +578,6 @@ const runAtomicStructureWidget =
 
       // Define the p5 sketch methods
       const sketch = (p) => {
-        p.preload = () => {
-          p.periodicTableData =
-              p.loadJSON('assets/js/periodic-table-lookup.json');
-        };
-
         p.setup = () => {
           // create the canvas
           p.createCanvas(dims.w, dims.h)
@@ -109,21 +608,9 @@ const runAtomicStructureWidget =
           return true;  // prevents touches firing twice on mobile
         };
 
-        // test at home
-        // p.touchEnded = () => {
-        //   return true;
-        // };
-
         p.touchMoved = (e) => {
           // prevent scrolling when the widget is being interacted with
           if (!e.cancelable) return;
-
-          // test at home
-          // let touchVec = p.touches[0];
-          // if (touchVec.x > 1 && touchVec.x < p.width && touchVec.y > 1 &&
-          //     touchVec.y < height) {
-          //   return false;
-          // };
 
           let anyParticleInGrasp = false;
           for (const particle of p.widgetObject.nucleusParticles) {
@@ -453,7 +940,9 @@ class AtomicStructureWidget {
     });
 
     // draw the protons and neutrons in the nucleus
-    this.nucleusParticles.forEach(particle => particle.draw());
+    for (let i = this.nucleusParticles.length - 1; i >= 0; i--) {
+      this.nucleusParticles[i].draw();
+    }
 
     // draw the ui elements
     this.particleButtons.forEach(pb => pb.draw());
@@ -1544,8 +2033,8 @@ class AtomicDataCard {
     if (protonCount <= 0 || protonCount >= 120) return;
 
     // extract the periodic table data
-    let elementID = this.p.periodicTableData.order[protonCount - 1];
-    let elementData = this.p.periodicTableData[elementID];
+    let elementID = periodicTableData.order[protonCount - 1];
+    let elementData = periodicTableData[elementID];
 
 
     this.p.push();
