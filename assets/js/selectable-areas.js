@@ -193,6 +193,7 @@ class SelectableAreasWidget {
     this.keyboardFocusedAreaStrokeWeight = 4;
     this.selectedAreaStrokeWeight = 3;
 
+    this.maxTooltipFrames = 120;     // number of frames
     this.hoverEffectDuration = 20;   // number of frames
     this.selectedFillOpacity = 150;  // 0-255, 0 is clear and 255 fully opaque
     this.lineDashLength = 5;         // length in pixels
@@ -226,7 +227,7 @@ class SelectableAreasWidget {
     for (const hotspot of this.hotspots) {
       this.selectableAreas.push(new SelectableArea(
           hotspot.area, hotspot.colorHexCode, hotspot.iconMarkVertexIndex,
-          hotspot.iconMarkType, this));
+          hotspot.iconMarkType, hotspot.tooltipID, this));
     };
   }
 
@@ -243,6 +244,10 @@ class SelectableAreasWidget {
     // draw the selectable areas
     for (const selectableArea of this.selectableAreas) {
       selectableArea.draw();
+    }
+    // draw tooltips over everything else
+    for (const selectableArea of this.selectableAreas) {
+      selectableArea.drawTooltip();
     }
   }
 
@@ -329,9 +334,11 @@ class SelectableAreasWidget {
 
     if (selectableArea.selected) {
       selectableArea.selected = false;
+      selectableArea.tooltipFrames = 0;
     } else {
       if (currSelectedAreaCount < this.maxSelections) {
         selectableArea.selected = true;
+        selectableArea.tooltipFrames = 0;
       } else {
         Swal.fire({
           title: 'Maximum Selections Exceeded',
@@ -348,7 +355,7 @@ class SelectableAreasWidget {
 
 class SelectableArea {
   constructor(
-      vertices, colorHexCode, iconMarkVertexIndex, iconMarkType,
+      vertices, colorHexCode, iconMarkVertexIndex, iconMarkType, tooltipID,
       widgetController) {
     // link to the widgetController
     this.widgetController = widgetController;
@@ -366,6 +373,28 @@ class SelectableArea {
     });
     this.iconMarkVertexIndex = iconMarkVertexIndex;
     this.iconMarkType = iconMarkType;
+
+    // load, set, and positon the tooltip
+    this.tooltipID = tooltipID;
+    this.tooltipFrames = -1;
+    this.tooltipWidth = this.p.textWidth(this.tooltipID + ' is unselected.');
+    this.tooltipVertex = {...this.vertices.reduce((prev, curr) => {
+      return prev.y > curr.y ? prev : curr;
+    })};
+    this.tooltipVertex.y += this.p.textSize();
+
+    let tooltipRightX = (this.tooltipWidth / 2) + this.tooltipVertex.x;
+    if (tooltipRightX > (this.p.width - 20)) {
+      let shiftAmount = tooltipRightX - this.p.width;
+      this.tooltipVertex.x -= shiftAmount;
+    }
+    let tooltipLeftX = this.tooltipVertex.x - (this.tooltipWidth / 2);
+    if (tooltipLeftX < 10) {
+      let shiftAmount = 10 - tooltipLeftX;
+      this.tooltipVertex.x += shiftAmount;
+    }
+
+
 
     // set the stylings
     this.strokeColor = this.p.color(colorHexCode);
@@ -418,6 +447,37 @@ class SelectableArea {
       this.p.vertex(areaVertex.x, areaVertex.y);
     }
     this.p.endShape(this.p.CLOSE);
+
+    this.p.pop();
+  }
+
+  drawTooltip() {
+    // track whether or not to display tooltip
+    if (this.tooltipFrames < 0) return;
+    if (this.tooltipFrames > this.widgetController.maxTooltipFrames) {
+      this.tooltipFrames = -1;
+      return;
+    }
+    this.tooltipFrames++;
+
+    let message = this.selected ? this.tooltipID + ' is selected.' :
+                                  this.tooltipID + ' is unselected.';
+
+    // stylings
+    this.p.push();
+    this.p.noStroke();
+
+    // tooltip background
+    this.p.rectMode(this.p.CENTER);
+    this.p.fill(10, 180);
+    this.p.rect(
+        this.tooltipVertex.x, this.tooltipVertex.y,
+        this.p.textWidth(message) * 1.05, this.p.textSize() * 1.1, 2);
+
+    // tooltip text
+    this.p.textAlign(this.p.CENTER, this.p.CENTER);
+    this.p.fill(255);
+    this.p.text(message, this.tooltipVertex.x, this.tooltipVertex.y);
 
     this.p.pop();
   }

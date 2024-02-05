@@ -20,8 +20,8 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
-
+      iconMarkType: 'correct',
+      tooltipID: 'Venus'
     },
     {
       area: [
@@ -32,7 +32,9 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
+      iconMarkType: 'correct',
+      tooltipID: 'Jupiter'
+
     },
     {
       area: [
@@ -46,7 +48,9 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
+      iconMarkType: 'correct',
+      tooltipID: 'Uranus'
+
     },
     {
       area: [
@@ -61,7 +65,8 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
+      iconMarkType: 'correct',
+      tooltipID: 'Neptune'
     },
     {
       area: [
@@ -78,7 +83,8 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
+      iconMarkType: 'correct',
+      tooltipID: 'Saturn'
     },
     {
       area: [
@@ -94,7 +100,8 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
+      iconMarkType: 'correct',
+      tooltipID: 'Mars'
     },
     {
       area: [
@@ -107,7 +114,8 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
+      iconMarkType: 'correct',
+      tooltipID: 'Pluto'
     },
     {
       area: [
@@ -122,7 +130,8 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
+      iconMarkType: 'correct',
+      tooltipID: 'Earth Moon System'
     },
     {
       area: [
@@ -136,7 +145,8 @@ const widgetConfig = {
       ],
       colorHexCode: '#50DFFF',
       iconMarkVertexIndex: 1,
-      iconMarkType: 'correct'
+      iconMarkType: 'correct',
+      tooltipID: 'Mercury'
     }
   ]
 };
