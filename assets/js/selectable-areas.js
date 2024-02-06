@@ -198,6 +198,8 @@ class SelectableAreasWidget {
     this.selectedFillOpacity = 150;  // 0-255, 0 is clear and 255 fully opaque
     this.lineDashLength = 5;         // length in pixels
     this.lineGapLength = 5;          // length in pixels
+
+    this.tooltipTextHeight = 16;  // height in pixels
     /* end control panel */
 
     // read configuration data
@@ -229,6 +231,9 @@ class SelectableAreasWidget {
           hotspot.area, hotspot.colorHexCode, hotspot.iconMarkVertexIndex,
           hotspot.iconMarkType, hotspot.tooltipID, this));
     };
+
+    // set text size
+    this.p.textSize(this.tooltipTextHeight);
   }
 
   draw() {
@@ -470,7 +475,7 @@ class SelectableArea {
 
     // tooltip background
     this.p.rectMode(this.p.CENTER);
-    this.p.fill(10, 180);
+    this.p.fill(0);
     this.p.rect(
         this.tooltipVertex.x, this.tooltipVertex.y,
         this.p.textWidth(message) * 1.05, this.p.textSize() * 1.1, 2);
