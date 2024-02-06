@@ -806,8 +806,8 @@ class AtomicStructureWidget {
     if (this.p.width > this.p.height) {
       /* landscape & desktop view */
       // set the dimension and position of the palette
-      this.paletteWidth = this.p.width * 0.28;
-      this.paletteX = 20;
+      this.paletteWidth = this.p.width * 0.25;
+      this.paletteX = 1;
       this.paletteElementHeight = this.p.height * 0.1;
       this.paletteElementSpacing = this.paletteElementHeight / 5;
       this.paletteY = this.p.height -
@@ -826,10 +826,10 @@ class AtomicStructureWidget {
     } else {
       /* portrait & mobile view */
       // set the dimension and position of the palette
-      this.paletteWidth = this.p.width * 0.9;
+      this.paletteWidth = this.p.width * 0.8;
       this.paletteX = (this.p.width - this.paletteWidth) / 2;
-      this.paletteElementHeight = this.p.height * 0.07;
-      this.paletteElementSpacing = this.paletteElementHeight / 5;
+      this.paletteElementHeight = this.p.height * 0.09;
+      this.paletteElementSpacing = this.paletteElementHeight / 4.5;
       this.paletteY = this.p.height -
           (this.paletteElementSpacing + this.paletteElementHeight) * 5;
 
@@ -1684,10 +1684,10 @@ class ShellAdjuster {
     this.capDims.y *= 0.7;
     this.capDims.x = this.capDims.y * 1.6;
     this.leftCapCenter = this.p.createVector(
-        this.centerPos.x - (this.dims.x - this.capDims.x) / 2,
+        this.centerPos.x - (this.dims.x - this.capDims.x * 2) / 1.4,
         this.centerPos.y);
     this.rightCapCenter = this.p.createVector(
-        this.centerPos.x + (this.dims.x - this.capDims.x) / 2,
+        this.centerPos.x + (this.dims.x - this.capDims.x * 2) / 1.4,
         this.centerPos.y);
     this.labelPos = this.centerPos.copy();
 
@@ -2016,12 +2016,12 @@ class AtomicDataCard {
     // size and positioning
     this.topLeftCorner = topLeftCorner.copy();
     this.dims = dims;
-    this.nametabHeight = this.dims.y / 4;
-    this.nametabY = topLeftCorner.y + dims.y - this.nametabHeight;
+    this.nametabHeight = this.dims.y / 3;
+    this.nametabY = (topLeftCorner.y + dims.y - this.nametabHeight) * 1.1;
     this.symbolPosition =
         topLeftCorner.copy().add(dims.x * 2 / 3, dims.y * 2 / 5);
     this.namePosition = topLeftCorner.copy().add(
-        this.dims.x / 2, this.dims.y - this.nametabHeight / 2);
+        this.dims.x / 2, this.dims.y - this.nametabHeight / 3.5);
     this.numberPosition =
         topLeftCorner.copy().add(dims.x * 1 / 4, dims.y * 3 / 5);
     this.molarPosition = topLeftCorner.copy().add(dims.x * 1 / 4, dims.y / 5)
@@ -2043,7 +2043,7 @@ class AtomicDataCard {
     this.p.rect(
         this.topLeftCorner.x, this.topLeftCorner.y, this.dims.x, this.dims.y,
         6);
-    this.p.fill(200);
+    this.p.fill(215);
     this.p.rect(
         this.topLeftCorner.x, this.nametabY, this.dims.x, this.nametabHeight, 0,
         0, 6, 6);
