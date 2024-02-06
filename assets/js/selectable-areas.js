@@ -135,6 +135,7 @@ const runSelectableAreasWidget =
             return false;
           } else if (p.keyCode == p.ENTER) {
             p.widgetObject.handleEnter();
+            return false;
           }
         };
 
