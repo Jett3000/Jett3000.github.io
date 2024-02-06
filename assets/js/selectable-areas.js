@@ -193,13 +193,13 @@ class SelectableAreasWidget {
     this.keyboardFocusedAreaStrokeWeight = 4;
     this.selectedAreaStrokeWeight = 3;
 
-    this.maxTooltipFrames = 120;     // number of frames
+    this.tooltipDuration = 120;      // number of frames
     this.hoverEffectDuration = 20;   // number of frames
-    this.selectedFillOpacity = 150;  // 0-255, 0 is clear and 255 fully opaque
+    this.selectedFillOpacity = 100;  // 0-255, 0 is clear and 255 fully opaque
     this.lineDashLength = 5;         // length in pixels
-    this.lineGapLength = 5;          // length in pixels
+    this.lineGapLength = 10;         // length in pixels
 
-    this.tooltipTextHeight = 16;  // height in pixels
+    this.tooltipTextHeight = 14;  // height in pixels
     /* end control panel */
 
     // read configuration data
@@ -368,18 +368,19 @@ class SelectableArea {
 
     // interactivity
     this.focusedFrames = 0;
+    this.selectedFrames = 0;
     this.mouseFocused = false;
     this.keyboardFocused = false;
     this.selected = false;
 
-    // load the shape and features
+    // shape and features
     this.vertices = vertices.map(v => {
       return {x: v[0] * this.p.width, y: v[1] * this.p.height};
     });
     this.iconMarkVertexIndex = iconMarkVertexIndex;
     this.iconMarkType = iconMarkType;
 
-    // load, set, and positon the tooltip
+    // tooltip
     this.tooltipID = tooltipID;
     this.tooltipFrames = -1;
     this.tooltipWidth = this.p.textWidth(this.tooltipID + ' is unselected.');
@@ -399,9 +400,7 @@ class SelectableArea {
       this.tooltipVertex.x += shiftAmount;
     }
 
-
-
-    // set the stylings
+    // colors
     this.strokeColor = this.p.color(colorHexCode);
     this.fillColor = this.p.color(colorHexCode);
     this.fillColor.setAlpha(this.widgetController.selectedFillOpacity);
@@ -410,44 +409,64 @@ class SelectableArea {
   draw() {
     this.p.push();
 
-    // styling
-    this.p.strokeWeight(this.widgetController.areaStrokeWeight);
-
-    // set the stroke color and weight for keyboard focus
-    if (this.keyboardFocused) {
-      this.p.stroke('#FFA500');
-      this.p.strokeWeight(
-          this.widgetController.keyboardFocusedAreaStrokeWeight);
+    // update timed animation frames
+    if (this.selected) {
+      this.selectedFrames = Math.min(
+          this.selectedFrames + 1, this.widgetController.hoverEffectDuration);
     } else {
-      this.p.stroke(this.strokeColor);
-    }
-
-    // set the line dash
+      this.selectedFrames = Math.max(this.selectedFrames - 2, 0);
+    };
     if (this.keyboardFocused || this.mouseFocused) {
       this.focusedFrames = Math.min(
           this.focusedFrames + 1, this.widgetController.hoverEffectDuration);
     } else {
       this.focusedFrames = Math.max(this.focusedFrames - 2, 0)
-    }
-    let progress =
+    };
+    let focusProgress =
         this.focusedFrames / this.widgetController.hoverEffectDuration;
+    let selectedProgress =
+        this.selectedFrames / this.widgetController.hoverEffectDuration;
+
+
+    // base styling
+    this.p.strokeWeight(this.widgetController.areaStrokeWeight);
+    this.strokeColor.setAlpha(255);
+    this.p.stroke(this.strokeColor);
     this.p.drawingContext.setLineDash([
-      this.widgetController.lineDashLength,
-      this.widgetController.lineGapLength -
-          (this.widgetController.lineGapLength * progress)
+      this.widgetController.lineDashLength, this.widgetController.lineGapLength
     ]);
 
-    // set the fill color if selected
-    if (this.selected) {
-      this.p.strokeWeight(this.widgetController.selectedAreaStrokeWeight);
-      this.p.fill(this.fillColor);
-      this.p.drawingContext.setLineDash([]);
-    } else {
+    // set the fill based on selection progress
+    if (selectedProgress == 0) {
       this.p.noFill();
+    } else {
+      this.fillColor.setAlpha(
+          selectedProgress * this.widgetController.selectedFillOpacity);
+      this.p.fill(this.fillColor);
     }
 
-    // draw shape
+    // draw shape with fill
     this.p.beginShape();
+    for (const areaVertex of this.vertices) {
+      this.p.vertex(areaVertex.x, areaVertex.y);
+    }
+    this.p.endShape(this.p.CLOSE);
+
+    // fade in solid stroke
+    this.p.drawingContext.setLineDash([]);
+    this.strokeColor.setAlpha(Math.max(focusProgress, selectedProgress) * 255);
+    this.p.stroke(this.strokeColor);
+    this.p.noFill();
+    this.p.beginShape();
+
+    // override stroke color and weight for keyboard focus
+    if (this.keyboardFocused) {
+      this.p.stroke('#FFA500');
+      this.p.strokeWeight(
+          this.widgetController.keyboardFocusedAreaStrokeWeight);
+      this.p.drawingContext.setLineDash([]);
+    }
+
     for (const areaVertex of this.vertices) {
       this.p.vertex(areaVertex.x, areaVertex.y);
     }
@@ -460,7 +479,7 @@ class SelectableArea {
     // track whether or not to display tooltip
     if (typeof this.tooltipID === 'undefined') return;
     if (this.tooltipFrames < 0) return;
-    if (this.tooltipFrames > this.widgetController.maxTooltipFrames) {
+    if (this.tooltipFrames > this.widgetController.tooltipDuration) {
       this.tooltipFrames = -1;
       return;
     }
