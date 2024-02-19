@@ -832,6 +832,8 @@ class AtomicStructureWidget {
       this.paletteElementSpacing = this.paletteElementHeight / 4.5;
       this.paletteY = this.p.height -
           (this.paletteElementSpacing + this.paletteElementHeight) * 5;
+      this.paletteY += this.paletteElementSpacing;
+
 
       // set the center of the atom model
       this.atomCenter = this.p.createVector(
@@ -921,10 +923,10 @@ class AtomicStructureWidget {
     // resize the atom to fit the space
     let maxShellRadius =
         this.minShellRadius() + this.activeShells * this.particleSize;
-    if (maxShellRadius > this.atomCenter.y * 0.95) {
+    if (maxShellRadius > this.atomCenter.y * 0.93) {
       this.resizeAtom(0.95);
     } else if (
-        maxShellRadius < this.atomCenter.y * 0.9 &&
+        maxShellRadius < this.atomCenter.y * 0.87 &&
         this.particleSize < this.maxParticleSize) {
       this.resizeAtom(1.05);
     }
@@ -1007,7 +1009,7 @@ class AtomicStructureWidget {
     this.p.textAlign(this.p.CENTER, this.p.TOP);
     let taglineY = this.p.width > this.p.height ?
         this.p.height - this.taglineSize :
-        this.paletteY - this.taglineSize / 2;
+        this.paletteY - this.taglineSize / 1.2;
     this.p.text(
         'Click on a particle to remove it', this.atomCenter.x, taglineY);
   }
@@ -1152,7 +1154,7 @@ class AtomicStructureWidget {
   subtractElement(element, tracking = true) {
     switch (element) {
       case 'shell':
-        if (this.activeShells <= 0) return;
+        if (this.activeShells <= 1) return;
 
         // remove shell particles on the outermost shell
         let deletedElectrons = this.shellParticles.filter(
@@ -1286,7 +1288,8 @@ class AtomicStructureWidget {
           this.atomCenter.copy();
     }
     // shells and electrons
-    if (this.atomData.shells.length > 0) {
+    if (typeof this.atomData.shells !== 'undefined' &&
+        this.atomData.shells != null && this.atomData.shells.length > 0) {
       for (const shellCount of this.atomData.shells) {
         this.addElement('shell', false);
         for (let i = 0; i < shellCount; i++) {
