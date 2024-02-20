@@ -539,6 +539,7 @@ const runAtomicStructureWidget =
       document.addEventListener('themeset', themeSetCallback);
 
       const node = document.getElementById(container);
+      node.tabIndex = 0;
 
       // create and configure the hidden input
       const answerHiddenInput = document.createElement('input');
@@ -643,8 +644,10 @@ const runAtomicStructureWidget =
             p.widgetObject.shiftDown = true;
             return false;
           } else if (p.keyCode == p.TAB) {
-            p.widgetObject.handleTab();
-            return false;
+            if (document.activeElement === node) {
+              p.widgetObject.handleTab();
+            }
+            return p.widgetObject.keyboardFocusIndex == -1;
           } else if (p.keyCode == p.ENTER) {
             p.widgetObject.handleEnter();
           }
