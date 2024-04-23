@@ -14,6 +14,9 @@ function setup() {
     let c = new BCurve(pos);
     curves.push(c);
   }
+    
+    background(14);
+    document.getElementById('main').style.background = '#00000000';
 }
 
 function windowResized() {
