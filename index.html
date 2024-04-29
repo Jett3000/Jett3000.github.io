@@ -4,36 +4,194 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Jett Pavlica's Digital Projects</title>
-    <meta name="description" content="I've created this website as a place to showcase and talk about different digital projects I've done throughout numerous areas of my life. ">
+    <title>jett pavlica</title>
+    <meta name="twitter:title" content="jett pavlica">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="description" content="portfolio of works by Jett Pavlica, a Durham based computational artist and web developer">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://jett.codes/assets/img/headshot-filled-in.webp">
+    <meta name="twitter:image" content="https://jett.codes/assets/img/headshot-filled-in.webp">
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "name": "jett-pavlica",
+            "url": "https://jett.codes"
+        }
+    </script>
+    <link rel="icon" type="image/svg+xml" sizes="50x48" href="assets/img/sig-for-site.svg">
+    <link rel="icon" type="image/svg+xml" sizes="50x48" href="assets/img/sig-for-site.svg">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courier+Prime&amp;display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata&amp;display=swap">
-    <link rel="stylesheet" href="https://use.typekit.net/snv1xgu.css">
-    <link rel="stylesheet" href="assets/css/splash.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js" integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="assets/css/index-styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js" integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><link rel="stylesheet" href="https://use.typekit.net/tzs4mab.css">
 </head>
 
-<body style="background: #0e0e0e;">
-    <main class="d-flex flex-column justify-content-start flex-lg-row" style="width: 100%;height: 100vh;padding: 5%;">
-        <!-- Start: waterfall sketch -->
-        <div class="col" style="padding: 0px;">
-            <div id="waterfall-sketch-container" style="width: 100%;height: 100%;">
-                <div id="p5_loading"></div>
-            </div>
-        </div><!-- End: waterfall sketch -->
-        <!-- Start: biography and links -->
-        <div class="col d-flex flex-column justify-content-start align-items-center" style="padding: 15px;"><img class="rounded-circle" src="assets/img/jett-headshot.webp">
-            <p style="font-family: Inconsolata, monospace;"><span id="name-span" style="font-family: 'Roboto Mono', monospace;">Jett Pavlica</span>&nbsp;is a computational artist from Durham, North Carolina. Their work exists at the intersection of art and science, visualizing the output of countless computer programs working harmoniously to color a pixel, project light on the wall, or drag a pen across paper. Classic algorithms, physical simulations, and generative organic forms are frequent areas of exploration.</p>
-            <p style="font-family: Inconsolata, monospace;">Jett is a founding member of the <a href="https://durmpac.art">Durham Powerful Arts Collective</a> where they design unique digital experiences and community engagement events that celebrate art and creativity within Durham.</p>
-            <div class="d-flex flex-column flex-lg-row" id="button-holder">
-                <!-- Start: project button --><a role="button" class="bio-button" href="art-projects.html">&nbsp;art &amp; projects&nbsp;</a><!-- End: project button -->
-                <!-- Start: resume button --><a role="button" class="bio-button" href="assets/files/jett-pavlica-resume.pdf">&nbsp; &nbsp; résumé&nbsp; &nbsp;&nbsp;</a><!-- End: resume button -->
-            </div>
-        </div><!-- End: biography and links -->
+<body>
+    <ul id="navbar">
+        <!-- Start: brand-sig -->
+        <li class="left-nav-item"><a class="brand-icon-holder" href="index.html"><svg
+    height="10vh"
+   viewBox="0 0 13.237198 12.77411"
+   version="1.1"
+   id="svg8495"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs8492" /><path
+     id="brand-icon-path"
+   stroke="#fcfaee" 
+    stroke-width="0.5"
+     d="M 7.4838157,0.26458335 A 5.0507398,3.017903 0 0 0 2.4965232,2.8127483 l 1.2138794,0.324528 A 3.7861105,1.7971479 0 0 1 7.4838157,1.4851807 3.7861105,1.7971479 0 0 1 11.258262,3.1408936 L 12.473175,2.8158489 A 5.0507398,3.017903 0 0 0 7.4838157,0.26458335 Z M 6.8936709,4.5118694 6.3262636,12.36617 7.557713,12.39976 8.0165998,5.4187908 l 2.9739782,0.00258 c 1.304785,0.033395 1.542348,2.7492518 -0.179834,2.7987956 L 8.333893,8.2320558 8.2016014,9.1369101 10.73323,9.0909181 c 2.739622,0.118834 3.110148,-4.321948 0.303857,-4.5790487 z M 3.6122174,4.5635458 0.39070855,12.489677 1.4986513,12.50673 4.5837343,4.5976523 Z" /></svg>
+</a></li><!-- End: brand-sig -->
+        <!-- Start: love-you -->
+        <li class="right-nav-item collapsable-nav-item"><a id="heart-button" href="index.html"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-hearts" id="hearts">
+                    <path fill-rule="evenodd" d="M4.931.481c1.627-1.671 5.692 1.254 0 5.015-5.692-3.76-1.626-6.686 0-5.015Zm6.84 1.794c1.084-1.114 3.795.836 0 3.343-3.795-2.507-1.084-4.457 0-3.343ZM7.84 7.642c2.71-2.786 9.486 2.09 0 8.358-9.487-6.268-2.71-11.144 0-8.358Z" class="heart-path"></path>
+                </svg></a></li><!-- End: love-you -->
+        <!-- Start: instagram -->
+        <li class="right-nav-item"><a href="https://www.instagram.com/contextfreegrammar" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-camera">
+                    <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"></path>
+                    <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"></path>
+                </svg></a></li><!-- End: instagram -->
+        <!-- Start: email -->
+        <li class="right-nav-item"><a href="mailto:jett@durmpac.art"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-mailbox">
+                    <path d="M4 4a3 3 0 0 0-3 3v6h6V7a3 3 0 0 0-3-3m0-1h8a4 4 0 0 1 4 4v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a4 4 0 0 1 4-4m2.646 1A3.99 3.99 0 0 1 8 7v6h7V7a3 3 0 0 0-3-3z"></path>
+                    <path d="M11.793 8.5H9v-1h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.354-.146l-.853-.854zM5 7c0 .552-.448 0-1 0s-1 .552-1 0a1 1 0 0 1 2 0"></path>
+                </svg></a></li><!-- End: email -->
+        <!-- Start: durmpac -->
+        <li class="right-nav-item collapsable-nav-item"><a href="https://durmpac.art" target="_blank">durmpac</a></li><!-- End: durmpac -->
+    </ul>
+    <main>
+        <div id="introduction-card" class="splash-card"><img src="assets/img/headshot-2024.webp">
+            <h1 id="name-heading">Jett Pavlica</h1>
+            <h2 id="title-heading">Computational Artist and Web Developer</h2>
+        </div>
+        <div id="projects-heading" class="splash-card"><?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 704.58 70.29">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #fcfaee;
+        stroke-miterlimit: 10;
+        stroke-width: 4px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path class="cls-1" d="M38.16,52.56h-21.07l-3.65,14.42H2.58L19.25,2.66h17.51l16.57,64.33h-11.61l-3.56-14.42ZM27.3,10.24l-7.77,32.58h16.2l-7.58-32.58h-.84Z"/>
+      <path class="cls-1" d="M94.91,66.98l-11.8-24.16h-8.43v24.16h-10.95V3.31h17.23c18.35,0,25.47,5.99,25.47,19.66,0,9.92-3.93,15.64-12.08,18.26l12.83,25.75h-12.27ZM74.68,32.62h7.68c9.36,0,12.73-2.53,12.73-9.55s-3.46-9.46-12.83-9.46h-7.58v19.01Z"/>
+      <path class="cls-1" d="M134.33,13.8h-17.23V3.31h45.69v10.49h-17.23v53.18h-11.24V13.8Z"/>
+      <path class="cls-1" d="M228.61,66.98l-1.59-2.25c-4.21,2.34-9.36,3.37-14.89,3.37h-.75c-13.86,0-21.25-6.65-21.25-18.26v-4.12c0-9.64,3.46-14.89,11.42-18.26-2.43-4.03-3.37-7.87-3.37-11.24,0-9.64,4.96-14.23,15.64-14.23h.66c10.39,0,14.98,4.68,14.98,14.23v2.72h-10.02v-2.72c0-3.37-1.5-5.15-5.34-5.15s-5.06,1.5-5.06,4.96c0,2.9.84,5.24,3.75,9.46l14.23,20.51c.09-.84.09-1.78.09-2.72v-13.58h10.96v13.58c0,5.71-1.22,10.3-3.28,13.95l6.74,9.74h-12.92ZM221.5,56.59l-14.79-21.54c-3.65,1.69-5.34,4.59-5.34,9.46v3.93c0,6.93,3.93,9.83,11.52,9.83,3.56,0,6.46-.47,8.61-1.69Z"/>
+      <path class="cls-1" d="M268.69,3.31h17.7c18.63,0,25.84,6.09,25.84,20.22s-7.12,20.13-25.84,20.13h-6.55v23.31h-11.14V3.31ZM287.51,33.27c9.83,0,13.39-2.43,13.39-9.74s-3.56-9.83-13.39-9.83h-7.68v19.57h7.68Z"/>
+      <path class="cls-1" d="M355.95,66.98l-11.8-24.16h-8.43v24.16h-10.95V3.31h17.23c18.35,0,25.47,5.99,25.47,19.66,0,9.92-3.93,15.64-12.08,18.26l12.83,25.75h-12.27ZM335.73,32.62h7.68c9.36,0,12.73-2.53,12.73-9.55s-3.46-9.46-12.83-9.46h-7.58v19.01Z"/>
+      <path class="cls-1" d="M379.46,45.73v-20.97c0-15.08,7.4-22.75,21.16-22.75h.75c13.76,0,21.25,7.68,21.25,22.75v20.97c0,14.7-7.02,22.57-20.97,22.57h-1.22c-14.05,0-20.97-7.87-20.97-22.57ZM411.39,46.57v-22.66c0-8.52-3.46-12.08-10.39-12.08s-10.3,3.56-10.3,12.08v22.66c0,8.43,3.37,11.89,10.3,11.89s10.39-3.46,10.39-11.89Z"/>
+      <path class="cls-1" d="M434.42,45.91v-2.43h10.58v3c0,8.43,3.37,11.99,10.39,11.99s10.3-3.46,10.3-11.52V3.31h11.24v42.88c0,14.51-6.74,22.1-20.79,22.1h-1.22c-12.92,0-20.51-5.43-20.51-22.38Z"/>
+      <path class="cls-1" d="M493.5,3.31h41.2v10.49h-30.24v15.45h26.59v10.39h-26.59v16.76h30.24v10.58h-41.2V3.31Z"/>
+      <path class="cls-1" d="M590.41,45.91c0,16.95-7.49,22.38-20.04,22.38h-1.22c-13.76,0-20.6-7.87-20.6-22.57v-20.97c0-15.08,7.3-22.75,20.88-22.75h.75c13.2,0,20.22,7.68,20.22,22.66v2.43h-10.58v-3.37c0-8.52-3.37-11.89-10.02-11.89s-10.02,3.37-10.02,11.8v22.75c0,8.33,3.28,12.08,10.02,12.08s10.02-3.65,10.02-11.99v-3h10.58v2.43Z"/>
+      <path class="cls-1" d="M619.34,13.8h-17.23V3.31h45.69v10.49h-17.23v53.18h-11.24V13.8Z"/>
+      <path class="cls-1" d="M659.33,47.88v-1.22h10.67v1.78c0,8.15,3.28,10.3,11.14,10.3s10.39-2.15,10.39-7.96c0-6.65-3.18-7.77-14.04-11.89-11.61-4.4-17.98-8.24-17.98-19.48s6.37-17.42,20.97-17.42h.75c14.51,0,21.07,6.55,21.07,19.94v1.12h-10.58v-1.78c0-7.4-3.18-9.74-10.96-9.74s-10.3,2.25-10.3,7.4c0,6.18,4.21,7.4,14.23,10.95,11.99,4.4,17.88,8.05,17.88,20.13s-5.9,18.26-20.88,18.26h-1.31c-14.89,0-21.07-6.37-21.07-20.41Z"/>
+    </g>
+  </g>
+</svg></div><!-- Start: bezier-noise -->
+        <div class="splash-card project-card dark-card">
+            <h2 class="project-title">Organic Curves and Forms</h2><img class="project-image" src="assets/img/dent-for-site.svg"><img class="project-image" src="assets/img/ok-for-site.svg">
+            <p class="project-writeup">These figures are created by laying out Bezier curves on a line or circle and giving them a rotation based on a Perlin noise value generated from their coordinate.</p><img class="project-image" src="assets/img/mermaid.webp">
+            <p class="project-writeup">I saw an opportunity in the sweeping lines and their proximity, realizing that a brush following their path would have an easy time pushing paint around on the paper. To create this painting, drops of watercolor are placed (mostly) in the predicted path of the brush before plotting.</p>
+        </div><!-- End: bezier-noise -->
+        <!-- Start: flow moons -->
+        <div class="splash-card project-card dark-card">
+            <h1 class="project-title">Flow Moons</h1><img class="project-image" src="assets/img/talk-for-site.svg"><img class="project-image" src="assets/img/breeze-for-site.svg">
+            <p class="project-writeup">The first algorithm I ever plotted, peering into the classic noise field through circular windows. Throughout the end of 2023 I continued to experiment with the structure and layout of the moons leading to refinement, nuance, and play.</p>
+        </div><!-- End: flow moons -->
+        <!-- Start: lightning -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Lightning Generator</h1><img class="project-image" src="assets/img/bolts-for-site.svg">
+            <p class="project-writeup">A digital recreation of one of my favorite natural phenomena, lightning. Bolts are created through recursive subdivision, with a random chance to fork on each pass.</p>
+        </div><!-- End: lightning -->
+        <!-- Start: swtf -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Things That Fly [Commission]</h1><img class="project-image" src="assets/img/upsidedown.webp">
+            <p class="project-writeup">Created with fellow DurmPAC member Celia Ruley for Durham's Safety and Wellness Taskforce report.</p>
+            <p class="project-writeup">The illustration, from Celia, was inspired by weightlessness and the metamorphosis of youth. I focused on the background inspired by quilting, interpreting tiles as individuals in a community.</p>
+        </div><!-- End: swtf -->
+        <!-- Start: fibbing lines -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Fibbing Lines [Commission]</h1><img class="project-image" src="assets/img/fibbing-lines-for-site.svg">
+            <p class="project-writeup">At the end of September, I vended at a local art market for the first time, where I was asked if I had used the Fibonacci Series in my work before. I hadn't, so I got to work imagining how it may play out on the page. The spaces between each line grows with the series, wrapping in the horizontal dimension and dropping in the vertical.</p>
+            <p class="project-writeup">To bring controlled chaos to the cascading lines, I gave their endpoints a slight offset provided by a two-dimensional Perlin noise field.</p>
+        </div><!-- End: fibbing lines -->
+        <!-- Start: ley lines -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Ley Lines</h1><img class="project-image" src="assets/img/leylines-for-site.svg"><img class="project-image" src="assets/img/lightning-for-site.svg">
+            <p class="project-writeup">When I think of Perlin noise, two common techniques stand out amongst the rest: flowfields and layers of wavy lines. One of my first ever generative art projects was the latter, which has today evolved into these layered ley lines.</p>
+        </div><!-- End: ley lines -->
+        <!-- Start: poisson portraits -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Poisson Portraits</h1><img class="project-image" src="assets/img/poisson%20jared.webp"><img class="project-image" src="assets/img/poisson%20succ.webp">
+            <p class="project-writeup">Another exploration of the Poisson Disc Sampling, with a twist. Where my tree rings sketch&nbsp; affected the sampling annulus, this sketch uses an image as a sampling density map.</p>
+            <p class="project-writeup">Selected outputs include my brother and our family dog.</p>
+        </div><!-- End: poisson portraits -->
+        <!-- Start: sun signals -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Sun Signals</h1><img class="project-image" src="assets/img/blades-for-site.svg"><img class="project-image" src="assets/img/reactor-for-site.svg"><img class="project-image" src="assets/img/friend-plot.webp">
+            <p class="project-writeup">Unlike my work in simulations, this p5.js sketch employs deterministic functions to set the radius of each line's start and end points.</p>
+        </div><!-- End: sun signals -->
+        <!-- Start: nerve sampling -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Nerve Sampling</h1><img class="project-image" src="assets/img/wave.png"><img class="project-image" src="assets/img/red-wave.jpeg">
+            <p class="project-writeup">A p5.js sketch that generates intricate and organic tree structures by linking together Poisson Disc samples. Users can create endless unique outputs, influenced by seven adjustable parameters.</p>
+            <p class="project-writeup">Efficiently implements this O(n) sampling alogrithm.</p>
+            <p class="project-writeup">Make your own <a href="tree-rings.html" target="_blank">with this generator</a>, with support for PNG and SVG file exports.</p>
+        </div><!-- End: nerve sampling -->
+        <!-- Start: juneteenth -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Juneteenth at The Hayti Heritage Center [Commission]</h1><img class="project-image" src="assets/img/juneteenth-2023-poster.webp" width="752" height="1162">
+            <p class="project-writeup">This is the second year that I've designed promotional materials for a youth artist exhibit featured at The Hayti Heritage Center's annual Juneteenth Celebration.&nbsp;This year, I had the pleasure of not only designing the promotional poster, but also being a part of the selection panel and installing the exhibit.&nbsp;</p>
+            <p class="project-writeup">This poster was created almost entirely in Adobe Illustrator, making use of the Image Trace feature to adapt photography by Cornell Watson.</p>
+        </div><!-- End: juneteenth -->
+        <!-- Start: bubbles -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Bubbles</h1><img class="project-image" src="assets/img/framed_bubbles.webp">
+            <p class="project-writeup">Something like a generative washing machine. This design will most likely be my last using traditional Java Processing, as the SVG runtime for p5.js has afforded me the best of both worlds when it comes to web portability and exporting for pen plotting.</p>
+        </div><!-- End: bubbles -->
+        <!-- Start: pbg exhibits -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Promotional Materials for Pop Box Gallery [Commission]</h1><img class="project-image" src="assets/img/we-dont-care-poster.webp"><img class="project-image" src="assets/img/in-ecstasy-post.webp"><img class="project-image" src="assets/img/upstart-post.webp">
+            <p class="project-writeup">Graphics created in a contracted position with Pop Box Gallery over the summer of 2023, supporting their three month residency on Driver Street in the Old East Durham neighborhood.</p><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/we-dont-care-reclaiming-our-environment"><em>We [<span style="text-decoration: line-through;">Don't</span>] Care</em> exhibition information -&gt;&nbsp;</a><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/in-ecstasy-i-call-your-name-so-i-wont-forget-by-kennedi-carter"><em>In Ecstasy, I call your name so I won't forget </em>exhibition information -&gt;</a><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/upstart-gallery-a-jim-lee-project"><em>upstART Gallery</em> exhibition information -&gt;</a>
+        </div><!-- End: pbg exhibits -->
+        <!-- Start: plasma topology -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Plasma Topology</h1><img class="project-image" src="assets/img/plasma-noise.png">
+            <p class="project-writeup">A p5.js sketch that expands on previous explorations to combine 2D Perlin Noise, linear algebra, and randomness in a way that mimics flowing, fuzzy, topographic lines.</p>
+            <p class="project-writeup">The sketch runs in realtime, with most of the computation taking place in a GLSL shader.</p>
+        </div><!-- End: plasma topology -->
+        <!-- Start: hayti, before & after -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Hayti, Before &amp; After</h1><img class="project-image" src="assets/img/hayti-before-after.webp"><img class="project-image" src="assets/img/hayti-in-gallery.webp">
+            <p class="project-writeup">An art piece made from historical arial photography alongside modern satellite imagery. The maps were converted to vector images using Adobe Illustrator's Image Trace feature, and then carefully composited and layered by hand.</p>
+            <p class="project-writeup">The layers were robotically plotted with my iDraw XY Pen Plotter. The use of the robot reflects the way that communities are displaced and new boundaries are drawn without direct thought or care from individuals, but as part of a larger human machine.</p>
+            <p class="project-writeup">The piece was selected for inclusion at Pop Box Gallery's&nbsp;<a class="project-link" href="https://www.popboxgallery.com/exhibits-events/we-dont-care-reclaiming-our-environment">We [<span style="text-decoration: line-through;">Don't</span>] Care</a>&nbsp;exhibition.</p>
+        </div><!-- End: hayti, before & after -->
+        <!-- Start: prototype launch party -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title"><em>PROTOTYPE</em>&nbsp;Launch Party</h1><img class="project-image" src="assets/img/launch-party-hosts.webp">
+            <p class="project-writeup">To create an immersive experience for our launch party guests that brings them into the digital realm of the zine, I designed a myriad of generative animations, which ran on three projectors to fill the space with art and light.&nbsp;</p>
+            <p class="project-writeup">The animations were developed with p5.js and choreographed with the Scene Manger tool made by&nbsp;Marian Veteanu. You can view them at the following links:</p><a class="project-link" href="zine-projections.html">Zine Excerpt Projection Scenes | 7 minute loop</a><a class="project-link" href="title-projections.html">Zine Title Projection Scenes | 8 minute loop</a><a class="project-link" href="fresh-projections.html">Zine Inspired Projection | 8 minute loop</a>
+            <p></p>
+        </div><!-- End: prototype launch party -->
+        <!-- Start: prototype digital zine -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title"><em>PROTOTYPE</em>&nbsp;Digital Zine [Commission]</h1><img class="project-image" src="assets/img/prototype-cover.webp">
+            <p class="project-writeup">A digital zine commissioned to commemorate and immortalize Pop Box Gallery's exhibit of the same name. The zine features seven of the exhibited artists' work, biographies, and thoughts on their process. I designed the zine as a network of interactive webpages, with&nbsp;eleven original p5.js animations.</p><a class="project-link" href="https://myavk4b9isuxsshot3rcvq.on.drv.tw/website/cover.html" target="_blank">View <em>PROTOTYPE</em> -&gt;</a>
+        </div><!-- End: prototype digital zine -->
+        <!-- Start: sawubona digital zine -->
+        <div class="project-card splash-card dark-card">
+            <h1 class="project-title">Sawubona Digital Zine</h1><img class="project-image" src="assets/img/sawubona-cover.webp">
+            <p class="project-writeup">Near and dear to my heart, Sawubona was my first large web project, as well as the first project of <a class="project-link" href="https://durmpac.art">DurmPAC</a>. The Collective put out an art call for BIPOC/LGBTQ youth in the triangle to feature their work in a zine. I worked closely with fellow designer <a class="project-link" href="https://celiaruley.com/" target="_blank">Celia Donnely</a>&nbsp;to create a digital edition to accompany the printed zine. Sawubona features a p5.js cover sketch and nine pieces of artwork from local youth artists.</p><a class="project-link" href="https://durmpac.art/sawubona-zine.html">View <em>Sawubona</em> -&gt;</a>
+        </div><!-- End: sawubona digital zine -->
     </main>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/cover-waterfall.js"></script>
 </body>
 
 </html>

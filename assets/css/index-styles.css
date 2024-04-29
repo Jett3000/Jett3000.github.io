@@ -1,0 +1,254 @@
+/* navbar */
+
+#navbar {
+  width: 100%;
+  height: 10vh;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: #0e0e0e;
+  position: fixed;
+  top: 0;
+  border: 2px solid #fcfcf8;
+  z-index: 1;
+}
+
+li {
+  height: 100%;
+}
+
+.left-nav-item {
+  float: left;
+  border-right: 2px solid #fcfcf8;
+}
+
+.right-nav-item {
+  float: right;
+  border-left: 2px solid #fcfcf8;
+}
+
+li a {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  text-align: center;
+  background-color: #0e0e0e;
+  color: #fcfcf8;
+  padding: 1vh 16px;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  font-family: "dico-code-one",sans-serif;
+  font-weight: 400;
+}
+
+li a:hover {
+  box-shadow: 0px 6px #0e0e0e, 0px 12px #50afdb;
+  z-index: 1;
+}
+
+a > svg {
+  height: 100%;
+  width: auto;
+}
+
+.brand-icon-holder {
+  padding: 1vh 20px;
+}
+
+#brand-icon-path {
+  stroke-dasharray: 82.5;
+  stroke-dashoffset: 82.5;
+  animation: draw 2s ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .collapsable-nav-item {
+    display: none;
+  }
+}
+
+/* page content */
+
+/* layout */
+
+main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 12vh;
+  background-color: #bc9eca;
+}
+
+.splash-card {
+  width: min(800px, 90vw);
+  margin-bottom: 20px;
+  padding: 20px 20px;
+  border-radius: 25px;
+  border: 4px solid black;
+  color: #fcfaee;
+  box-shadow: 4px 4px #0e0e0e;
+}
+
+/* introduction card */
+
+#introduction-card {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(90deg in oklab, #50afdb, #bc9eca, var(--bs-orange));
+  background-size: 600% 100%;
+  animation: intro-gradient 6s ease infinite;
+}
+
+@keyframes intro-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* projects heading */
+
+#projects-heading {
+  background: #50afdb;
+}
+
+.cls-1 {
+  stroke-dasharray: 355;
+  stroke-dashoffset: 355;
+  animation: draw 2s ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+#Layer_2 {
+  filter: drop-shadow(2px 2px 2px #0e0e0e);
+  z-index: 0;
+}
+
+/* projects area */
+
+.date-card {
+  background: #bc9eca;
+}
+
+.date-heading {
+  color: #0e0e0e;
+  margin-bottom: 0px;
+  font-family: "dico-code-one", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.project-card.light-card {
+  background: #fcfaee;
+}
+
+.project-card.dark-card {
+  background: #0e0e0e;
+  border-color: #fcfaee;
+  box-shadow: 4px 4px #fcfaee;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-title, .project-writeup, .project-image {
+  margin-bottom: 20px;
+}
+
+.project-title, .project-writeup, .project-link {
+  border-radius: 8px;
+  background-color: #50afdb;
+  box-shadow: inherit;
+  padding: 2px 8px;
+  width: fit-content;
+}
+
+.project-image {
+  max-height: 60vh;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.dark-card .project-writeup {
+  background: #fcfaee;
+  color: #0e0e0e;
+  box-shadow: 4px 4px 2px #50afdb;
+}
+
+.project-link {
+  background: #0e0e0e;
+  color: #fcfcf8;
+  text-decoration: none;
+  font-family: "antarctican-mono", sans-serif;
+  font-weight: 400;
+  border: 1px solid #fcfaee;
+  margin-bottom: 10px;
+}
+
+.project-link:hover {
+  background: #50afdb;
+  color: #0e0e0e;
+  box-shadow: 4px 4px 0px #bc9eca;
+}
+
+.project-writeup .project-link {
+  box-shadow: none;
+  background: none;
+  color: #50afdb;
+  padding: initial;
+}
+
+/* typography */
+
+#name-heading {
+  font-family: "dico-code-one", sans-serif;
+  font-weight: 600;
+}
+
+#title-heading {
+  font-family: "antarctican-mono", sans-serif;
+  font-weight: 400;
+}
+
+.project-title {
+  font-family: "dico-code-one",sans-serif;
+  font-weight: 500;
+}
+
+.project-writeup {
+  font-family: "antarctican-mono",sans-serif;
+  font-weight: 400;
+}
+
+p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+p > a {
+  text-decoration: none;
+  color: #1f4556;
+}
+
+p > a:hover {
+  text-decoration: underline;
+  color: #fcfaee;
+}
+
