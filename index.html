@@ -23,7 +23,10 @@
     <link rel="icon" type="image/svg+xml" sizes="50x48" href="assets/img/sig-for-site.svg">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/index-styles.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js" integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><link rel="stylesheet" href="https://use.typekit.net/tzs4mab.css">
+    <link rel="stylesheet" href="assets/css/navbar-styles.css">
+    <link rel="stylesheet" href="assets/css/sitewide-styles.css">
+<link rel="stylesheet" href="https://use.typekit.net/tzs4mab.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js" integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
@@ -44,7 +47,7 @@
      d="M 7.4838157,0.26458335 A 5.0507398,3.017903 0 0 0 2.4965232,2.8127483 l 1.2138794,0.324528 A 3.7861105,1.7971479 0 0 1 7.4838157,1.4851807 3.7861105,1.7971479 0 0 1 11.258262,3.1408936 L 12.473175,2.8158489 A 5.0507398,3.017903 0 0 0 7.4838157,0.26458335 Z M 6.8936709,4.5118694 6.3262636,12.36617 7.557713,12.39976 8.0165998,5.4187908 l 2.9739782,0.00258 c 1.304785,0.033395 1.542348,2.7492518 -0.179834,2.7987956 L 8.333893,8.2320558 8.2016014,9.1369101 10.73323,9.0909181 c 2.739622,0.118834 3.110148,-4.321948 0.303857,-4.5790487 z M 3.6122174,4.5635458 0.39070855,12.489677 1.4986513,12.50673 4.5837343,4.5976523 Z" /></svg>
 </a></li><!-- End: brand-sig -->
         <!-- Start: love-you -->
-        <li class="right-nav-item collapsable-nav-item"><a id="heart-button" href="index.html"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-hearts" id="hearts">
+        <li class="right-nav-item collapsable-nav-item"><a id="heart-button" href=""><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-hearts" id="hearts">
                     <path fill-rule="evenodd" d="M4.931.481c1.627-1.671 5.692 1.254 0 5.015-5.692-3.76-1.626-6.686 0-5.015Zm6.84 1.794c1.084-1.114 3.795.836 0 3.343-3.795-2.507-1.084-4.457 0-3.343ZM7.84 7.642c2.71-2.786 9.486 2.09 0 8.358-9.487-6.268-2.71-11.144 0-8.358Z" class="heart-path"></path>
                 </svg></a></li><!-- End: love-you -->
         <!-- Start: instagram -->
@@ -59,13 +62,19 @@
                 </svg></a></li><!-- End: email -->
         <!-- Start: durmpac -->
         <li class="right-nav-item collapsable-nav-item"><a href="https://durmpac.art" target="_blank">durmpac</a></li><!-- End: durmpac -->
+        <!-- Start: about-me -->
+        <li class="right-nav-item collapsable-nav-item"><a href="about.html">about me</a></li><!-- End: about-me -->
     </ul>
     <main>
-        <div id="introduction-card" class="splash-card"><img src="assets/img/headshot-2024.webp">
-            <h1 id="name-heading">Jett Pavlica</h1>
-            <h2 id="title-heading">Computational Artist and Web Developer</h2>
-        </div>
-        <div id="projects-heading" class="splash-card"><?xml version="1.0" encoding="UTF-8"?>
+        <div id="intro-projects-container">
+            <div id="introduction-bento" class="bento-container">
+                <div id="introduction-card" class="black-outline"><img src="assets/img/headshot-2024.webp">
+                    <h1 id="name-heading">Jett Pavlica</h1>
+                    <h2 id="title-heading">Computational Artist and Web Developer</h2>
+                </div><a class="bento-link white-outline" href="about.html">learn more -&gt;</a><a class="bento-link white-outline" href="services.html">hire me -&gt;</a>
+            </div>
+            <div id="projects-column">
+                <div id="projects-heading" class="splash-card"><?xml version="1.0" encoding="UTF-8"?>
 <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 704.58 70.29">
   <defs>
     <style>
@@ -94,104 +103,107 @@
     </g>
   </g>
 </svg></div><!-- Start: bezier-noise -->
-        <div class="splash-card project-card dark-card">
-            <h2 class="project-title">Organic Curves and Forms</h2><img class="project-image" src="assets/img/dent-for-site.svg"><img class="project-image" src="assets/img/ok-for-site.svg">
-            <p class="project-writeup">These figures are created by laying out Bezier curves on a line or circle and giving them a rotation based on a Perlin noise value generated from their coordinate.</p><img class="project-image" src="assets/img/mermaid.webp">
-            <p class="project-writeup">I saw an opportunity in the sweeping lines and their proximity, realizing that a brush following their path would have an easy time pushing paint around on the paper. To create this painting, drops of watercolor are placed (mostly) in the predicted path of the brush before plotting.</p>
-        </div><!-- End: bezier-noise -->
-        <!-- Start: flow moons -->
-        <div class="splash-card project-card dark-card">
-            <h1 class="project-title">Flow Moons</h1><img class="project-image" src="assets/img/talk-for-site.svg"><img class="project-image" src="assets/img/breeze-for-site.svg">
-            <p class="project-writeup">The first algorithm I ever plotted, peering into the classic noise field through circular windows. Throughout the end of 2023 I continued to experiment with the structure and layout of the moons leading to refinement, nuance, and play.</p>
-        </div><!-- End: flow moons -->
-        <!-- Start: lightning -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Lightning Generator</h1><img class="project-image" src="assets/img/bolts-for-site.svg">
-            <p class="project-writeup">A digital recreation of one of my favorite natural phenomena, lightning. Bolts are created through recursive subdivision, with a random chance to fork on each pass.</p>
-        </div><!-- End: lightning -->
-        <!-- Start: swtf -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Things That Fly [Commission]</h1><img class="project-image" src="assets/img/upsidedown.webp">
-            <p class="project-writeup">Created with fellow DurmPAC member Celia Ruley for Durham's Safety and Wellness Taskforce report.</p>
-            <p class="project-writeup">The illustration, from Celia, was inspired by weightlessness and the metamorphosis of youth. I focused on the background inspired by quilting, interpreting tiles as individuals in a community.</p>
-        </div><!-- End: swtf -->
-        <!-- Start: fibbing lines -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Fibbing Lines [Commission]</h1><img class="project-image" src="assets/img/fibbing-lines-for-site.svg">
-            <p class="project-writeup">At the end of September, I vended at a local art market for the first time, where I was asked if I had used the Fibonacci Series in my work before. I hadn't, so I got to work imagining how it may play out on the page. The spaces between each line grows with the series, wrapping in the horizontal dimension and dropping in the vertical.</p>
-            <p class="project-writeup">To bring controlled chaos to the cascading lines, I gave their endpoints a slight offset provided by a two-dimensional Perlin noise field.</p>
-        </div><!-- End: fibbing lines -->
-        <!-- Start: ley lines -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Ley Lines</h1><img class="project-image" src="assets/img/leylines-for-site.svg"><img class="project-image" src="assets/img/lightning-for-site.svg">
-            <p class="project-writeup">When I think of Perlin noise, two common techniques stand out amongst the rest: flowfields and layers of wavy lines. One of my first ever generative art projects was the latter, which has today evolved into these layered ley lines.</p>
-        </div><!-- End: ley lines -->
-        <!-- Start: poisson portraits -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Poisson Portraits</h1><img class="project-image" src="assets/img/poisson%20jared.webp"><img class="project-image" src="assets/img/poisson%20succ.webp">
-            <p class="project-writeup">Another exploration of the Poisson Disc Sampling, with a twist. Where my tree rings sketch&nbsp; affected the sampling annulus, this sketch uses an image as a sampling density map.</p>
-            <p class="project-writeup">Selected outputs include my brother and our family dog.</p>
-        </div><!-- End: poisson portraits -->
-        <!-- Start: sun signals -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Sun Signals</h1><img class="project-image" src="assets/img/blades-for-site.svg"><img class="project-image" src="assets/img/reactor-for-site.svg"><img class="project-image" src="assets/img/friend-plot.webp">
-            <p class="project-writeup">Unlike my work in simulations, this p5.js sketch employs deterministic functions to set the radius of each line's start and end points.</p>
-        </div><!-- End: sun signals -->
-        <!-- Start: nerve sampling -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Nerve Sampling</h1><img class="project-image" src="assets/img/wave.png"><img class="project-image" src="assets/img/red-wave.jpeg">
-            <p class="project-writeup">A p5.js sketch that generates intricate and organic tree structures by linking together Poisson Disc samples. Users can create endless unique outputs, influenced by seven adjustable parameters.</p>
-            <p class="project-writeup">Efficiently implements this O(n) sampling alogrithm.</p>
-            <p class="project-writeup">Make your own <a href="tree-rings.html" target="_blank">with this generator</a>, with support for PNG and SVG file exports.</p>
-        </div><!-- End: nerve sampling -->
-        <!-- Start: juneteenth -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Juneteenth at The Hayti Heritage Center [Commission]</h1><img class="project-image" src="assets/img/juneteenth-2023-poster.webp" width="752" height="1162">
-            <p class="project-writeup">This is the second year that I've designed promotional materials for a youth artist exhibit featured at The Hayti Heritage Center's annual Juneteenth Celebration.&nbsp;This year, I had the pleasure of not only designing the promotional poster, but also being a part of the selection panel and installing the exhibit.&nbsp;</p>
-            <p class="project-writeup">This poster was created almost entirely in Adobe Illustrator, making use of the Image Trace feature to adapt photography by Cornell Watson.</p>
-        </div><!-- End: juneteenth -->
-        <!-- Start: bubbles -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Bubbles</h1><img class="project-image" src="assets/img/framed_bubbles.webp">
-            <p class="project-writeup">Something like a generative washing machine. This design will most likely be my last using traditional Java Processing, as the SVG runtime for p5.js has afforded me the best of both worlds when it comes to web portability and exporting for pen plotting.</p>
-        </div><!-- End: bubbles -->
-        <!-- Start: pbg exhibits -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Promotional Materials for Pop Box Gallery [Commission]</h1><img class="project-image" src="assets/img/we-dont-care-poster.webp"><img class="project-image" src="assets/img/in-ecstasy-post.webp"><img class="project-image" src="assets/img/upstart-post.webp">
-            <p class="project-writeup">Graphics created in a contracted position with Pop Box Gallery over the summer of 2023, supporting their three month residency on Driver Street in the Old East Durham neighborhood.</p><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/we-dont-care-reclaiming-our-environment"><em>We [<span style="text-decoration: line-through;">Don't</span>] Care</em> exhibition information -&gt;&nbsp;</a><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/in-ecstasy-i-call-your-name-so-i-wont-forget-by-kennedi-carter"><em>In Ecstasy, I call your name so I won't forget </em>exhibition information -&gt;</a><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/upstart-gallery-a-jim-lee-project"><em>upstART Gallery</em> exhibition information -&gt;</a>
-        </div><!-- End: pbg exhibits -->
-        <!-- Start: plasma topology -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Plasma Topology</h1><img class="project-image" src="assets/img/plasma-noise.png">
-            <p class="project-writeup">A p5.js sketch that expands on previous explorations to combine 2D Perlin Noise, linear algebra, and randomness in a way that mimics flowing, fuzzy, topographic lines.</p>
-            <p class="project-writeup">The sketch runs in realtime, with most of the computation taking place in a GLSL shader.</p>
-        </div><!-- End: plasma topology -->
-        <!-- Start: hayti, before & after -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Hayti, Before &amp; After</h1><img class="project-image" src="assets/img/hayti-before-after.webp"><img class="project-image" src="assets/img/hayti-in-gallery.webp">
-            <p class="project-writeup">An art piece made from historical arial photography alongside modern satellite imagery. The maps were converted to vector images using Adobe Illustrator's Image Trace feature, and then carefully composited and layered by hand.</p>
-            <p class="project-writeup">The layers were robotically plotted with my iDraw XY Pen Plotter. The use of the robot reflects the way that communities are displaced and new boundaries are drawn without direct thought or care from individuals, but as part of a larger human machine.</p>
-            <p class="project-writeup">The piece was selected for inclusion at Pop Box Gallery's&nbsp;<a class="project-link" href="https://www.popboxgallery.com/exhibits-events/we-dont-care-reclaiming-our-environment">We [<span style="text-decoration: line-through;">Don't</span>] Care</a>&nbsp;exhibition.</p>
-        </div><!-- End: hayti, before & after -->
-        <!-- Start: prototype launch party -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title"><em>PROTOTYPE</em>&nbsp;Launch Party</h1><img class="project-image" src="assets/img/launch-party-hosts.webp">
-            <p class="project-writeup">To create an immersive experience for our launch party guests that brings them into the digital realm of the zine, I designed a myriad of generative animations, which ran on three projectors to fill the space with art and light.&nbsp;</p>
-            <p class="project-writeup">The animations were developed with p5.js and choreographed with the Scene Manger tool made by&nbsp;Marian Veteanu. You can view them at the following links:</p><a class="project-link" href="zine-projections.html">Zine Excerpt Projection Scenes | 7 minute loop</a><a class="project-link" href="title-projections.html">Zine Title Projection Scenes | 8 minute loop</a><a class="project-link" href="fresh-projections.html">Zine Inspired Projection | 8 minute loop</a>
-            <p></p>
-        </div><!-- End: prototype launch party -->
-        <!-- Start: prototype digital zine -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title"><em>PROTOTYPE</em>&nbsp;Digital Zine [Commission]</h1><img class="project-image" src="assets/img/prototype-cover.webp">
-            <p class="project-writeup">A digital zine commissioned to commemorate and immortalize Pop Box Gallery's exhibit of the same name. The zine features seven of the exhibited artists' work, biographies, and thoughts on their process. I designed the zine as a network of interactive webpages, with&nbsp;eleven original p5.js animations.</p><a class="project-link" href="https://myavk4b9isuxsshot3rcvq.on.drv.tw/website/cover.html" target="_blank">View <em>PROTOTYPE</em> -&gt;</a>
-        </div><!-- End: prototype digital zine -->
-        <!-- Start: sawubona digital zine -->
-        <div class="project-card splash-card dark-card">
-            <h1 class="project-title">Sawubona Digital Zine</h1><img class="project-image" src="assets/img/sawubona-cover.webp">
-            <p class="project-writeup">Near and dear to my heart, Sawubona was my first large web project, as well as the first project of <a class="project-link" href="https://durmpac.art">DurmPAC</a>. The Collective put out an art call for BIPOC/LGBTQ youth in the triangle to feature their work in a zine. I worked closely with fellow designer <a class="project-link" href="https://celiaruley.com/" target="_blank">Celia Donnely</a>&nbsp;to create a digital edition to accompany the printed zine. Sawubona features a p5.js cover sketch and nine pieces of artwork from local youth artists.</p><a class="project-link" href="https://durmpac.art/sawubona-zine.html">View <em>Sawubona</em> -&gt;</a>
-        </div><!-- End: sawubona digital zine -->
+                <div class="splash-card project-card dark-card">
+                    <h2 class="project-title">Organic Curves and Forms</h2><img class="project-image" src="assets/img/dent-for-site.svg"><img class="project-image" src="assets/img/ok-for-site.svg">
+                    <p class="project-writeup">These figures are created by laying out Bezier curves on a line or circle and giving them a rotation based on a Perlin noise value generated from their coordinate.</p><img class="project-image" src="assets/img/mermaid.webp">
+                    <p class="project-writeup">I saw an opportunity in the sweeping lines and their proximity, realizing that a brush following their path would have an easy time pushing paint around on the paper. To create this painting, drops of watercolor are placed (mostly) in the predicted path of the brush before plotting.</p>
+                </div><!-- End: bezier-noise -->
+                <!-- Start: flow moons -->
+                <div class="splash-card project-card dark-card">
+                    <h1 class="project-title">Flow Moons</h1><img class="project-image" src="assets/img/talk-for-site.svg"><img class="project-image" src="assets/img/breeze-for-site.svg">
+                    <p class="project-writeup">The first algorithm I ever plotted, peering into the classic noise field through circular windows. Throughout the end of 2023 I continued to experiment with the structure and layout of the moons leading to refinement, nuance, and play.</p>
+                </div><!-- End: flow moons -->
+                <!-- Start: lightning -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Lightning Generator</h1><img class="project-image" src="assets/img/bolts-for-site.svg">
+                    <p class="project-writeup">A digital recreation of one of my favorite natural phenomena, lightning. Bolts are created through recursive subdivision, with a random chance to fork on each pass.</p>
+                </div><!-- End: lightning -->
+                <!-- Start: swtf -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Things That Fly [Commission]</h1><img class="project-image" src="assets/img/upsidedown.webp">
+                    <p class="project-writeup">Created with fellow DurmPAC member Celia Ruley for Durham's Safety and Wellness Taskforce report.</p>
+                    <p class="project-writeup">The illustration, from Celia, was inspired by weightlessness and the metamorphosis of youth. I focused on the background inspired by quilting, interpreting tiles as individuals in a community.</p>
+                </div><!-- End: swtf -->
+                <!-- Start: fibbing lines -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Fibbing Lines [Commission]</h1><img class="project-image" src="assets/img/fibbing-lines-for-site.svg">
+                    <p class="project-writeup">At the end of September, I vended at a local art market for the first time, where I was asked if I had used the Fibonacci Series in my work before. I hadn't, so I got to work imagining how it may play out on the page. The spaces between each line grows with the series, wrapping in the horizontal dimension and dropping in the vertical.</p>
+                    <p class="project-writeup">To bring controlled chaos to the cascading lines, I gave their endpoints a slight offset provided by a two-dimensional Perlin noise field.</p>
+                </div><!-- End: fibbing lines -->
+                <!-- Start: ley lines -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Ley Lines</h1><img class="project-image" src="assets/img/leylines-for-site.svg"><img class="project-image" src="assets/img/lightning-for-site.svg">
+                    <p class="project-writeup">When I think of Perlin noise, two common techniques stand out amongst the rest: flowfields and layers of wavy lines. One of my first ever generative art projects was the latter, which has today evolved into these layered ley lines.</p>
+                </div><!-- End: ley lines -->
+                <!-- Start: poisson portraits -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Poisson Portraits</h1><img class="project-image" src="assets/img/poisson%20jared.webp"><img class="project-image" src="assets/img/poisson%20succ.webp">
+                    <p class="project-writeup">Another exploration of the Poisson Disc Sampling, with a twist. Where my tree rings sketch&nbsp; affected the sampling annulus, this sketch uses an image as a sampling density map.</p>
+                    <p class="project-writeup">Selected outputs include my brother and our family dog.</p>
+                </div><!-- End: poisson portraits -->
+                <!-- Start: sun signals -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Sun Signals</h1><img class="project-image" src="assets/img/blades-for-site.svg"><img class="project-image" src="assets/img/reactor-for-site.svg"><img class="project-image" src="assets/img/friend-plot.webp">
+                    <p class="project-writeup">Unlike my work in simulations, this p5.js sketch employs deterministic functions to set the radius of each line's start and end points.</p>
+                </div><!-- End: sun signals -->
+                <!-- Start: nerve sampling -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Nerve Sampling</h1><img class="project-image" src="assets/img/wave.png"><img class="project-image" src="assets/img/red-wave.jpeg">
+                    <p class="project-writeup">A p5.js sketch that generates intricate and organic tree structures by linking together Poisson Disc samples. Users can create endless unique outputs, influenced by seven adjustable parameters.</p>
+                    <p class="project-writeup">Efficiently implements this O(n) sampling alogrithm.</p>
+                    <p class="project-writeup">Make your own <a href="tree-rings.html" target="_blank">with this generator</a>, with support for PNG and SVG file exports.</p>
+                </div><!-- End: nerve sampling -->
+                <!-- Start: juneteenth -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Juneteenth at The Hayti Heritage Center [Commission]</h1><img class="project-image" src="assets/img/juneteenth-2023-poster.webp" width="752" height="1162">
+                    <p class="project-writeup">This is the second year that I've designed promotional materials for a youth artist exhibit featured at The Hayti Heritage Center's annual Juneteenth Celebration.&nbsp;This year, I had the pleasure of not only designing the promotional poster, but also being a part of the selection panel and installing the exhibit.&nbsp;</p>
+                    <p class="project-writeup">This poster was created almost entirely in Adobe Illustrator, making use of the Image Trace feature to adapt photography by Cornell Watson.</p>
+                </div><!-- End: juneteenth -->
+                <!-- Start: bubbles -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Bubbles</h1><img class="project-image" src="assets/img/framed_bubbles.webp">
+                    <p class="project-writeup">Something like a generative washing machine. This design will most likely be my last using traditional Java Processing, as the SVG runtime for p5.js has afforded me the best of both worlds when it comes to web portability and exporting for pen plotting.</p>
+                </div><!-- End: bubbles -->
+                <!-- Start: pbg exhibits -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Promotional Materials for Pop Box Gallery [Commission]</h1><img class="project-image" src="assets/img/we-dont-care-poster.webp"><img class="project-image" src="assets/img/in-ecstasy-post.webp"><img class="project-image" src="assets/img/upstart-post.webp">
+                    <p class="project-writeup">Graphics created in a contracted position with Pop Box Gallery over the summer of 2023, supporting their three month residency on Driver Street in the Old East Durham neighborhood.</p><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/we-dont-care-reclaiming-our-environment"><em>We [<span style="text-decoration: line-through;">Don't</span>] Care</em> exhibition information -&gt;&nbsp;</a><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/in-ecstasy-i-call-your-name-so-i-wont-forget-by-kennedi-carter"><em>In Ecstasy, I call your name so I won't forget </em>exhibition information -&gt;</a><a class="project-link" href="https://www.popboxgallery.com/exhibits-events/upstart-gallery-a-jim-lee-project"><em>upstART Gallery</em> exhibition information -&gt;</a>
+                </div><!-- End: pbg exhibits -->
+                <!-- Start: plasma topology -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Plasma Topology</h1><img class="project-image" src="assets/img/plasma-noise.png">
+                    <p class="project-writeup">A p5.js sketch that expands on previous explorations to combine 2D Perlin Noise, linear algebra, and randomness in a way that mimics flowing, fuzzy, topographic lines.</p>
+                    <p class="project-writeup">The sketch runs in realtime, with most of the computation taking place in a GLSL shader.</p>
+                </div><!-- End: plasma topology -->
+                <!-- Start: hayti, before & after -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Hayti, Before &amp; After</h1><img class="project-image" src="assets/img/hayti-before-after.webp"><img class="project-image" src="assets/img/hayti-in-gallery.webp">
+                    <p class="project-writeup">An art piece made from historical arial photography alongside modern satellite imagery. The maps were converted to vector images using Adobe Illustrator's Image Trace feature, and then carefully composited and layered by hand.</p>
+                    <p class="project-writeup">The layers were robotically plotted with my iDraw XY Pen Plotter. The use of the robot reflects the way that communities are displaced and new boundaries are drawn without direct thought or care from individuals, but as part of a larger human machine.</p>
+                    <p class="project-writeup">The piece was selected for inclusion at Pop Box Gallery's&nbsp;<a class="project-link" href="https://www.popboxgallery.com/exhibits-events/we-dont-care-reclaiming-our-environment">We [<span style="text-decoration: line-through;">Don't</span>] Care</a>&nbsp;exhibition.</p>
+                </div><!-- End: hayti, before & after -->
+                <!-- Start: prototype launch party -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title"><em>PROTOTYPE</em>&nbsp;Launch Party</h1><img class="project-image" src="assets/img/launch-party-hosts.webp">
+                    <p class="project-writeup">To create an immersive experience for our launch party guests that brings them into the digital realm of the zine, I designed a myriad of generative animations, which ran on three projectors to fill the space with art and light.&nbsp;</p>
+                    <p class="project-writeup">The animations were developed with p5.js and choreographed with the Scene Manger tool made by&nbsp;Marian Veteanu. You can view them at the following links:</p><a class="project-link" href="zine-projections.html">Zine Excerpt Projection Scenes | 7 minute loop</a><a class="project-link" href="title-projections.html">Zine Title Projection Scenes | 8 minute loop</a><a class="project-link" href="fresh-projections.html">Zine Inspired Projection | 8 minute loop</a>
+                    <p></p>
+                </div><!-- End: prototype launch party -->
+                <!-- Start: prototype digital zine -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title"><em>PROTOTYPE</em>&nbsp;Digital Zine [Commission]</h1><img class="project-image" src="assets/img/prototype-cover.webp">
+                    <p class="project-writeup">A digital zine commissioned to commemorate and immortalize Pop Box Gallery's exhibit of the same name. The zine features seven of the exhibited artists' work, biographies, and thoughts on their process. I designed the zine as a network of interactive webpages, with&nbsp;eleven original p5.js animations.</p><a class="project-link" href="https://myavk4b9isuxsshot3rcvq.on.drv.tw/website/cover.html" target="_blank">View <em>PROTOTYPE</em> -&gt;</a>
+                </div><!-- End: prototype digital zine -->
+                <!-- Start: sawubona digital zine -->
+                <div class="project-card splash-card dark-card">
+                    <h1 class="project-title">Sawubona Digital Zine</h1><img class="project-image" src="assets/img/sawubona-cover.webp">
+                    <p class="project-writeup">Near and dear to my heart, Sawubona was my first large web project, as well as the first project of <a class="project-link" href="https://durmpac.art">DurmPAC</a>. The Collective put out an art call for BIPOC/LGBTQ youth in the triangle to feature their work in a zine. I worked closely with fellow designer <a class="project-link" href="https://celiaruley.com/" target="_blank">Celia Donnely</a>&nbsp;to create a digital edition to accompany the printed zine. Sawubona features a p5.js cover sketch and nine pieces of artwork from local youth artists.</p><a class="project-link" href="https://durmpac.art/sawubona-zine.html">View <em>Sawubona</em> -&gt;</a>
+                </div><!-- End: sawubona digital zine -->
+            </div>
+        </div>
     </main>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/lover.js"></script>
 </body>
 
 </html>
