@@ -65,7 +65,7 @@
   color: #fcfaee;
   font-family: 'dico-code-one', sans-serif;
   font-weight: 600;
-  font-size: 1.4rem;
+  font-size: min(1.4rem, 18px);
   transition: background 0.3s;
 }
 
