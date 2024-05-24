@@ -8,6 +8,7 @@ main {
 
 #bio-card {
   max-width: min(800px, 90vw);
+  margin-bottom: 120px;
 }
 
 p {

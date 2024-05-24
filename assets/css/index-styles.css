@@ -39,7 +39,7 @@
 @media (min-width: 992px) {
   #introduction-bento {
     position: sticky;
-    top: 12vh;
+    top: 80px;
   }
 }
 
@@ -132,9 +132,12 @@
   margin-bottom: 20px;
 }
 
+.project-title {
+  background-color: #50afdb;
+}
+
 .project-title, .project-writeup, .project-link {
   border-radius: 8px;
-  background-color: #50afdb;
   box-shadow: inherit;
   padding: 2px 8px;
   width: fit-content;
@@ -144,12 +147,6 @@
   max-height: 60vh;
   max-width: 100%;
   object-fit: contain;
-}
-
-.dark-card .project-writeup {
-  background: #fcfaee;
-  color: #0e0e0e;
-  box-shadow: 4px 4px 2px #50afdb;
 }
 
 .project-link {
@@ -166,13 +163,6 @@
   background: #50afdb;
   color: #0e0e0e;
   box-shadow: 4px 4px 0px #bc9eca;
-}
-
-.project-writeup .project-link {
-  box-shadow: none;
-  background: none;
-  color: #50afdb;
-  padding: initial;
 }
 
 /* typography */
