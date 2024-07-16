@@ -1,7 +1,7 @@
 p5.disableFriendlyErrors = true;
 
 var bolts = [];
-var boltCount = 2;
+var boltCount = 4;
 var detailDepth = 8;
 var forkChance = 0.6;
 
@@ -23,7 +23,7 @@ function setup() {
 
 function draw() {
   background('#bc9eca')
-
+    
   bolts.forEach(b => {
     b.show();
     if (b.done) b.regenerate();

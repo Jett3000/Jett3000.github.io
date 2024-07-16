@@ -28,7 +28,7 @@
 
 .bento-container {
   display: grid;
-  max-height: 79vh;
+  /*max-height: 79vh;*/
   max-width: 650px;
   grid: 1fr 100px / 1fr 1fr;
   gap: 20px;
@@ -59,6 +59,12 @@
   background: linear-gradient(90deg in oklab, #50afdb, #bc9eca, var(--bs-orange));
   background-size: 600% 100%;
   animation: intro-gradient 6s ease infinite;
+}
+
+#headshot {
+  max-height: 800px;
+  /*max-width: 100%;*/
+  object-fit: contain;
 }
 
 .bento-link {

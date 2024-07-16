@@ -6,18 +6,26 @@ main {
   justify-content: start;
 }
 
-#bio-card {
+#bio-image {
+  max-width: min(600px, 90vw);
+}
+
+.bio-card {
   max-width: min(800px, 90vw);
   margin-bottom: 120px;
 }
 
+.bio-heading {
+  font-size: 1.8rem;
+}
+
 p {
-  margin: 0;
+  margin-bottom: 24px;
   font-family: 'antarctican-mono', sans-serif;
   font-size: 1.1rem;
 }
 
-#name-span {
+.name-span {
   font-size: 1.4rem;
 }
 
