@@ -8,15 +8,17 @@ main {
 
 #bio-image {
   max-width: min(600px, 90vw);
+  max-height: 60vh;
 }
 
-.bio-card {
-  max-width: min(800px, 90vw);
+#bio-card {
   margin-bottom: 120px;
 }
 
 .bio-heading {
-  font-size: 1.8rem;
+  font-size: 1.3rem;
+  font-family: 'dico-code-one';
+  font-weight: 600;
 }
 
 p {
@@ -26,7 +28,8 @@ p {
 }
 
 .name-span {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
+  /*font-weight: 600;*/
 }
 
 p > a {
