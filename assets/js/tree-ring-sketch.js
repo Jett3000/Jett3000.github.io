@@ -103,7 +103,7 @@ function setup() {
     }
 
     // create the canvas for the sketch
-    let dim = min(window.innerWidth, window.innerHeight);
+    let dim = min(window.innerWidth, window.innerHeight - 100);
     let sketchNode = document.getElementById('sketch-container');
     let c = createCanvas(dim, dim, userSettings.renderMode);
     c.parent(sketchNode);

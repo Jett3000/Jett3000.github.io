@@ -13,14 +13,19 @@ html, body, main {
   min-width: min(100vw, 400px);
   height: 100vh;
   padding-top: 2vh;
+  /*display: flex;*/
 }
 
 .slider-title, .slider-label {
   color: #fcfaee;
 }
 
+slider-label {
+  padding-left: 20px;
+}
+
 .slider-title {
-  font-family: 'Inconsolata';
+  /*font-family: 'Inconsolata';*/
   font-size: 2rem;
 }
 

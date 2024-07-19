@@ -156,18 +156,16 @@
 }
 
 .project-link {
-  background: #0e0e0e;
-  color: #fcfcf8;
+  color: #50afdb;
   text-decoration: none;
   font-family: "antarctican-mono", sans-serif;
   font-weight: 400;
-  border: 1px solid #fcfaee;
   margin-bottom: 10px;
 }
 
 .project-link:hover {
   background: #50afdb;
-  color: #0e0e0e;
+  color: #fcfaee;
   box-shadow: 4px 4px 0px #bc9eca;
 }
 
@@ -199,13 +197,12 @@ p {
   margin-bottom: 0.5rem;
 }
 
-p > a {
-  text-decoration: none;
-  color: #1f4556;
+p > .project-link {
+  box-shadow: none;
 }
 
 p > a:hover {
-  text-decoration: underline;
+  /*text-decoration: underline;*/
   color: #fcfaee;
 }
 
