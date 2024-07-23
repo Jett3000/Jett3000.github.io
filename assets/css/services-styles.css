@@ -8,22 +8,32 @@ main {
 
 .service-card {
   margin-bottom: 20px;
+  max-width: min(800px, 90vw);
 }
 
 .service-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin-bottom: 16px;
+  max-width: min(800px, 90vw);
   text-decoration: none;
+  font-size: min(1.4rem, 18px);
+  text-align: center;
   background: #0e0e0e;
   color: #fcfaee;
-  font-size: min(1.4rem, 18px);
   transition: background 0.3s;
 }
 
 .service-link:hover {
   background: #fcfaee;
   color: #0e0e0e;
+}
+
+.service-heading {
+  margin-bottom: 16px;
+  width: min(800px, 90vw);
+  text-decoration: none;
+  text-align: center;
+  background: #bc9eca;
+  color: #fcfaee;
+  padding: 20px;
 }
 

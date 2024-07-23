@@ -1,0 +1,48 @@
+#main {
+  min-height: 100vh;
+}
+
+#contact-column {
+  max-width: min(700px, 90vw);
+  margin: auto;
+}
+
+.contact-form {
+  max-width: min(800px, 90vw);
+  margin: auto;
+  padding-bottom: 120px;
+}
+
+.form-element, .form-element::placeholder {
+  background: #0e0e0e;
+  color: #fcfaee;
+  font-family: 'antarctican-mono', sans-serif;
+  width: 100%;
+}
+
+.form-element:focus {
+  background: #0e0e0e;
+  color: #fcfaee;
+  box-shadow: none;
+  border-color: #50afdb;
+}
+
+.form-element {
+  border: solid 2px #bc9eca;
+}
+
+#form-button:hover {
+  background: #50afdb;
+  border-color: #fcfaee;
+}
+
+.form-greeeting {
+  color: #fcfaee;
+  /*text-align: center;*/
+}
+
+iframe > * {
+  background: #0e0e0e !important;
+  color: #fcfaee !important;
+}
+

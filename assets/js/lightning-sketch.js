@@ -18,7 +18,7 @@ function setup() {
   // clear main div to show canvas
   let mainNode = document.getElementById('main');
   mainNode.style.backgroundColor = '#00000000'
-  console.log(mainNode);
+  // console.log(mainNode);
 }
 
 function draw() {

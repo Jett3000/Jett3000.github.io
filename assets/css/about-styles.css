@@ -12,6 +12,7 @@ main {
 }
 
 #bio-card {
+  max-width: min(80ch, 90vw);
   margin-bottom: 120px;
 }
 

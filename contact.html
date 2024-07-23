@@ -14,7 +14,7 @@
     <link rel="icon" type="image/svg+xml" sizes="50x48" href="assets/img/sig-for-site.svg">
     <link rel="icon" type="image/svg+xml" sizes="50x48" href="assets/img/sig-for-site.svg">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/about-styles.css">
+    <link rel="stylesheet" href="assets/css/contact-styles.css">
     <link rel="stylesheet" href="assets/css/navbar-styles.css">
     <link rel="stylesheet" href="assets/css/sitewide-styles.css">
 <link rel="stylesheet" href="https://use.typekit.net/tzs4mab.css">
@@ -53,20 +53,25 @@
                     <path d="M11.793 8.5H9v-1h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.354-.146l-.853-.854zM5 7c0 .552-.448 0-1 0s-1 .552-1 0a1 1 0 0 1 2 0"></path>
                 </svg></a></li><!-- End: email -->
         <!-- Start: durmpac -->
-        <li class="right-nav-item collapsable-nav-item"><a href="services.html" target="_blank">services</a></li><!-- End: durmpac -->
+        <li class="right-nav-item collapsable-nav-item"><a href="services.html">services</a></li><!-- End: durmpac -->
         <!-- Start: about-me -->
         <li class="right-nav-item collapsable-nav-item"><a href="about.html">about me</a></li><!-- End: about-me -->
     </ul>
-    <main id="main"><img id="bio-image" src="assets/img/abt-headshot.webp">
-        <div id="bio-card" class="text-card light-card">
-            <h1 class="bio-heading">Brief (27 words, 199 characters)</h1>
-            <p class="bio-paragraph"><span class="name-span">Jett Pavlica</span>&nbsp;(b. 2000, they/them) is a computational artist from Durham, North Carolina exploring classic algorithms, physical simulations, and generative organic forms while creating public art events in their hometown.</p>
-            <h1 class="bio-heading">Short (85 words, 569 characters)</h1>
-            <p class="bio-paragraph"><span class="name-span">Jett Pavlica</span>&nbsp;(b. 2000, they/them) is a computational artist from Durham, North Carolina. Their work exists at the intersection of art and science, visualizing the output of countless computer programs working harmoniously to color a pixel, project light on the wall, or drag a pen across paper. Classic algorithms, physical simulations, and generative organic forms are frequent areas of exploration.<br><br>Jett is a founding member of the <a href="https://durmpac.art">Durham Powerful Arts Collective</a>&nbsp;where they design unique digital experiences and community engagement events that celebrate art and creativity within Durham.</p>
-        </div>
+    <main id="main">
+        <!-- Start: form and text -->
+        <div id="contact-column">
+            <h1 class="form-greeeting">I'm excited to hear from you.</h1>
+            <p class="form-greeeting">Please reach out with the form below, detailing the service you're seeking or the collaboration you have in mind. Include some times we can meet to get the ball rolling!</p>
+            <form class="contact-form" data-bss-recipient="c106c11fec3c249bee99703eacfc7fcd">
+                <div class="form-group mb-3"><input class="form-control form-element" type="text" id="name-field" name="name" placeholder="Name" required=""></div>
+                <div class="form-group mb-3"><input class="form-control form-element" type="email" id="email-field" name="email" placeholder="Email" required=""></div>
+                <div class="form-group mb-3"><textarea class="form-control form-element" id="message-field" name="message" placeholder="Message" rows="14" required="" minlength="10" style="background: #0e0e0e;color: #fcfaee;"></textarea></div>
+                <div class="text-center form-group mb-3"><button class="btn btn-primary form-element" id="form-button" type="submit" style="--bs-body-bg: #0e0e0e;--bs-body-color: #fcfaee;--bs-primary: #bc9eca;--bs-primary-rgb: 188,158,202;--bs-secondary: #50afdb;--bs-secondary-rgb: 80,175,219;">send </button></div>
+            </form>
+        </div><!-- End: form and text -->
     </main>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/lightning-sketch.js"></script>
+    <script src="assets/js/smart-forms.min.js"></script>
     <script src="assets/js/lover.js"></script>
 </body>
 

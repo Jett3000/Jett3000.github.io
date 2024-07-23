@@ -1,0 +1,185 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+}
+
+main {
+  width: 100%;
+  height: 100%;
+}
+
+main {
+  background: #000817;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: stretch;
+  padding: 3%;
+}
+
+@media (max-width:600px) {
+  main {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: start;
+    padding-top: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+  }
+}
+
+.screen-panel {
+  height: 100%;
+}
+
+@media (min-width: 601px) {
+  .screen-panel {
+    width: 50%;
+  }
+}
+
+#sketch-container {
+  padding: 0;
+}
+
+#artist-info-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  padding: 20px;
+  /*overflow-y: auto;*/
+}
+
+@media (min-width: 601px) {
+  #artist-info-panel {
+    overflow-y: auto;
+  }
+}
+
+#title-material-link-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15%;
+}
+
+#excerpt-container {
+  justify-content: right;
+}
+
+h1 {
+  color: gainsboro;
+  font-size: 2em;
+  font-family: josefin-sans, sans-serif;
+}
+
+h2 {
+  color: #B53391;
+  font-size: 1.5rem;
+  font-family: neuropol-x-light,sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+h2, a {
+  margin-bottom: 5px;
+}
+
+h3, p {
+  text-align: right;
+}
+
+h3 {
+  font-size: 1.8rem;
+  font-family: neuropol-x-light,sans-serif;
+  color: #B53391;
+}
+
+p {
+  font-size: 1.3rem;
+  color: gainsboro;
+  font-family: josefin-sans, sans-serif;
+}
+
+a {
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: #bc9eca;
+  font-family: kobenhavn-sans-stencil, sans-serif;
+}
+
+a:hover {
+  font-size: 1.6rem;
+  color: rgb(216,182,232);
+}
+
+#artist-index-link {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  p, h3 {
+    text-align: center;
+  }
+}
+
+@media (min-width: 601px) {
+  #title-mobile {
+    display: none;
+  }
+}
+
+@media (max-width:600px) {
+  #title-desktop {
+    display: none;
+  }
+}
+
+#button-spacer {
+  min-height: 5px;
+  width: 90%;
+  max-width: 600px;
+  background-color: #b53391;
+  margin-bottom: 15px;
+}
+
+.btn {
+  margin-bottom: 10px;
+  background-color: #b969ae;
+  border: none;
+  max-width: 400px;
+  width: 90%;
+  font-family: kobenhavn-sans-stencil, sans-serif;
+  font-size: 1.2rem;
+}
+
+.btn:hover {
+  /*margin-bottom: 10px;*/
+  background-color: #b53391;
+  border: solid;
+  border-color: gainsboro;
+  /*border-radius: 4px;*/
+  font-size: 1.2rem;
+}
+
+#mobile-page-extender {
+  min-height: 30vh;
+  min-width: 1px;
+}
+
+@media (min-width: 601px) {
+  #mobile-page-extender {
+    display: none;
+  }
+}
+
