@@ -1,16 +1,18 @@
-#main {
+main {
   min-height: 100vh;
 }
 
 #contact-column {
+  width: 100%;
   max-width: min(700px, 90vw);
   margin: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .contact-form {
   max-width: min(800px, 90vw);
-  margin: auto;
-  padding-bottom: 120px;
+  /*margin-bottom: 40px;*/
 }
 
 .form-element, .form-element::placeholder {
@@ -44,5 +46,20 @@
 iframe > * {
   background: #0e0e0e !important;
   color: #fcfaee !important;
+}
+
+.contact-link {
+  margin-bottom: 80px;
+  text-decoration: none;
+  font-size: min(1.4rem, 18px);
+  text-align: center;
+  background: #0e0e0e;
+  color: #fcfaee;
+  transition: background 0.3s;
+}
+
+.contact-link:hover {
+  background: #fcfaee;
+  color: #0e0e0e;
 }
 
