@@ -20,9 +20,10 @@ var nd = {
 
 function preload() {
   // loads fonts for title and supporting text
-  fontJosefine = loadFont("https://use.typekit.net/af/2ed95c/00000000000000007735a0cf/30/a?subset_id=2&fvd=i6&v=3");
+  fontJosefine = loadFont(
+      'https://use.typekit.net/af/2ed95c/00000000000000007735a0cf/30/a?subset_id=2&fvd=i6&v=3');
   fontNittiTypewriter = loadFont(
-    "https://use.typekit.net/af/b1404e/00000000000000007735f7e2/30/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3");
+      'https://use.typekit.net/af/b1404e/00000000000000007735f7e2/30/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3');
 }
 
 function setup() {
@@ -30,12 +31,12 @@ function setup() {
   let sketchNode = document.getElementById('cover-container')
   let c = createCanvas(window.innerWidth, window.innerHeight);
   c.parent(sketchNode);
-  fill("#DA48975A");
+  fill('#DA48975A');
   stroke(100);
   strokeWeight(2);
   frameRate(30);
 
-  // typography setyp
+  // typography setup
   textAlign(CENTER, CENTER);
   textFont(fontJosefine);
   // title sizing
@@ -85,7 +86,7 @@ function setup() {
 function draw() {
   // reset background
   blendMode(BLEND);
-  background("#000817");
+  background('#000817');
   blendMode(ADD);
 
   // animate PentaPrism
@@ -125,17 +126,15 @@ class PentaPrism {
 
     let initOffset = random(TWO_PI / 10);
     for (let i = 0; i < 5; i++) {
-      let offsetVec = p5.Vector.fromAngle(initOffset + (i * TWO_PI) / 5).mult(
-        random(width / 5, width / 3)
-      );
+      let offsetVec = p5.Vector.fromAngle(initOffset + (i * TWO_PI) / 5)
+                          .mult(random(width / 5, width / 3));
       this.frontPoints.push(p5.Vector.add(this.prismCenter1, offsetVec));
     }
 
     initOffset = random(TWO_PI / 10);
     for (let i = 0; i < 5; i++) {
-      let offsetVec = p5.Vector.fromAngle(initOffset + (i * TWO_PI) / 5).mult(
-        random(width / 5, width / 3)
-      );
+      let offsetVec = p5.Vector.fromAngle(initOffset + (i * TWO_PI) / 5)
+                          .mult(random(width / 5, width / 3));
       this.backPoints.push(p5.Vector.add(this.prismCenter2, offsetVec));
     }
   }
