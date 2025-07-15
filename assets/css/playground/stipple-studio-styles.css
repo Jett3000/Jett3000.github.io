@@ -1,0 +1,95 @@
+#app-container {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+@media (min-width: 992px) {
+  #app-container {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+#control-panel {
+  height: 100vh;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+  padding-bottom: 20px;
+}
+
+@media (min-width: 992px) {
+  #control-panel {
+    padding-bottom: 0;
+  }
+}
+
+.subpanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  max-width: 80%;
+}
+
+#count-label {
+  text-align: center;
+}
+
+.slider-holder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#canvas-container {
+  width: 100%;
+  /*height: 100vh;*/
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload, button, select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 6px 12px;
+  background-color: #0000;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 6px;
+  border: 2px solid var(--blue);
+}
+
+:root {
+  --dark: #000000;
+  --light: #f7f6f4;
+  --pink: #f8c8dc;
+  --blue: #50afdb;
+  --sm-margin: 12px;
+  --md-margin: 18px;
+  --lg-margin: 24px;
+}
+
+p, label, select, button {
+  font-family: 'Atkinson Hyperlegible Mono', sans-serif;
+  font-size: .8rem;
+}
+

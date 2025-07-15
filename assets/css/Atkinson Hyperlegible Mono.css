@@ -1,0 +1,125 @@
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-eac2eee21f3a5ba43a9bdcf15aa1b8ac.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-1a4e770defdfb536202d6d0f106c000b.woff) format('woff');
+	font-weight: 200;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-7f402b46a896811ae31cd295dcdac0ed.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-afaaafe54d2002edb3531459aa377a2a.woff) format('woff');
+	font-weight: 200;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-bc00aeddbc92a4c3e9fce14164d2edb8.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-f9d1fc6ab7a8cd180aef2f4953806d96.woff) format('woff');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-434f5dceea1e8c7084d86066720cf53b.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-d8de58057e6b86a2ec905321ac84490e.woff) format('woff');
+	font-weight: 300;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-80e8af7170f0f3d30bf09451ad56b4a1.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-347df2c9490a05c93292ff339ebf44d8.woff) format('woff');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-7ad88c25b52c9f32ac67be02b5fdfe27.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-0634cd4a9af6020ede0782034d509499.woff) format('woff');
+	font-weight: normal;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-1c2d3e5acd1098d149a7dd3c0882ef5b.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-8fbfe96e83c3ef2f5ce34a5a7689acd6.woff) format('woff');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-0758582052b3e852a65e51b6a15a98e7.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-158d11b0c0933708b25c7437da87a3f6.woff) format('woff');
+	font-weight: 500;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-cda1836f16022afd7acb3caf3bf6b4ad.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-42d3a1db9d508eb5dba80e1eab7f4dea.woff) format('woff');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-a8d0ac9781c78261c04e17044faa541a.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-617862d6bd072fda4f7051a4f39bd244.woff) format('woff');
+	font-weight: 600;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-2d648a6c98f0c326f20109a0edfa2df5.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-49e0768b2d5eb8389f9587aa0aca93df.woff) format('woff');
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-65637f005ec013e96ba88127461f9f49.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-33e5d6b393b5bd9968dbc78279b38d14.woff) format('woff');
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-5c7d3c5dd87304001f9fd222300926e1.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-a0dcf71b2406a0d398167ba52299be53.woff) format('woff');
+	font-weight: bold;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible Mono';
+	src: url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-e2bb828185021a5e97c91ff63e4bbc35.woff2) format('woff2'),
+	url(../../assets/fonts/Atkinson%20Hyperlegible%20Mono-a25191053b30c76d052767478acf7f68.woff) format('woff');
+	font-weight: bold;
+	font-style: italic;
+	font-display: swap;
+}

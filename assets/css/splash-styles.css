@@ -1,0 +1,48 @@
+/* main container for nav and portrait */
+
+#splash-container {
+  display: grid;
+  grid-template-columns: 4fr 3fr;
+}
+
+@media (max-width: 768px) {
+  #splash-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+}
+
+/* main nav panel */
+
+#card-holder {
+  min-width: min(400px, 30vw);
+  place-self: center center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-margin);
+}
+
+#project-thumb-holder {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--md-margin);
+}
+
+#project-thumb-holder > * {
+  flex: 1;
+}
+
+/* splash stipple portrait */
+
+#headshot {
+  place-self: end end;
+  max-height: 95vh;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  #headshot {
+    max-height: 50vh;
+  }
+}
+
