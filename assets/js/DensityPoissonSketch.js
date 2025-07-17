@@ -20,7 +20,7 @@ var samplerBank = [];
 var sampleBank = [];
 
 function preload() {
-    loadImage('default.png', (img) => {
+    loadImage('/assets/img/default.png', (img) => {
         userImage = img;
     }, (e) => {
         console.log(e);
