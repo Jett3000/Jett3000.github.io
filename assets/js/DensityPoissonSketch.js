@@ -14,7 +14,7 @@ var imageInputElement;
 var drawModeInput;
 var canvasContainer;
 
-// for cymk stuff
+// for handling multple samplers in cymk mode
 var cmykMode = false;
 var samplerBank = [];
 var sampleBank = [];
@@ -48,13 +48,16 @@ function setup() {
     countLabel = document.getElementById('count-label');
 
     // setup file handling
-    imageInputElement = createFileInput(handleImage);
+    imageInputElement = createFileInput(uploadImageToDOM);
     imageInputElement.parent(document.getElementById('button-panel'))
     imageInputElement.elt.id = 'file-upload';
 
     // setup file saving
-    document.getElementById('user-download').onclick = () => {
-        renderToSVG();
+    document.getElementById('user-download-svg').onclick = () => {
+        renderToFile('SVG');
+    };
+    document.getElementById('user-download-png').onclick = () => {
+        renderToFile('PNG');
     };
 
     // load drawMode selection & handle swapping
@@ -264,13 +267,16 @@ function saveUserData() {
     storeItem('userData', userData);
 }
 
-function renderToSVG() {
-    let graphics = createGraphics(userImage.width, userImage.height, SVG);
+function renderToFile(fileType) {
+    let renderer = fileType === 'SVG' ? SVG : P2D;
+    let graphics = createGraphics(userImage.width, userImage.height, renderer);
+    graphics.noFill()
     for (let sample of activeSampler.samples) {
         graphics.circle(sample.pos.x, sample.pos.y, userSliders.radius.value / 2);
     }
     graphics.save();
 }
+
 
 
 // image helpers
@@ -286,31 +292,47 @@ function sizeToCanvas(image) {
     resizeCanvas(image.width, image.height)
 }
 
-function handleImage(file) {
-    imgLoaded = false;
-    if (file.type === 'image') {
-        bufferImage = createImg(
-            file.data, 'Alt text', 'anonymous', imgCreated);
-        bufferImage.hide();
+// given an image file, creates a DOM img element containing the image
+// invokes domToP5Image() on success
+function uploadImageToDOM(file) {
+    if (file.type !== 'image') {
+        alert('unsupported file type');
+        return;
+    }
+
+    if (file.name.split('.').pop().toLowerCase() == 'heic') {
+        // Convert the HEIC file to a Blob
+        const blob = new Blob([file.file], { type: file.file.type });
+        // Use heic2any to convert HEIC to PNG
+        heic2any({
+            blob: blob,
+            toType: "image/png",
+        }).then((convertedBlob) => {
+            // Create an image DOM element to hold the converted image
+            bufferImage = createImg(URL.createObjectURL(convertedBlob), '', 'anonymous', domToP5Image);
+            bufferImage.hide(); // Hide the image element (we only need its src for the canvas)
+        }).catch((err) => {
+            console.error("HEIC conversion failed: ", err);
+        });
     } else {
-        bufferImage = null;
+        bufferImage = createImg(
+            file.data, 'Alt text', 'anonymous', domToP5Image);
+        bufferImage.hide();
     }
 }
 
-// Once the img element is created, use it to 
-// convert the image element into a p5Image object. 
-function imgCreated() {
-    bufferImage.hide();
-    // Create a temporary p5.Graphics object to draw the image.
+// converts the image stored in the global bufferImage DOM element
+// to p5.Image, then saves it in the global userImage variable
+function domToP5Image() {
+    // draw the image to a temporary p5.Graphics element, copy into p5.Image, then remove
     let g = createGraphics(bufferImage.elt.width, bufferImage.elt.height);
     g.image(bufferImage, 0, 0);
-    // Remove the original element from the DOM.
-    bufferImage.remove();
-    // g.get will return image data as a p5.Image object
-    bufferImage = g.get(0, 0, g.width, g.height)
+    userImage = g.get(0, 0, g.width, g.height)
 
-    // Record that we have finished creating the image object.
-    imgLoaded = true;
-    userImage = bufferImage;
+    // clean up
+    bufferImage.remove();
+    g.remove();
+
+    // with the image loaded, initialize sampler
     initializeSampler();
 }

@@ -1,3 +1,26 @@
+.user-guide-text > a {
+  text-decoration: underline var(--blue);
+}
+
+.user-guide-text > a:hover {
+  text-decoration: underline var(--pink);
+}
+
+.user-guide-text {
+  font-size: 1rem;
+  max-width: 44ch;
+}
+
+.user-guide-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: var(--md-margin);
+  gap: var(--md-margin);
+  text-align: center;
+  padding-bottom: var(--lg-margin);
+}
+
 #app-container {
   display: flex;
   flex-direction: column-reverse;
@@ -10,20 +33,23 @@
   }
 }
 
-#control-panel {
-  height: 100vh;
-  min-width: 180px;
+.control-panel {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  gap: var(--lg-margin);
   align-items: center;
-  padding: 0 10px;
-  padding-bottom: 20px;
+  padding: var(--lg-margin) 10px;
 }
 
 @media (min-width: 992px) {
-  #control-panel {
-    padding-bottom: 0;
+  .control-panel {
+    height: 100vh;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    align-items: center;
+    padding: var(--lg-margin) 10px;
   }
 }
 
@@ -33,7 +59,7 @@
   justify-content: center;
   align-items: center;
   gap: 30px;
-  max-width: 80%;
+  width: 80%;
 }
 
 #count-label {
@@ -44,6 +70,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 }
 
 #canvas-container {
@@ -65,7 +92,7 @@ input[type="file"] {
   display: none;
 }
 
-.custom-file-upload, button, select {
+.custom-file-upload, button, select, #user-guide {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,8 +115,14 @@ input[type="file"] {
   --lg-margin: 24px;
 }
 
-p, label, select, button {
+p, label, select, button, #user-guide {
   font-family: 'Atkinson Hyperlegible Mono', sans-serif;
-  font-size: .8rem;
+  /*font-size: .8rem;*/
+  color: black !important;
+  text-decoration: none;
+}
+
+h1 {
+  font-family: 'Atkinson Hyperlegible Mono', sans-serif;
 }
 

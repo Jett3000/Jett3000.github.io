@@ -6,6 +6,7 @@ input[type="range"] {
   background: transparent;
   cursor: pointer;
   margin-bottom: var(--sm-margin);
+  width: 100%;
 }
 
 /* Removes default focus */

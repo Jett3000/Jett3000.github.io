@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Jett Pavlica</title>
+    <meta name="twitter:card" content="summary">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Jett Pavlica's Portfolio">
+    <meta property="og:image" content="https://jett.codes/assets/img/headshot-in-pink.webp">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/Atkinson%20Hyperlegible%20Mono.css">
+    <link rel="stylesheet" href="assets/css/glass.css">
+    <link rel="stylesheet" href="assets/css/sitewide-styles.css">
+    <link rel="stylesheet" href="assets/css/playground/stipple-studio-styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+</head>
+
+<body id="body" class="user-guide-body" style="background: pink;">
+    <h1>Stipple Studio <br>User Guide</h1>
+    <p class="user-guide-text"><a href="stipple-studio.html">Stipple Studio</a>&nbsp;is an in-browser rendering tool that converts bitmap images into stipple patterns for pen plotting.</p>
+    <p class="user-guide-text">Users can control various aspects of the Poisson Disc sampling process, allowing for finely tuned stipple renders.</p>
+    <p class="user-guide-text">Clicking on the canvas will attempt to spawn an active sample under the mouse, useful for filling in missed areas.</p>
+    <p class="user-guide-text">Stipple Studio can export in bitmap and vector formats.</p>
+    <p class="user-guide-text"><strong>Controls:</strong></p>
+    <p class="user-guide-text"><strong>Attempts</strong>&nbsp;controls how many times a sample will try to spawn new samples before marking itself inactive. High values fill in the image more consistently, at the cost of slower performance.</p>
+    <p class="user-guide-text"><strong>Spawn Radius</strong>&nbsp;sets the minimum radius for spawning new samples. Low values generate more detailed images, with longer plotting times.</p>
+    <p class="user-guide-text"><strong>Highlights</strong>&nbsp;applies a multiplier to the maximum spawning radius for new samples, making bright areas lighter with more spread out samples.</p>
+    <p class="user-guide-text"><strong>Shadows</strong>&nbsp;applies a curve to the image's luminance, making dim areas darker with more densely packed samples.&nbsp;&nbsp;</p>
+    <p class="user-guide-text"><strong>For Plotters:</strong></p>
+    <p class="user-guide-text">These plots can get intense quickly!<br><a href="https://vpype.readthedocs.io/en/latest/index.html" target="_blank">vpype</a>&nbsp;or another SVG optimizing tool is essential before plotting. (native optimization coming soon)</p>
+    <p class="user-guide-text">For my plotter, an iDraw2.0 A3, it takes about an hour to do 20k dots.</p>
+    <p class="user-guide-text">Densely packed areas can use a lot of ink, be sure to fill your reservoir or use a fresh pen if possible.</p>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/background-shader.js"></script>
+</body>
+
+</html>

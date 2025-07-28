@@ -17,31 +17,41 @@
     <link rel="stylesheet" href="assets/css/Atkinson%20Hyperlegible%20Mono.css">
     <link rel="stylesheet" href="assets/css/playground/stipple-studio-styles.css">
     <link rel="stylesheet" href="assets/css/playground/slider-styles.css">
+<script src="https://cdn.jsdelivr.net/npm/heic2any"></script>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"
     integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <script src="https://unpkg.com/p5.js-svg@1.5.1"></script>
 </head>
 
 <body style="background-color: var(--pink);">
     <div id="app-container">
-        <div id="control-panel">
-            <div id="slider-panel" class="subpanel">
-                <div class="slider-holder"><input type="range" id="radius-slider" max="5" min="1" step="0.001"><label for="radius-slider">Radius</label></div>
-                <div class="slider-holder"><input type="range" id="attempts-slider" max="40" min="1" step="1"><label for="attempts-slider">Attempts</label></div>
-                <div class="slider-holder"><input type="range" id="contrast-slider" max="12" min="0" step="0.1"><label for="contrast-slider">Contrast</label></div>
-                <div class="slider-holder"><input type="range" id="lightness-slider" max="25" min="1" step="1"><label for="lightness-slider">Lightness</label></div>
+        <div id="generator-panel" class="control-panel"><a role="button" id="user-guide" href="stipple-studio-guide.html">User Guide</a>
+            <p class="panel-element">Render Settings</p>
+            <div id="slider-panel" class="subpanel panel-element">
+                <div class="slider-holder panel-element"><input type="range" id="attempts-slider" class="panel-element" max="40" min="1" step="1"><label class="panel-element" for="attempts-slider">Attempts</label></div>
+                <div class="slider-holder panel-element"><input type="range" id="radius-slider" class="panel-element" max="5" min="1" step="0.001"><label class="panel-element" for="radius-slider">Spawn Radius</label></div>
+                <div class="slider-holder panel-element"><input type="range" id="lightness-slider" class="panel-element" max="25" min="1" step="1"><label class="panel-element" for="lightness-slider">Highlights</label></div>
+                <div class="slider-holder panel-element"><input type="range" id="contrast-slider" class="panel-element" max="12" min="0" step="0.1"><label class="panel-element" for="contrast-slider">Shadows</label></div>
             </div>
-            <p id="count-label">Circles:<br>&nbsp;0</p>
-            <div class="subpanel" style="gap:0px;">
-                <p>Mode:</p><select id="draw-mode-dropdown" name="draw-mode">
+            <p id="count-label" class="panel-element">Circles:<br>&nbsp;0</p>
+            <div class="subpanel panel-element" style="gap:0px;">
+                <p class="panel-element">Mode:</p><select id="draw-mode-dropdown" class="panel-element" name="draw-mode">
                     <option value="luminance">Luminance</option>
                     <option value="cmyk">C M Y K</option>
                 </select>
             </div>
-            <div id="button-panel" class="subpanel"><button type="button" id="user-regenerate">Regenerate</button><button type="button" id="user-download">Download SVG</button><label class="custom-file-upload" for="file-upload"> Upload Image </label></div>
+            <div id="button-panel" class="subpanel panel-element"><button id="user-regenerate" class="panel-element" type="button">Regenerate</button></div>
         </div>
-        <div id="canvas-container"></div>
+        <div id="canvas-container">
+            <h1 id="p5_loading">loading stipple studio...</h1>
+        </div>
+        <div id="export-panel" class="control-panel">
+            <p>Upload &amp; Export</p><label class="custom-file-upload" for="file-upload"> Upload Image </label><button id="user-download-svg" type="button">Export SVG</button><button id="user-download-png" type="button">Export PNG</button>
+        </div>
     </div>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/DensityPoissonSampler.js"></script>
