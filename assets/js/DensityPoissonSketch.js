@@ -34,7 +34,6 @@ function setup() {
     canvas.parent(canvasContainer)
     noFill();
     strokeWeight(1.7);
-    // blendMode(ADD)
     console.log("canvas created")
 
     // size the density map to the canvas
@@ -54,7 +53,7 @@ function setup() {
 
     // setup file saving
     document.getElementById('user-download-svg').onclick = () => {
-        renderToFile('SVG');
+        renderToSVG();
     };
     document.getElementById('user-download-png').onclick = () => {
         renderToFile('PNG');
@@ -275,6 +274,29 @@ function renderToFile(fileType) {
         graphics.circle(sample.pos.x, sample.pos.y, userSliders.radius.value / 2);
     }
     graphics.save();
+}
+
+function renderToSVG() {
+    let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">\n`;
+
+    for (let sample of activeSampler.samples) {
+        svgContent += `  <circle cx="${Math.round(sample.pos.x * 10000) / 10000}" cy="${Math.round(sample.pos.y * 10000) / 10000}" r="${userSliders.radius.value / 2}" />\n`;
+    }
+    svgContent += `</svg>`;
+
+    const blob = new Blob([svgContent], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    let now = new Date();
+    link.download = "stipple_render_" + now.toLocaleTimeString().slice(0, -3) + ".svg"; // Filename for the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Release the object URL
+    URL.revokeObjectURL(url);
 }
 
 
