@@ -36,7 +36,7 @@
 .control-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--lg-margin);
+  /*gap: var(--md-margin);*/
   align-items: center;
   padding: var(--lg-margin) 10px;
 }
@@ -47,7 +47,7 @@
     min-width: 200px;
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: var(--sm-margin);
     align-items: center;
     padding: var(--lg-margin) 10px;
   }
@@ -124,5 +124,14 @@ p, label, select, button, #user-guide {
 
 h1 {
   font-family: 'Atkinson Hyperlegible Mono', sans-serif;
+}
+
+button-group {
+  /*display: flex;*/
+  /*flex-direction: column;*/
+}
+
+.panel-button {
+  margin-bottom: var(--sm-margin);
 }
 

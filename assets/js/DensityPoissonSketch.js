@@ -19,6 +19,16 @@ var cmykMode = false;
 var samplerBank = [];
 var sampleBank = [];
 
+// banding effect
+var stopsInput;
+var colorInput;
+var addColorButton;
+var removeColorButton;
+var clearColorButton;
+var bandingColors = [];
+var bandingStops = [];
+
+
 function preload() {
     loadImage('/assets/img/default.png', (img) => {
         userImage = img;
@@ -42,6 +52,10 @@ function setup() {
     // load DOM sliders into sketch memory
     initializeSliders();
     console.log("sliders initialized")
+
+    // load banding controls into sketch memory
+    initializeBandingControls();
+
 
     // load count label to sketch memory
     countLabel = document.getElementById('count-label');
@@ -110,6 +124,36 @@ function initializeSliders() {
     })
 }
 
+function initializeBandingControls() {
+    stopsInput = document.getElementById('stops-input')
+    colorInput = document.getElementById('color-input');
+    addColorButton = document.getElementById('add-color');
+    removeColorButton = document.getElementById('remove-color')
+    clearColorButton = document.getElementById('clear-color')
+
+    addColorButton.onclick = () => {
+        bandingColors.push(color(colorInput.value))
+        displayBandingColors();
+    }
+
+    removeColorButton.onclick = () => {
+        if (bandingColors.length > 1) {
+            bandingColors.pop();
+            colorInput.value = bandingColors[bandingColors.length - 1].toString('#rrggbb');
+        } else {
+            bandingColors = [];
+            colorInput.value = '#000000';
+        }
+        displayBandingColors();
+    }
+
+    clearColorButton.onclick = () => {
+        bandingColors = [];
+        colorInput.value = '#000000';
+        displayBandingColors();
+    }
+}
+
 function initializeSampler() {
     if (userImage.height > height ||
         userImage.width > width ||
@@ -158,16 +202,17 @@ function initializeSampler() {
 }
 
 function draw() {
-    // let drawMode = drawModeInput.options[drawModeInput.selectedIndex].value;
-
     switch (drawModeInput.options[drawModeInput.selectedIndex].value) {
         case 'luminance':
             if (!activeSampler.samplesFull) {
                 let newSamples = activeSampler.growSamples();
                 if (newSamples) {
                     // draw new samples 
-                    stroke(0);
+                    // stroke(0);
                     for (let s of newSamples) {
+                        console.log(channelValtoColor(s.chanelVal));
+
+                        stroke(channelValtoColor(s.chanelVal))
                         circle(s.pos.x, s.pos.y, userSliders.radius.value)
                     }
                     // update circle count lable
@@ -254,7 +299,11 @@ function mouseClicked() {
         }
         loop();
     }
+
+    channelValtoColor(0);
 }
+
+
 
 function saveUserData() {
     let userData = {
@@ -276,6 +325,8 @@ function renderToFile(fileType) {
     graphics.save();
 }
 
+
+// custom svg construction for lightweight files with thousands of elements
 function renderToSVG() {
     let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">\n`;
 
@@ -298,7 +349,6 @@ function renderToSVG() {
     // Release the object URL
     URL.revokeObjectURL(url);
 }
-
 
 
 // image helpers
@@ -357,4 +407,35 @@ function domToP5Image() {
 
     // with the image loaded, initialize sampler
     initializeSampler();
+}
+
+// receives a float value and returns a color from the user supplied bands
+function channelValtoColor(val) {
+    if (!bandingColors.length) return color(0);
+
+    for (let i = 0; i < bandingStops.length - 1; i++) {
+        if (val >= bandingStops[i] && val < bandingStops[i + 1]) {
+            return bandingColors[i]
+        }
+    }
+    // use last stop
+    return bandingColors[bandingColors.length - 1];
+}
+
+function displayBandingColors() {
+    let label = document.getElementById("banding-color-label")
+    let string = `Banding Colors<br>`;
+    for (let col of bandingColors) {
+        string += `<span style="color: ${col.toString()}; font-size: 1.5em;">█ </span>`
+    }
+    label.innerHTML = string;
+
+    // also recalculate the stops for display
+    bandingStops = [];
+    for (let i = 0; i < bandingColors.length; i++) {
+        // evenly spaced value from 0 to 1
+        let t = i / bandingColors.length;
+        // apply exponent
+        bandingStops.push(Math.pow(t, parseFloat(userSliders.contrast.value)));
+    }
 }
