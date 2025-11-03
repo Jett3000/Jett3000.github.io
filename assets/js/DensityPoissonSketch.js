@@ -53,7 +53,7 @@ function setup() {
     initializeSliders();
     console.log("sliders initialized")
 
-    // load banding controls into sketch memory
+    // load palette controls into sketch memory
     initializeBandingControls();
 
 
@@ -70,7 +70,7 @@ function setup() {
         renderToSVG();
     };
     document.getElementById('user-download-png').onclick = () => {
-        renderToFile('PNG');
+        save();
     };
 
     // load drawMode selection & handle swapping
@@ -83,6 +83,7 @@ function setup() {
     document.getElementById('user-regenerate').onclick = () => {
         initializeSampler();
     };
+
     // begin generations :)
     console.log("initializing sampler...");
     initializeSampler();
@@ -133,7 +134,7 @@ function initializeBandingControls() {
 
     addColorButton.onclick = () => {
         bandingColors.push(color(colorInput.value))
-        displayBandingColors();
+        handlePaletteChange(true);
     }
 
     removeColorButton.onclick = () => {
@@ -144,14 +145,18 @@ function initializeBandingControls() {
             bandingColors = [];
             colorInput.value = '#000000';
         }
-        displayBandingColors();
+        handlePaletteChange(true);
     }
 
     clearColorButton.onclick = () => {
-        bandingColors = [];
+        bandingColors = [color(0)];
         colorInput.value = '#000000';
-        displayBandingColors();
+        handlePaletteChange(true);
     }
+
+    bandingColors = [color(0)];
+    colorInput.value = '#000000';
+    handlePaletteChange();
 }
 
 function initializeSampler() {
@@ -208,10 +213,7 @@ function draw() {
                 let newSamples = activeSampler.growSamples();
                 if (newSamples) {
                     // draw new samples 
-                    // stroke(0);
                     for (let s of newSamples) {
-                        console.log(channelValtoColor(s.chanelVal));
-
                         stroke(channelValtoColor(s.chanelVal))
                         circle(s.pos.x, s.pos.y, userSliders.radius.value)
                     }
@@ -299,8 +301,6 @@ function mouseClicked() {
         }
         loop();
     }
-
-    channelValtoColor(0);
 }
 
 
@@ -315,15 +315,15 @@ function saveUserData() {
     storeItem('userData', userData);
 }
 
-function renderToFile(fileType) {
-    let renderer = fileType === 'SVG' ? SVG : P2D;
-    let graphics = createGraphics(userImage.width, userImage.height, renderer);
-    graphics.noFill()
-    for (let sample of activeSampler.samples) {
-        graphics.circle(sample.pos.x, sample.pos.y, userSliders.radius.value / 2);
-    }
-    graphics.save();
-}
+// function renderToFile(fileType) {
+//     let renderer = fileType === 'SVG' ? SVG : P2D;
+//     let graphics = createGraphics(userImage.width, userImage.height, renderer);
+//     graphics.noFill()
+//     for (let sample of activeSampler.samples) {
+//         graphics.circle(sample.pos.x, sample.pos.y, userSliders.radius.value / 2);
+//     }
+//     graphics.save();
+// }
 
 
 // custom svg construction for lightweight files with thousands of elements
@@ -331,7 +331,11 @@ function renderToSVG() {
     let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">\n`;
 
     for (let sample of activeSampler.samples) {
-        svgContent += `  <circle cx="${Math.round(sample.pos.x * 10000) / 10000}" cy="${Math.round(sample.pos.y * 10000) / 10000}" r="${userSliders.radius.value / 2}" />\n`;
+        let col = ``;
+        if (bandingColors.length) {
+            col = `stroke="${channelValtoColor(sample.chanelVal).toString()}"`
+        }
+        svgContent += `  <circle ${col} cx="${Math.round(sample.pos.x * 10000) / 10000}" cy="${Math.round(sample.pos.y * 10000) / 10000}" r="${userSliders.radius.value / 2}" />\n`;
     }
     svgContent += `</svg>`;
 
@@ -422,9 +426,9 @@ function channelValtoColor(val) {
     return bandingColors[bandingColors.length - 1];
 }
 
-function displayBandingColors() {
+function handlePaletteChange(retrigger = false) {
     let label = document.getElementById("banding-color-label")
-    let string = `Banding Colors<br>`;
+    let string = `Palette:<br>`;
     for (let col of bandingColors) {
         string += `<span style="color: ${col.toString()}; font-size: 1.5em;">█ </span>`
     }
@@ -437,5 +441,10 @@ function displayBandingColors() {
         let t = i / bandingColors.length;
         // apply exponent
         bandingStops.push(Math.pow(t, parseFloat(userSliders.contrast.value)));
+    }
+
+    // optionally redraw the render
+    if (retrigger) {
+        initializeSampler();
     }
 }
