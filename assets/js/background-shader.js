@@ -33,6 +33,10 @@ function draw() {
     scrollOffset *= 0.999;
     
   shader(shaderObject)
+let mx =  2*(mouseX - width/2) / min(width, height);
+let my = 2*(mouseY - height/2) / -min(width, height);
+
+shaderObject.setUniform('u_mouse', [mx, my]);
 
   shaderObject.setUniform('u_resolution', [width, height])
   shaderObject.setUniform('u_time', millis() / 1000.0)
@@ -79,6 +83,7 @@ precision mediump float;
 
 // sketch uniforms
 uniform vec2 u_resolution;
+uniform vec2 u_mouse;
 uniform float u_time;
 uniform float u_seed;
 uniform float u_scroll;
@@ -107,11 +112,13 @@ void main() {
 
   float currTime = u_time * speed;
 
+float mouseD = distance(uv, u_mouse) * 4.0;
+
   float d = -currTime;
   float a = 0.0 + u_seed / 3.1415;
   for (float i = 0.0; i < 8.0; ++i) {
     a += cos(u_seed + i - d - a * uv.x);
-    d += sin(u_scroll *0.001 + u_seed + uv.y * i + a);
+    d += sin(u_scroll *0.001 + u_seed + uv.y * i + a + mouseD);
   }
   d += currTime;
   vec3 col = vec3(cos(uv * vec2(d, a)) * 0.6 + 0.4, cos(a + d) * 0.5 + 0.5);
