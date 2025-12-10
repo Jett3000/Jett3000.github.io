@@ -1,0 +1,29 @@
+p, h1 {
+  font-family: 'Atkinson Hyperlegible Mono';
+  font-weight: 100;
+  color: white;
+  max-width: min(92vw, 600px);
+  margin: 16px auto;
+  text-align: justify;
+  line-height: 1.7rem;
+}
+
+p {
+  margin-bottom: 32px;
+}
+
+a {
+  color: #f8c8dc;
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgb(255, 20, 20);
+  text-decoration: underline;
+}
+
+html, body {
+  padding: 12px;
+  background: black;
+}
+

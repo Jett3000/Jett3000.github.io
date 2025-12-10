@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Sketch</title>
+    <meta name="twitter:card" content="summary">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Jett Pavlica's Portfolio">
+    <meta property="og:image" content="https://jett.codes/assets/img/headshot-in-pink.webp">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/Atkinson%20Hyperlegible%20Mono.css">
+    <link rel="stylesheet" href="assets/css/ssd-styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+</head>
+
+<body>
+    <div id="canvas-container">
+        <p class="clear-text" id="title">Soli State Drive</p>
+        <p id="board-display"></p>
+        <div id="options-container"></div>
+        <div id="button-container">
+            <div class="button-pair">
+                <p class="button toggled" id="dfs-button">DFS</p>
+                <p class="button" id="bfs-button">BFS</p>
+            </div>
+            <p class="button toggled" id="backtracking" style="text-align:center;">with backtracking</p>
+            <p>————————</p>
+            <p class="button" id="toggle-camera">c | chase camera</p>
+            <p class="button" id="automate-button">a | automate +500</p>
+            <p class="button" id="fast-physics">f | fast physics</p><input type="range" id="speed-slider" max="20" min="1.1" step="0.1" style="display:none;" value="10">
+            <p id="node-label">-<br>-<br>-<br>-<br>-<br>-</p>
+            <p class="button" id="new-game">n | new game</p>
+        </div>
+        <p class="clear-text" id="credit-line"><a class="clear-text" href="about-ssd.html">about soli state drive</a> | <a class="clear-text" href="index.html">created by Jett</a></p>
+    </div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/ssd-js/graph.mjs" type="module"></script>
+    <script src="assets/js/ssd-js/octree.mjs" type="module"></script>
+    <script src="assets/js/ssd-js/board.mjs" type="module"></script>
+</body>
+
+</html>

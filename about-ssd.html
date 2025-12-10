@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en" style="background: var(--dark);">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Jett Pavlica</title>
+    <meta name="twitter:card" content="summary">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Jett Pavlica's Portfolio">
+    <meta property="og:image" content="https://jett.codes/assets/img/headshot-in-pink.webp">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/Atkinson%20Hyperlegible%20Mono.css">
+    <link rel="stylesheet" href="assets/css/abt-ssd-styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+</head>
+
+<body>
+    <p>major thank you to&nbsp;<a href="https://www.youtube.com/watch?v=YGLNyHd2w10">2swap</a>&nbsp;for inspiring this project</p>
+    <h1><br>Keybinds (unlisted)</h1>
+    <p>Fast Mode - explores new nodes offscreen, faster<br>- j to enter/exit<br>- k to add any offscreen nodes to the graph<br>Simulation<br>- w to scramble node positions (really fun)<br>- x to disable the global central attraction force<br>- q to cancel all exploration<br>- s to explore the next state space, once<br>- z to backtrack to the current node's parent<br>- r to return to the root node</p>
+    <h1><br>Soli</h1>
+    <p>Solitaire is a game some people find fun that generally involves merging groups of cards to continue a pattern formed by their suits and ranks. It is my go to when it's time for bed but I'm not tired yet.&nbsp;</p>
+    <h1>State</h1>
+    <p>The arrangement of all the cards in a given game, their positions in the draw deck, build piles, columns, and etc, is considered the "state" of the game for our purposes. Moving a card, either between columns, from the deck to the draw pile, or otherwise, creates a new state of the game. By calling these states nodes, and these moves links, I learned all the graph theory I needed for this project.</p>
+    <h1>Drive</h1>
+    <p>In SSD, the user can select a move from a list of currently legal moves, or let the computer try things out at lightning speed. As new nodes are discovered, they are added to the 3D force directed graph simulation. Keep an eye out for green, blue, and purple nodes - they hue shift as the board approaches victory.</p>
+    <h1><br>Technical Stuff</h1>
+    <p>The canvas API of choice is p5.js in WebGL mode, the graph simulation is done with a Barnes-Hut octree for repulsion and a simple spring integration for the links, all custom. There's some optimization opportunities left to go but architecturally, my mind is on WebGPU compute shaders...</p>
+    <h1><br>Keywords (seo listed)</h1>
+    <p style="text-align: left;">state machine, graph theory, real-time simulation, n-body simulation, barnes-hut, webgl, p5.js, solitaire, <br>force directed graph, data visualization, <br>particle systems,&nbsp;creative coding</p>
+    <p id="credit-line" style="text-align: center;"><a class="clear-text" href="ssd.html">soli state drive</a> | <a class="clear-text" href="index.html">site homepage</a></p>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>
