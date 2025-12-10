@@ -1,10 +1,12 @@
 let shaderObject;
 let seedOffset;
 let scrollOffset = 0;
-// window.addEventListener('scroll', () => scrollOffset = scrollY);
+
 
 let lastX = 0;
 let lastY = 0;
+
+let mouseVec;
 
 
 function windowResized() {
@@ -22,22 +24,26 @@ function setup() {
   // setup shaders
   shaderObject = createShader(vert, frag)
   seedOffset = random(TWO_PI);
+
+  //allocate mouse vector
+  mouseVec = createVector(width / -min(width, height), 2 * (height / 2) / min(width, height));
 }
 
 
 function draw() {
-    // react to mouse
-    scrollOffset += abs(lastX - mouseX) + abs(lastY - mouseY);
-    lastX = mouseX;
-    lastY = mouseY;
-    scrollOffset *= 0.999;
-    
+  // mouse interactions
+  // accrue mouse travel distance
+  scrollOffset += abs(lastX - mouseX) + abs(lastY - mouseY);
+  lastX = mouseX;
+  lastY = mouseY;
+  scrollOffset *= 0.999;
+  // find mouse pos in shader coord space for distance calculation 
+  let mx = 2 * (mouseX - width / 2) / min(width, height);
+  let my = 2 * (mouseY - height / 2) / -min(width, height);
+  mouseVec.lerp(mx, my, 0, .1);
+
   shader(shaderObject)
-let mx =  2*(mouseX - width/2) / min(width, height);
-let my = 2*(mouseY - height/2) / -min(width, height);
-
-shaderObject.setUniform('u_mouse', [mx, my]);
-
+  shaderObject.setUniform('u_mouse', [mouseVec.x, mouseVec.y]);
   shaderObject.setUniform('u_resolution', [width, height])
   shaderObject.setUniform('u_time', millis() / 1000.0)
   shaderObject.setUniform('u_seed', seedOffset)
