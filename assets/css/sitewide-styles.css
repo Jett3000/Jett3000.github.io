@@ -57,6 +57,7 @@ a:hover {
 .nav-card-grid {
   display: grid;
   width: 100%;
+  max-width: 1300px;
   padding: 0 var(--md-margin);
   grid-template-columns: repeat(auto-fit, minmax(min(400px, 80vw), 1fr));
   place-items: center;
