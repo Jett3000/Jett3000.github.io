@@ -6,7 +6,7 @@ import { Octree } from "./octree.mjs";
 // text displays
 var boardDisplay = document.getElementById('board-display')
 var optionsContainer = document.getElementById('options-container')
-var nodeInfoLabl = document.getElementById('node-label')
+var nodeInfoLabel = document.getElementById('node-label')
 var titleElt = document.getElementById('title')
 
 // ui controls
@@ -228,7 +228,7 @@ const sketch = (p) => {
 
         // position camera
         if (trackingCamera) {
-            trackingVector.lerp(-lastNode.position.x, -lastNode.position.y, -lastNode.position.z, .05)
+            trackingVector.lerp(-lastNode.position.x, -lastNode.position.y, -lastNode.position.z, .02)
             p.translate(...trackingVector.array());
         } else {
             let x = 0, y = 0, z = 0;
@@ -237,7 +237,7 @@ const sketch = (p) => {
                 y += n.position.y
                 z += n.position.z
             }
-            let c = p._renderer._curCamera
+            // let c = p._renderer._curCamera
             p.rotate(p.millis() / 30000, [0, 1, 0])
 
             p.translate(-x / graphNodes.length, -y / graphNodes.length, -z / graphNodes.length);
@@ -299,7 +299,7 @@ const sketch = (p) => {
         if (p.frameCount % 10 == 0) {
             let nodeCount = fastMode ? Object.keys(visitedSet).length : graphNodes.length;
 
-            nodeInfoLabl.innerHTML =
+            nodeInfoLabel.innerHTML =
                 `${fastPhysics ? speedSlider.value : 1}x sim speed<br>————————<br>
                  ${nodeCount} node${nodeCount <= 1 ? '' : 's'}<br>
               fps: ${Math.round(p.frameRate())}<br>————————<br>
@@ -349,6 +349,7 @@ const sketch = (p) => {
         return false;
     }
 
+    // depreceated
     p.getBestUnfinishedNode = () => {
         let maxScore = -99;
         let maxNode = rootNode;
@@ -374,14 +375,34 @@ const sketch = (p) => {
         return false;
     }
 
-    // p.mouseWheel = (e) => {
-    //     if (e.delta < 0) {
-    //         scaleTarget *= 1.01;
-    //     } else {
-    //         scaleTarget *= 0.99;
-    //     }
-    //     scaleTarget = Math.max(0, scaleTarget)
-    // }
+    p.removeLowScoreNodes = () => {
+        // find lowest score
+        let minScore = 99999;
+        for (const node of graphNodes) {
+            if (node.score < minScore) {
+                minScore = node.score;
+            }
+        }
+        // remove low scoring nodes from graph
+        let index = 0;
+        let c = 99
+        while (index < graphNodes.length && c--) {
+            let curr = graphNodes[index];
+            if (curr == rootNode) continue;
+            if (curr.score > minScore) {
+                index++;
+                continue;
+            }
+
+            // remove node
+            curr.children.forEach(element => {
+                element.parent = curr.parent;
+            });
+            curr.parent.children.splice(curr.parent.children.indexOf(curr), 1)
+            curr.parent.children.push(...curr.children);
+            graphNodes.splice(index, 1)
+        }
+    }
 
     p.keyPressed = () => {
         switch (p.key) {
@@ -396,6 +417,9 @@ const sketch = (p) => {
             case 'z':
                 if (lastNode.parent) p.playFromNode(lastNode.parent)
                 break
+            case 'v':
+                p.removeLowScoreNodes();
+                break;
 
             // automation
             case 'a':

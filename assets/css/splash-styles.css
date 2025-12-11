@@ -7,8 +7,11 @@
 
 @media (max-width: 768px) {
   #splash-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--lg-margin);
+    padding: var(--lg-margin) 0px;
   }
 }
 
@@ -22,10 +25,22 @@
   gap: var(--md-margin);
 }
 
+@media (max-width: 768px) {
+  #card-holder {
+    width: 80vw;
+  }
+}
+
 #project-thumb-holder {
   display: flex;
   justify-content: space-between;
   gap: var(--md-margin);
+}
+
+@media (max-width: 768px) {
+  #project-thumb-holder {
+    flex-direction: column;
+  }
 }
 
 #project-thumb-holder > * {

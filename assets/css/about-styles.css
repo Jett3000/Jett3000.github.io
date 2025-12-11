@@ -10,12 +10,12 @@
 @media (min-width: 992px) {
   #picture-bio-twizzler {
     flex-direction: row;
-    gap: var(--md-margin);
+    gap: var(--lg-margin);
   }
 }
 
 #bust-image {
-  max-height: 65vh;
+  max-height: 85vh;
   width: auto;
   object-fit: contain;
 }

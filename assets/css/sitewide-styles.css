@@ -50,9 +50,8 @@ form {
 
 input.text-input, textarea {
   background-color: transparent !important;
-  backdrop-filter: brightness(0);
-  -webkit-backdrop-filter: brightness(0);
-  border: none;
+  backdrop-filter: invert(1);
+  -webkit-backdrop-filter: invert(1);
   font-family: 'Atkinson Hyperlegible Mono';
 }
 
@@ -71,6 +70,17 @@ a {
 a:hover {
   text-decoration: underline;
   color: var(--light);
+}
+
+#page-title {
+  max-width: 80vw;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  #page-title > h1 {
+    font-size: 1.2rem;
+  }
 }
 
 .nav-card-grid {
