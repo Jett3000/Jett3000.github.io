@@ -109,8 +109,8 @@ class DensityPoissonSampler {
   // returns false otherwise
   evaluateSample(sampleX, sampleY) {
     // reject samples outside of the domain
-    if (sampleX < 0 || sampleY < 0 || sampleX > this.domainVec.x ||
-      sampleY > this.domainVec.y)
+    if (sampleX < 0.5 || sampleY < 0.5 || sampleX > this.domainVec.x - 0.5 ||
+      sampleY > this.domainVec.y - 0.5)
       return false;
 
     // cache sample channel values
