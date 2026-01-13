@@ -2,14 +2,14 @@
 // Jett Pavlica 2025
 
 class DensityPoissonSampler {
-  constructor(densityMap, sampleRadius, attemptCount, contrastExponent = 1, highlightMultiplier = 1, pixelChanel = 'l', initSearchX = 0, initSearchY = 0) {
+  constructor(densityMap, sampleRadius, attemptCount, contrastExponent = 1, highlightMultiplier = 1, pixelChannel = 'l', initSearchX = 0, initSearchY = 0) {
     // save density map, poisson & image interpretation params
     this.densityMap = densityMap;
     this.sampleRadius = sampleRadius;
     this.attemptCount = attemptCount;
     this.contrastExponent = contrastExponent;
     this.highlightMultiplier = highlightMultiplier;
-    this.pixelChanel = pixelChanel;
+    this.pixelChannel = pixelChannel;
 
     // prepare hashtable
     this.domainVec = createVector(densityMap.width, densityMap.height);
@@ -20,13 +20,13 @@ class DensityPoissonSampler {
 
     // sample array and flag
     this.samples = [];
+    this.activeSamples = [];
     this.samplesFull = false;
 
     // prepare sampling function
     this.densityMap.loadPixels()
-    //TODO implement more sampling functions
     this.samplingFunction;
-    switch (pixelChanel) {
+    switch (pixelChannel) {
       case 'l':
         this.samplingFunction = this.getLuminance;
         break;
@@ -46,7 +46,6 @@ class DensityPoissonSampler {
     let found = false;
     for (let x = initSearchX; x < this.domainVec.x; x++) {
       for (let y = initSearchY; y < this.domainVec.y; y++) {
-        let a = this.getAlpha(x, y);
         if (this.getAlpha(x, y) > 0) {
           found = this.evaluateSample(x, y);
         }
@@ -68,27 +67,27 @@ class DensityPoissonSampler {
   growSamples() {
     if (this.samplesFull) return;
 
-    // pull the active samples from the main list
-    let currentSamples = this.samples.filter(s => s.active);
-    if (currentSamples.length == 0) {
+    // update the active sample list
+    this.activeSamples = this.activeSamples.filter(s => s.active);
+    if (this.activeSamples.length == 0) {
       this.samplesFull = true;
       return;
     }
 
     let newSamples = [];
-    for (let sample of currentSamples) {
+    for (let sample of this.activeSamples) {
       // boolean to track success
       let sampleAdded = false;
 
       // attempt to add new sample from the current one
       for (let i = 0; i < this.attemptCount; i++) {
-        let theta = random(TWO_PI);
+        let theta = Math.random() * Math.PI * 2
         let r = sample.spawnRadius + sample.spawnRadius * Math.random();
 
         // test the new sample for validity
         let potentialX = sample.pos.x + Math.cos(theta) * r;
         let potentialY = sample.pos.y + Math.sin(theta) * r;
-        let newSample = this.evaluateSample(potentialX, potentialY, sample);
+        let newSample = this.evaluateSample(potentialX, potentialY);
         if (newSample) {
           // if it's accepted, record and break
           newSamples.push(newSample)
@@ -124,15 +123,16 @@ class DensityPoissonSampler {
     let sampleCol = floor(sampleX / this.cellSize);
     let sampleRow = floor(sampleY / this.cellSize);
     let radiusPadding = this.highlightMultiplier * this.sampleRadius * sampleChannel;
-    let traversal = this.highlightMultiplier; //ceil(this.highlightMultiplier * sampleChannel);
+    let traversal = ceil((this.sampleRadius + radiusPadding) / this.cellSize);
+
 
     // test neighboring squares in the spatial hash
     for (let xOff = -traversal; xOff <= traversal; xOff++) {
       for (let yOff = -traversal; yOff <= traversal; yOff++) {
         let searchCol = sampleCol + xOff;
         let searchRow = sampleRow + yOff;
-        if (searchCol < 0 || searchRow < 0 || searchCol > this.hashCols ||
-          searchRow > this.hashRows)
+        if (searchCol < 0 || searchRow < 0 || searchCol >= this.hashCols ||
+          searchRow >= this.hashRows)
           continue;
 
         let collidingSampleIndex =
@@ -149,11 +149,12 @@ class DensityPoissonSampler {
 
     // on success:
     // update hashmap
-    this.hashArray[this.coords2index(sampleRow, sampleCol)] = this.samples.length;
+    this.hashArray[this.coords2index(sampleCol, sampleRow)] = this.samples.length;
     //create new sample object
     let newSample = new Sample(createVector(sampleX, sampleY), this.sampleRadius + radiusPadding, sampleChannel, sampleAlpha);
-    // add it to the sample list
+    // add it to the sample lists
     this.samples.push(newSample);
+    this.activeSamples.push(newSample);
     // return it
     return newSample;
   }
@@ -164,7 +165,7 @@ class DensityPoissonSampler {
     let y = floor(index / this.hashCols);
     return createVector(x, y);
   }
-  coords2index(row, col) {
+  coords2index(col, row) {
     let index = row * this.hashCols + col;
     return index;
   }
@@ -205,10 +206,10 @@ class DensityPoissonSampler {
 }
 
 class Sample {
-  constructor(pos, spawnRadius, chanelVal, alphaVal) {
+  constructor(pos, spawnRadius, channelVal, alphaVal) {
     this.pos = pos;
     this.spawnRadius = spawnRadius;
-    this.chanelVal = chanelVal;
+    this.channelVal = channelVal;
     this.alphaVal = alphaVal;
     this.active = alphaVal > 0;
   }
