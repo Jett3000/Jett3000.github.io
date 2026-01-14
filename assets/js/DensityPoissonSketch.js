@@ -214,7 +214,7 @@ function draw() {
                 if (newSamples) {
                     // draw new samples 
                     for (let s of newSamples) {
-                        stroke(channelValtoColor(s.chanelVal))
+                        stroke(channelValtoColor(s.channelVal))
                         circle(s.pos.x, s.pos.y, userSliders.radius.value)
                     }
                     // update circle count lable
@@ -333,7 +333,7 @@ function renderToSVG() {
     for (let sample of activeSampler.samples) {
         let col = ``;
         if (bandingColors.length) {
-            col = `stroke="${channelValtoColor(sample.chanelVal).toString()}"`
+            col = `stroke="${channelValtoColor(sample.channelVal).toString()}"`
         }
         svgContent += `  <circle ${col} cx="${Math.round(sample.pos.x * 10000) / 10000}" cy="${Math.round(sample.pos.y * 10000) / 10000}" r="${userSliders.radius.value / 2}" />\n`;
     }
