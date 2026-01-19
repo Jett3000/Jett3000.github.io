@@ -59,7 +59,7 @@ const sketch = (p) => {
         buildTreeFlag = true;
         trackingVector = rootNode.position.copy();
         p.playFromNode(rootNode);
-        autoAllowance = -500 // dumb hack but negates the automation canvas-conatiner onclick
+        e.stopPropagation();
     }
 
     backtackingButton.onclick = () => {
@@ -69,6 +69,8 @@ const sketch = (p) => {
         } else {
             backtackingButton.classList.remove('toggled')
         }
+        e.stopPropagation();
+
     }
 
     dfsButton.onclick = () => {
@@ -123,7 +125,7 @@ const sketch = (p) => {
 
         const canvasContainer = document.getElementById('canvas-container');
         c.parent('canvas-container');
-        canvasContainer.onclick = (e) => {
+        c.onclick = (e) => {
             titleElt.style.color = "#00000000";
             if (graphNodes.length < 2) autoAllowance += 500;
         };
@@ -246,7 +248,7 @@ const sketch = (p) => {
 
 
         // visit each node, draw it, for each of its children, calculate a spring link force for next frame and draw the link
-        let springForce = fastPhysics ? 0.01 : .01
+        let springForce = .01;
 
         p.beginShape(p.LINES)
         p.stroke(255, .6)
@@ -332,7 +334,71 @@ const sketch = (p) => {
         } else {
             automateButton.classList.remove('toggled')
         }
+
+
     }
+
+    p.renderSVG = () => {
+        const viewMat = p._renderer.uMVMatrix.mat4;        // ModelView
+        const projMat = p._renderer.uPMatrix.mat4;         // Projection
+        var linkXML = [];
+        var nodeXML = [];
+
+
+
+        for (let node of graphNodes) {
+            let coords = mulMat4Vec4(projMat, mulMat4Vec4(viewMat, [node.position.x, node.position.y, node.position.z, 1]));
+            coords[0] = (coords[0] / coords[3] * 0.5 + 0.5) * p.width;
+            coords[1] = (1 - (coords[1] / coords[3] * 0.5 + 0.5)) * p.height;
+            nodeXML.push(`  <circle cx="${Math.round(coords[0] * 10000) / 10000}" cy="${Math.round(coords[1] * 10000) / 10000}" r="${1}" />\n`);
+
+
+            //links
+            for (let child of node.children) {
+                let childCoords = mulMat4Vec4(projMat, mulMat4Vec4(viewMat, [child.position.x, child.position.y, child.position.z, 1]));
+                childCoords[0] = (childCoords[0] / childCoords[3] * 0.5 + 0.5) * p.width;
+                childCoords[1] = (1 - (childCoords[1] / childCoords[3] * 0.5 + 0.5)) * p.height;
+
+                linkXML.push(`  <line x1="${coords[0]}" y1="${coords[1]}" x2="${childCoords[0]}" y2="${childCoords[1]}" />`)
+            }
+        }
+
+
+        let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${p.width}" height="${p.height}">
+                             <style> circle, line {stroke: black; fill: white; }</style>\n`;
+        for (let line of linkXML) {
+            svgContent += line
+        }
+        for (let line of nodeXML) {
+            svgContent += line;
+        }
+        svgContent += `</svg>`;
+
+        const blob = new Blob([svgContent], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        let now = new Date();
+        link.download = "ssd_render_" + now.toLocaleTimeString().slice(0, -3) + ".svg"; // Filename for the download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Release the object URL
+        URL.revokeObjectURL(url);
+
+
+        function mulMat4Vec4(m, v) {
+            return [
+                m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12],
+                m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13],
+                m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14],
+                m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15],
+            ];
+        }
+    }
+
 
     p.getNextNode = () => {
         let keys = searchDFS ? Object.keys(visitedSet).reverse() : Object.keys(visitedSet);
@@ -471,6 +537,9 @@ const sketch = (p) => {
             case 'n':
                 newGameButton.onclick();
                 autoAllowance = 0;
+                break;
+            case 'e':
+                p.renderSVG();
                 break;
         }
     };
