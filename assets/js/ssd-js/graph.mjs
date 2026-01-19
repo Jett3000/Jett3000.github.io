@@ -359,7 +359,7 @@ const sketch = (p) => {
                 childCoords[0] = (childCoords[0] / childCoords[3] * 0.5 + 0.5) * p.width;
                 childCoords[1] = (1 - (childCoords[1] / childCoords[3] * 0.5 + 0.5)) * p.height;
 
-                linkXML.push(`  <line x1="${coords[0]}" y1="${coords[1]}" x2="${childCoords[0]}" y2="${childCoords[1]}" />`)
+                linkXML.push(`  <line x1="${coords[0]}" y1="${coords[1]}" x2="${childCoords[0]}" y2="${childCoords[1]}" />\n`)
             }
         }
 
