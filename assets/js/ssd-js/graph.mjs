@@ -35,6 +35,7 @@ const sketch = (p) => {
     // initialize sketch variables
     var autoAllowance = 0;
     var allowOddMoves = true;
+    var treeMode = false;
     var trackingCamera = false;
     var lastNode;
     var trackingVector;
@@ -178,7 +179,7 @@ const sketch = (p) => {
         // --- repulsion ---
         // barnes–hut repulsion
         const THETA = 0.9;   // lower = more accurate, slower
-        const BH_K = 100;   // repulsion strength
+        const BH_K = 30;   // repulsion strength
 
         // compute bounds
         let minX = Infinity, minY = Infinity, minZ = Infinity;
@@ -251,7 +252,7 @@ const sketch = (p) => {
         let springForce = .01;
 
         p.beginShape(p.LINES)
-        p.stroke(255, .6)
+        p.stroke(80)
         for (let node of graphNodes) {
             p.push()
             p.translate(...node.position.array())
@@ -313,6 +314,26 @@ const sketch = (p) => {
         if (autoAllowance > 0) {
             autoAllowance--
 
+            if (treeMode) {
+                debugger;
+                let termNodes = [];
+                for (let node of graphNodes) {
+                    if (node.potentialMoves.length || node.oddMoves.length) {
+                        termNodes.push(node);
+                    }
+                }
+                for (let node of termNodes) {
+                    if (node.potentialMoves.length) {
+                        p.progressNode(node, node.potentialMoves.shift())
+                    } else if (node.oddMoves.length) {
+                        p.progressNode(node, node.oddMoves.shift())
+                    }
+                }
+                treeMode = false;
+                return;
+            }
+
+
             while (fastMode && autoAllowance && lastNode.potentialMoves.length) {
                 autoAllowance--
                 p.progressNode(lastNode, lastNode.potentialMoves.shift());
@@ -334,8 +355,6 @@ const sketch = (p) => {
         } else {
             automateButton.classList.remove('toggled')
         }
-
-
     }
 
     p.renderSVG = () => {
@@ -402,13 +421,11 @@ const sketch = (p) => {
 
     p.getNextNode = () => {
         let keys = searchDFS ? Object.keys(visitedSet).reverse() : Object.keys(visitedSet);
-        let oddNode = undefined;
         for (const key of keys) {
             if (visitedSet[key].potentialMoves.length || visitedSet[key].oddMoves.length) {
                 return visitedSet[key]
             }
         }
-
 
         // if we get here, the statespace is fully explored, kill automation for safety
         autoAllowance = 0;
@@ -509,6 +526,10 @@ const sketch = (p) => {
                     graphNodes.push(visitedSet[key])
                 }
                 break;
+            case 't':
+                treeMode = true;
+                autoAllowance = 1;
+                break
 
             // node graph simulation
             case 'f':

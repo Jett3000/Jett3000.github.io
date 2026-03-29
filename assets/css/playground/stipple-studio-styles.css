@@ -1,109 +1,6 @@
-.user-guide-text > a {
-  text-decoration: underline var(--blue);
-}
-
-.user-guide-text > a:hover {
-  text-decoration: underline var(--pink);
-}
-
-.user-guide-text {
-  font-size: 1rem;
-  max-width: 44ch;
-}
-
-.user-guide-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: var(--md-margin);
-  gap: var(--md-margin);
-  text-align: center;
-  padding-bottom: var(--lg-margin);
-}
-
-#app-container {
-  display: flex;
-  flex-direction: column-reverse;
-}
-
-@media (min-width: 992px) {
-  #app-container {
-    display: flex;
-    flex-direction: row;
-  }
-}
-
-.control-panel {
-  display: flex;
-  flex-direction: column;
-  /*gap: var(--md-margin);*/
-  align-items: center;
-  padding: var(--lg-margin) 10px;
-}
-
-@media (min-width: 992px) {
-  .control-panel {
-    height: 100vh;
-    min-width: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--sm-margin);
-    align-items: center;
-    padding: var(--lg-margin) 10px;
-  }
-}
-
-.subpanel {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-  width: 80%;
-}
-
-#count-label {
-  text-align: center;
-}
-
-.slider-holder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-#canvas-container {
-  width: 100%;
-  /*height: 100vh;*/
-  background-color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-}
-
-input[type="file"] {
-  display: none;
-}
-
-.custom-file-upload, button, select, #user-guide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 6px 12px;
-  background-color: #0000;
-  cursor: pointer;
-  text-align: center;
-  border-radius: 6px;
-  border: 2px solid var(--blue);
-}
+/* ========================================
+   ROOT VARIABLES
+======================================== */
 
 :root {
   --dark: #000000;
@@ -113,25 +10,379 @@ input[type="file"] {
   --sm-margin: 12px;
   --md-margin: 18px;
   --lg-margin: 24px;
+  --radius: 8px;
 }
 
-p, label, select, button, #user-guide {
+/* ========================================
+   GLOBAL RESET
+======================================== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   font-family: 'Atkinson Hyperlegible Mono', sans-serif;
-  /*font-size: .8rem;*/
-  color: black !important;
+  background: var(--light);
+  color: black;
+}
+
+h1, h2, h3, p, label {
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+@media (min-width: 769px) {
+  body {
+    overflow: hidden;
+  }
+}
+
+/* ========================================
+   APP LAYOUT
+======================================== */
+
+#app-container {
+  display: flex;
+  flex-direction: row-reverse;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ========================================
+   SIDEBAR
+======================================== */
+
+#control-sidebar {
+  width: 320px;
+  min-width: 280px;
+  max-width: 360px;
+  background: var(--dark);
+  border-right: 2px solid var(--pink);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.05);
+  padding: var(--lg-margin);
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-margin);
+}
+
+#control-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.app-title {
+  font-size: 1.8rem;
+  text-align: center;
+  color: var(--light);
+}
+
+/* ========================================
+   CANVAS AREA
+======================================== */
+
+#canvas-container {
+  flex: 1;
+  background: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================================
+   COLLAPSIBLE SECTIONS
+======================================== */
+
+.control-section {
+  border: 2px solid var(--pink);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  background: var(--light);
+  transition: 0.2s ease;
+}
+
+.control-section summary {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 6px 0;
+  list-style: none;
+  position: relative;
+}
+
+.control-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.control-section summary::after {
+  content: "＋";
+  position: absolute;
+  right: 0;
+}
+
+.control-section[open] summary::after {
+  content: "−";
+}
+
+.control-section[open] {
+  background: var(--dark);
+  color: white;
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sm-margin);
+  padding-top: var(--sm-margin);
+}
+
+#page-setup-section .section-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 12px;
+  row-gap: 12px;
+  align-items: center;
+}
+
+#page-setup-section label {
+  text-align: left;
+}
+
+#page-setup-section input, .param-row input[type="number"] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--blue);
+  border-radius: var(--radius);
+  font-family: inherit;
+  text-align: right;
+}
+
+/* PARAMETER GROUP */
+
+.param-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* LABEL + NUMBER ROW */
+
+.param-row {
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.param-row label {
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+/* SLIDER */
+
+.param-group input[type="range"] {
+  width: 100%;
+}
+
+/* ========================================
+   FIELDS & SLIDERS
+======================================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-holder {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+input[type="color"] {
+  width: 100%;
+  height: 40px;
+  border: 2px solid var(--pink);
+  border-radius: var(--radius);
+  background: transparent;
+  cursor: pointer;
+}
+
+.page-setup-input-group {
+  display: flex;
+  flex-direction: row;
+}
+
+/* ==============================
+   CUSTOM RANGE SLIDER
+============================== */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  margin-top: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* TRACK (Chrome, Safari, Edge) */
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 2px;
+  background: #e6e6e6;
+  border-radius: 999px;
+}
+
+/* THUMB (Chrome, Safari, Edge) */
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 12px;
+  width: 12px;
+  margin-top: -5px;
+  background: var(--blue);
+  border-radius: 50%;
+  border: 1px solid white;
+  /*box-shadow: 0 0 0 2px var(--blue);*/
+  transition: 0.15s ease;
+}
+
+/* TRACK (Firefox) */
+
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: #e6e6e6;
+  border-radius: 999px;
+}
+
+/* THUMB (Firefox) */
+
+input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  background: var(--blue);
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--blue);
+  transition: 0.15s ease;
+}
+
+/* HOVER EFFECT */
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+  transform: scale(1.15);
+}
+
+/* ACTIVE DRAG */
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+
+input[type="range"]:active::-moz-range-thumb {
+  transform: scale(1.25);
+}
+
+/* ========================================
+   BUTTONS & INTERACTIVE ELEMENTS
+======================================== */
+
+button, select, .custom-file-upload, #user-guide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 2px solid var(--pink);
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.15s ease;
   text-decoration: none;
+  color: var(--light);
 }
 
-h1 {
-  font-family: 'Atkinson Hyperlegible Mono', sans-serif;
+button:hover, select:hover, .custom-file-upload:hover, #user-guide:hover {
+  background: var(--pink);
+  color: var(--dark);
+  border-color: var(--light);
 }
 
-button-group {
-  /*display: flex;*/
-  /*flex-direction: column;*/
+button:active, .custom-file-upload:active {
+  transform: translateY(1px);
 }
 
-.panel-button {
-  margin-bottom: var(--sm-margin);
+/* ========================================
+   FILE INPUT (HIDDEN)
+======================================== */
+
+input[type="file"] {
+  display: none;
+}
+
+/* ========================================
+   COUNT LABEL
+======================================== */
+
+#count-label {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: var(--sm-margin);
+}
+
+/* ========================================
+   USER GUIDE LINK (BOTTOM SPACING)
+======================================== */
+
+#user-guide {
+  margin-top: auto;
+}
+
+/* ========================================
+   SCROLLBAR (OPTIONAL POLISH)
+======================================== */
+
+/* ========================================
+   MOBILE BEHAVIOR
+======================================== */
+
+@media (max-width: 768px) {
+  #app-container {
+    display: inline;
+  }
+}
+
+@media (max-width: 768px) {
+  #control-sidebar {
+    width: 100%;
+    max-width: none;
+    border-right: none;
+    border-bottom: 2px solid var(--pink);
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  #canvas-container {
+    flex: 1;
+  }
 }
 

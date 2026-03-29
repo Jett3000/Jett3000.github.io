@@ -16,49 +16,90 @@
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Atkinson%20Hyperlegible%20Mono.css">
     <link rel="stylesheet" href="assets/css/playground/stipple-studio-styles.css">
-    <link rel="stylesheet" href="assets/css/playground/slider-styles.css">
+    <link rel="stylesheet" href="assets/css/user-gradient-styles.css">
 <script src="https://cdn.jsdelivr.net/npm/heic2any"></script>
-
-
+<script src="https://cdn.jsdelivr.net/npm/mathjs@11/lib/browser/math.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"
     integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
   <script src="https://unpkg.com/p5.js-svg@1.5.1"></script>
 </head>
 
-<body style="background-color: var(--pink);">
+<body>
     <div id="app-container">
-        <div id="generator-panel" class="control-panel"><a role="button" id="user-guide" href="stipple-studio-guide.html">User Guide</a>
-            <div class="subpanel panel-element" style="gap:0px;">
-                <p class="panel-element">Mode:</p><select id="draw-mode-dropdown" class="panel-element" name="draw-mode">
-                    <option value="luminance">Luminance</option>
-                    <option value="cmyk">C M Y K</option>
-                </select>
-            </div>
-            <p class="panel-element" style="text-align: center;">Generation Settings</p>
-            <div id="slider-panel" class="subpanel panel-element">
-                <div class="slider-holder panel-element"><input type="range" id="attempts-slider" class="panel-element" max="40" min="1" step="1"><label class="panel-element" for="attempts-slider">Attempts</label></div>
-                <div class="slider-holder panel-element"><input type="range" id="radius-slider" class="panel-element" max="5" min="1" step="0.001"><label class="panel-element" for="radius-slider">Spawn Radius</label></div>
-                <div class="slider-holder panel-element"><input type="range" id="lightness-slider" class="panel-element" max="25" min="1" step="1"><label class="panel-element" for="lightness-slider">Highlights</label></div>
-                <div class="slider-holder panel-element"><input type="range" id="contrast-slider" class="panel-element" max="12" min="0" step="0.1"><label class="panel-element" for="contrast-slider">Shadows</label></div>
-            </div>
-            <div id="button-panel" class="subpanel panel-element"><button id="user-regenerate" class="panel-element" type="button">Regenerate</button></div>
-        </div>
         <div id="canvas-container">
             <h1 id="p5_loading">loading stipple studio...</h1>
         </div>
-        <div id="export-panel" class="control-panel">
-            <p>Upload &amp; Export</p>
-            <div class="button-group"><label class="custom-file-upload panel-button" for="file-upload"> Upload Image </label><button id="user-download-svg" class="panel-button" type="button">Export SVG</button><button id="user-download-png" class="panel-button" type="button">Export PNG</button></div>
-            <p id="count-label" class="panel-element">Circles:<br>&nbsp;0</p>
-            <p id="banding-color-label" class="panel-element" style="text-align: center;max-width: 18ch;">Palette:</p><input type="color" id="color-input" style="width: 80%;max-width: 40vw;height: 40px;margin-bottom: var(--sm-margin);">
-            <div class="button-group"><button id="add-color" class="panel-element panel-button" type="button">Add Color</button><button id="remove-color" class="panel-element panel-button" type="button">Remove Color</button><button id="clear-color" class="panel-element panel-button" type="button">Clear Colors</button></div>
+        <aside id="control-sidebar">
+            <h2 class="app-title">Stipple Studio</h2>
+  <div class="section-content" id="upload-section">
+    <label class="custom-file-upload panel-button" for="file-upload"> Upload Image </label>
+    <button id="user-download-svg" class="panel-button" type="button">Export SVG</button>
+    <button id="user-download-png" class="panel-button" type="button">Export PNG</button>
+    <p style="color:white" id="count-label" class="panel-element">Samples:<br /> 0</p>
+    <button id="user-regenerate" class="panel-element" type="button">Regenerate</button>
+  </div><details open id="generation-section" class="control-section">
+  <summary>Generation Settings</summary>
+
+  <div class="section-content">
+
+    <div class="param-group">
+      <div class="param-row">
+        <label for="attempts-slider">Attempts</label>
+        <input id="attempts-input" type="number" min="1" max="40" step="1" />
+      </div>
+      <input id="attempts-slider" type="range" max="40" min="1" step="1" />
+    </div>
+
+    <div class="param-group">
+      <div class="param-row">
+        <label for="radius-slider">Spawn Radius</label>
+        <input id="radius-input" type="number" min="1" max="5" step="0.01" />
+      </div>
+      <input id="radius-slider" type="range" max="5" min="1" step="0.001" />
+    </div>
+
+    <div class="param-group">
+      <div class="param-row">
+        <label for="highlights-slider">Highlights</label>
+        <input id="highlights-input" type="number" min="1" max="25" step="1" />
+      </div>
+      <input id="highlights-slider" type="range" max="25" min="1" step="1" />
+    </div>
+
+    <div class="param-group">
+      <div class="param-row">
+        <label for="shadows-slider">Shadows</label>
+        <input id="shadows-input" type="number" min="0" max="12" step="0.1" />
+      </div>
+      <input id="shadows-slider" type="range" max="12" min="0" step="0.1" />
+    </div>
+
+  </div>
+</details><details open id="page-setup-section" class="control-section">
+  <summary>Page Setup</summary>
+  <div class="section-content">
+    <label for="page-width">width</label>
+    <input id="page-width" type="text" value="11in" />
+    <label for="page-height">height</label>
+    <input id="page-height" type="text" value="14in"/>
+    <label for="pen-width">pen width</label>
+    <input id="pen-width" type="text" value="0.5mm"/>
+  </div>
+</details>  <details open class="control-section">
+        <summary>Palette</summary>
+        <div class="section-content">
+            <div id="gradient-editor"></div>
+            
+        
         </div>
+      </details><a role="button" id="user-guide" href="stipple-studio-guide.html">User Guide</a>
+        </aside>
     </div>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/DensityPoissonSampler.js"></script>
-    <script src="assets/js/DensityPoissonSketch.js"></script>
+    <script src="assets/js/StippleStudio.js"></script>
+    <script src="assets/js/UserGradient.js"></script>
 </body>
 
 </html>
