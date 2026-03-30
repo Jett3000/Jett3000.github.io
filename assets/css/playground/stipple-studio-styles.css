@@ -7,6 +7,7 @@
   --light: #f7f6f4;
   --pink: #f8c8dc;
   --blue: #50afdb;
+  --xs-margin: 6px;
   --sm-margin: 12px;
   --md-margin: 18px;
   --lg-margin: 24px;
@@ -23,7 +24,7 @@ html, body {
   height: 100%;
   font-family: 'Atkinson Hyperlegible Mono', sans-serif;
   background: var(--light);
-  color: black;
+  color: var(--dark);
 }
 
 h1, h2, h3, p, label {
@@ -48,7 +49,6 @@ body {
   display: flex;
   flex-direction: row-reverse;
   height: 100vh;
-  width: 100vw;
 }
 
 /* ========================================
@@ -99,7 +99,7 @@ body {
 .control-section {
   border: 2px solid var(--pink);
   border-radius: var(--radius);
-  padding: 8px 12px;
+  padding: var(--xs-margin) var(--sm-margin);
   background: var(--light);
   transition: 0.2s ease;
 }
@@ -107,7 +107,7 @@ body {
 .control-section summary {
   cursor: pointer;
   font-weight: bold;
-  padding: 6px 0;
+  padding: var(--xs-margin) 0;
   list-style: none;
   position: relative;
 }
@@ -141,8 +141,8 @@ body {
 #page-setup-section .section-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 12px;
-  row-gap: 12px;
+  column-gap: var(--sm-margin);
+  row-gap: var(--sm-margin);
   align-items: center;
 }
 
@@ -330,17 +330,11 @@ button:active, .custom-file-upload:active {
   transform: translateY(1px);
 }
 
-/* ========================================
-   FILE INPUT (HIDDEN)
-======================================== */
+/* one offs */
 
 input[type="file"] {
   display: none;
 }
-
-/* ========================================
-   COUNT LABEL
-======================================== */
 
 #count-label {
   text-align: center;
@@ -348,17 +342,9 @@ input[type="file"] {
   margin-top: var(--sm-margin);
 }
 
-/* ========================================
-   USER GUIDE LINK (BOTTOM SPACING)
-======================================== */
-
 #user-guide {
   margin-top: auto;
 }
-
-/* ========================================
-   SCROLLBAR (OPTIONAL POLISH)
-======================================== */
 
 /* ========================================
    MOBILE BEHAVIOR

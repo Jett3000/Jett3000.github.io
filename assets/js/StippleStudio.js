@@ -158,14 +158,26 @@ function saveSettings() {
 
 function loadSettings() {
     const saved = getItem(STORAGE_KEY);
-    if (!saved) return;
+    if (saved) {
+        Object.assign(app.state.samplerParameters, saved.samplerParameters);
+        Object.assign(app.state.page, saved.page);
+        return;
+    }
 
-    Object.assign(app.state.samplerParameters, saved.samplerParameters);
-    Object.assign(app.state.page, saved.page);
-    // if (saved.palette) {
-    //     app.state.palette.colors = saved.palette.colors;
-    //     app.state.palette.stops = saved.palette.stops;
-    // }
+    // load defaults
+    app.state = {
+        samplerParameters: {
+            radius: 1,
+            attempts: 30,
+            shadows: 1,
+            highlights: 4,
+        },
+        page: {
+            widthMM: 279.4, // 11in
+            heightMM: 355.6, // 14in
+            penWidthMM: .5,
+        },
+    }
 }
 
 function applySettingsToUI() {
