@@ -21,6 +21,7 @@ var newGameButton = document.getElementById('new-game')
 
 // optimized memory
 var globalTempVec;
+var globalMouseVec;
 
 const sketch = (p) => {
     p.disableFriendlyErrors = true;
@@ -48,7 +49,6 @@ const sketch = (p) => {
     var drawPoints = false;
     var buildTreeFlag = false;
 
-
     newGameButton.onclick = (e) => {
         visitedSet = {};
         graphNodes = [];
@@ -56,6 +56,8 @@ const sketch = (p) => {
         rootNode = new Node(p, initBoard);
         graphNodes.push(rootNode);
         visitedSet[rootNode.board.hashString()] = rootNode;
+        autoAllowance = 0;
+        automateButton.classList.remove('toggled')
 
         buildTreeFlag = true;
         trackingVector = rootNode.position.copy();
@@ -63,7 +65,7 @@ const sketch = (p) => {
         e.stopPropagation();
     }
 
-    backtackingButton.onclick = () => {
+    backtackingButton.onclick = (e) => {
         backtracking = !backtracking;
         if (backtracking) {
             backtackingButton.classList.add('toggled')
@@ -74,18 +76,21 @@ const sketch = (p) => {
 
     }
 
-    dfsButton.onclick = () => {
+    dfsButton.onclick = (e) => {
         searchDFS = true;
         dfsButton.classList.add('toggled')
         bfsButton.classList.remove('toggled')
+        e.stopPropagation();
     }
-    bfsButton.onclick = () => {
+    bfsButton.onclick = (e) => {
         searchDFS = false;
         bfsButton.classList.add('toggled')
         dfsButton.classList.remove('toggled')
+        e.stopPropagation();
+
     }
 
-    automateButton.onclick = () => {
+    automateButton.onclick = (e) => {
         if (autoAllowance < 1) {
             autoAllowance += 500;
             automateButton.classList.add('toggled')
@@ -93,9 +98,10 @@ const sketch = (p) => {
         } else {
             autoAllowance = 0;
         }
+        e.stopPropagation();
     }
 
-    fastPhysicsButton.onclick = () => {
+    fastPhysicsButton.onclick = (e) => {
         fastPhysics = !fastPhysics;
         if (fastPhysics) {
             fastPhysicsButton.classList.add('toggled')
@@ -105,9 +111,10 @@ const sketch = (p) => {
             fastPhysicsButton.classList.remove('toggled')
             speedSlider.style.display = 'none'
         }
+        e.stopPropagation();
     }
 
-    cameraButton.onclick = () => {
+    cameraButton.onclick = (e) => {
         trackingCamera = !trackingCamera;
         if (trackingCamera) {
             trackingVector = lastNode.position.copy().mult(-1);
@@ -115,10 +122,13 @@ const sketch = (p) => {
         } else {
             cameraButton.classList.remove('toggled')
         }
+        e.stopPropagation();
     }
 
     p.setup = () => {
         const c = p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+        console.log(c);
+
 
         p.colorMode(p.HSB);
         p.noFill();
@@ -126,9 +136,10 @@ const sketch = (p) => {
 
         const canvasContainer = document.getElementById('canvas-container');
         c.parent('canvas-container');
-        c.onclick = (e) => {
+        c.elt.onclick = (e) => {
             titleElt.style.color = "#00000000";
             if (graphNodes.length < 2) autoAllowance += 500;
+            automateButton.classList.add('toggled')
         };
 
         if (p.windowWidth < 768) {
@@ -162,6 +173,7 @@ const sketch = (p) => {
         scaleTarget = Math.min(p.width, p.height) * 1.2;
 
         globalTempVec = p.createVector();
+        globalMouseVec = p.createVector();
         trackingVector = rootNode.position.copy();
         p.playFromNode(rootNode);
     };
@@ -514,6 +526,9 @@ const sketch = (p) => {
                 autoAllowance += 1;
                 titleElt.style.color = "#00000000"
                 break;
+            case 'o':
+                p.exportOBJ();
+                break;
             case 'q':
                 autoAllowance = 0;
                 break;
@@ -601,6 +616,46 @@ const sketch = (p) => {
         lastNode = p.random(graphNodes);
         p.playFromNode(lastNode)
     }
+
+    p.exportOBJ = () => {
+        let obj = '# Soli State Drive graph export\n';
+
+        const indexMap = new Map();
+
+        // vertices
+        graphNodes.forEach((node, i) => {
+            const { x, y, z } = node.position;
+            obj += `v ${x} ${y} ${z}\n`;
+            indexMap.set(node, i + 1); // OBJ is 1-indexed
+        });
+
+        obj += '\n';
+
+        // edges
+        graphNodes.forEach(node => {
+            const parentIndex = indexMap.get(node);
+
+            node.children.forEach(child => {
+                const childIndex = indexMap.get(child);
+
+                if (childIndex) {
+                    obj += `l ${parentIndex} ${childIndex}\n`;
+                }
+            });
+        });
+
+        const blob = new Blob([obj], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ssd_graph_${Date.now()}.obj`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(url);
+    };
 };
 
 
@@ -675,13 +730,14 @@ class Node {
                 option.appendChild(span);
             }
 
-            option.onclick = () => {
+            option.onclick = (e) => {
                 handlerFn(this, move)
                 if (this.potentialMoves.includes(move)) {
                     this.potentialMoves.splice(this.potentialMoves.indexOf(move), 1)
                 } else {
                     this.oddMoves.splice(this.oddMoves.indexOf(move), 1)
                 }
+                e.stopPropagation();
                 return false;
             }
             element.appendChild(option);
