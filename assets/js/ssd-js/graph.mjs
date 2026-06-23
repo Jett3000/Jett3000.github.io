@@ -126,9 +126,12 @@ const sketch = (p) => {
     }
 
     p.setup = () => {
-        const c = p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
-        console.log(c);
-
+        try {
+            var c = p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+        } catch (error) {
+            alert('error setting up graphics context. ensure your browser is WebGL enabled!')
+            return;
+        }
 
         p.colorMode(p.HSB);
         p.noFill();
