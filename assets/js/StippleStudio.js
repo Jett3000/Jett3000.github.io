@@ -5,6 +5,34 @@
 
 
 const STORAGE_KEY = "stippleStudioSettings";
+const SHADOW_EPSILON = 0.001;
+const MAX_PAGE_DIMENSION_MM = 1625.6;
+const PAGE_PRESETS = {
+    "art-9x12": { widthMM: 228.6, heightMM: 304.8 },
+    "art-11x14": { widthMM: 279.4, heightMM: 355.6 },
+    "arch-a": { widthMM: 228.6, heightMM: 304.8 },
+    "art-5x7": { widthMM: 127, heightMM: 177.8 },
+    "art-8x10": { widthMM: 203.2, heightMM: 254 },
+    "art-12x16": { widthMM: 304.8, heightMM: 406.4 },
+    "art-16x20": { widthMM: 406.4, heightMM: 508 },
+    "art-18x24": { widthMM: 457.2, heightMM: 609.6 },
+    "art-20x24": { widthMM: 508, heightMM: 609.6 },
+    "art-24x30": { widthMM: 609.6, heightMM: 762 },
+    "art-24x36": { widthMM: 609.6, heightMM: 914.4 },
+    "arch-b": { widthMM: 304.8, heightMM: 457.2 },
+    "arch-c": { widthMM: 457.2, heightMM: 609.6 },
+    "arch-d": { widthMM: 609.6, heightMM: 914.4 },
+    "arch-e": { widthMM: 914.4, heightMM: 1219.2 },
+    a4: { widthMM: 210, heightMM: 297 },
+    a5: { widthMM: 148, heightMM: 210 },
+    a3: { widthMM: 297, heightMM: 420 },
+    a2: { widthMM: 420, heightMM: 594 },
+    a1: { widthMM: 594, heightMM: 841 },
+    a0: { widthMM: 841, heightMM: 1189 },
+    letter: { widthMM: 215.9, heightMM: 279.4 },
+    legal: { widthMM: 215.9, heightMM: 355.6 },
+    tabloid: { widthMM: 279.4, heightMM: 431.8 },
+};
 const app = {
     ui: {
         sliders: {
@@ -23,9 +51,14 @@ const app = {
             width: null,
             height: null,
             penWidth: null,
+            preset: null,
+            dimensions: null,
+            orientation: {
+                portrait: null,
+                landscape: null,
+            },
         },
         buttons: {
-            uploadImage: null,
             regenerate: null,
             exportPNG: null,
             exportSVG: null,
@@ -44,6 +77,8 @@ const app = {
             widthMM: null,
             heightMM: null,
             penWidthMM: null,
+            orientation: "portrait",
+            presetKey: "custom",
         },
         palette: null,
         activeSampler: null,
@@ -51,7 +86,6 @@ const app = {
     render: {
         pixelsPerMM: null,
         strokeWidth: null,
-        circleRadius: null,
     },
     images: {
         userImage: null,
@@ -75,12 +109,15 @@ function setup() {
     loadSettings();
     applySettingsToUI();
 
-    app.state.palette = new UserGradient("gradient-editor");
-    app.state.palette.onChange(recolor)
+    app.state.palette = new UserGradient("gradient-editor", app.state.paletteStops);
+    app.state.palette.onChange((stops, committed) => {
+        app.state.paletteStops = stops;
+        if (committed) saveSettings();
+        recolor();
+    });
 
     initPage();
     initSamplerParameters();
-    // initPalette();
 
     initCanvas();
 
@@ -119,7 +156,7 @@ function draw() {
 }
 
 function mouseClicked() {
-    debugger
+    if (!app.state.activeSampler) return;
     app.state.activeSampler.evaluateSample(mouseX - app.render.imageOffsetX, mouseY - app.render.imageOffsetY)
     app.state.activeSampler.samplesFull = false;
     loop()
@@ -151,7 +188,7 @@ function saveSettings() {
     const settings = {
         samplerParameters: app.state.samplerParameters,
         page: app.state.page,
-        palette: app.state.palette
+        palette: app.state.palette ? app.state.palette.getStops() : app.state.paletteStops,
     };
     storeItem(STORAGE_KEY, settings);
 }
@@ -161,6 +198,11 @@ function loadSettings() {
     if (saved) {
         Object.assign(app.state.samplerParameters, saved.samplerParameters);
         Object.assign(app.state.page, saved.page);
+        const savedPalette = Array.isArray(saved.palette) ? saved.palette : saved.palette?.stops;
+        app.state.paletteStops = Array.isArray(savedPalette) && savedPalette.length >= 1
+            ? savedPalette
+            : UserGradient.createDefaultStops();
+        inferPageSelection(app.state.page, saved.page);
         return;
     }
 
@@ -176,7 +218,12 @@ function loadSettings() {
             widthMM: 279.4, // 11in
             heightMM: 355.6, // 14in
             penWidthMM: .5,
+            orientation: "portrait",
+            presetKey: "art-11x14",
         },
+        paletteStops: [
+            ...UserGradient.createDefaultStops(),
+        ],
     }
 }
 
@@ -197,9 +244,10 @@ function applySettingsToUI() {
     function mmToIn(mm) {
         return mm / 25.4;
     }
-    app.ui.pageInputs.width.value = 1 * mmToIn(page.widthMM).toFixed(2) + "in";
-    app.ui.pageInputs.height.value = 1 * mmToIn(page.heightMM).toFixed(2) + "in";
-    app.ui.pageInputs.penWidth.value = 1 * page.penWidthMM.toFixed(2) + "mm";
+    app.ui.pageInputs.width.value = `${mmToIn(page.widthMM).toFixed(4)}in`;
+    app.ui.pageInputs.height.value = `${mmToIn(page.heightMM).toFixed(4)}in`;
+    app.ui.pageInputs.penWidth.value = `${page.penWidthMM.toFixed(2)}mm`;
+    syncPresetSelection();
 }
 
 function initUI() {
@@ -224,6 +272,10 @@ function initUI() {
     ui.pageInputs.width = document.getElementById("page-width");
     ui.pageInputs.height = document.getElementById("page-height");
     ui.pageInputs.penWidth = document.getElementById("pen-width");
+    ui.pageInputs.preset = document.getElementById("page-preset");
+    ui.pageInputs.dimensions = document.querySelector("#page-setup-section .dimension-grid");
+    ui.pageInputs.orientation.portrait = document.getElementById("orientation-portrait");
+    ui.pageInputs.orientation.landscape = document.getElementById("orientation-landscape");
 
     // buttons
     ui.buttons.regenerate = document.getElementById("user-regenerate");
@@ -247,24 +299,27 @@ function bindUIEvents() {
         renderToSVG();
     };
 
-    // page inputs
-    ui.pageInputs.width.oninput = () => {
-        initPage();
-        initCanvas();
-        initializeSampler();
-    };
-
-    ui.pageInputs.height.oninput = () => {
-        initPage();
-        initCanvas();
-        initializeSampler();
-    };
-
-    ui.pageInputs.penWidth.oninput = () => {
-        initPage();
-        initCanvas();
-        initializeSampler();
-    };
+    ui.pageInputs.preset.addEventListener("change", applyPagePreset);
+    ui.pageInputs.orientation.portrait.addEventListener("click", () => setOrientation("portrait"));
+    ui.pageInputs.orientation.landscape.addEventListener("click", () => setOrientation("landscape"));
+    [ui.pageInputs.width, ui.pageInputs.height, ui.pageInputs.penWidth].forEach((input) => {
+        input.addEventListener("input", () => {
+            if (input !== ui.pageInputs.penWidth) {
+                ui.pageInputs.preset.value = "custom";
+                ui.pageInputs.dimensions.hidden = false;
+            }
+            validatePageInput(input);
+            if (input !== ui.pageInputs.penWidth) updateOrientationFromInputs();
+        });
+        input.addEventListener("blur", commitPageInputs);
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                commitPageInputs();
+                input.blur();
+            }
+        });
+    });
 
     bindSamplerParameter("radius");
     bindSamplerParameter("attempts");
@@ -277,9 +332,14 @@ function bindUIEvents() {
         const params = app.state.samplerParameters;
 
         function update(value) {
-            params[name] = parseFloat(value);
-            input.value = 1 * params[name].toFixed(2);
-            slider.value = value;
+            const parsedValue = parseFloat(value);
+            params[name] = name === "shadows"
+                ? Math.max(Number.isFinite(parsedValue) ? parsedValue : 0, SHADOW_EPSILON)
+                : parsedValue;
+            input.value = name === "shadows"
+                ? String(params[name])
+                : 1 * params[name].toFixed(2);
+            slider.value = params[name];
             initializeSampler();
         }
 
@@ -289,28 +349,192 @@ function bindUIEvents() {
         input.addEventListener("input", () => {
             update(input.value);
         });
-
-        update(params[name]);
     }
 }
 
-function initPage(reset = false) {
+function initPage() {
     const ui = app.ui.pageInputs;
     const page = app.state.page;
+    const values = {
+        widthMM: parseToMM(ui.width.value, ui.width.id),
+        heightMM: parseToMM(ui.height.value, ui.height.id),
+        penWidthMM: parseToMM(ui.penWidth.value, ui.penWidth.id),
+    };
+    const errors = {
+        width: validateDimension(values.widthMM, true),
+        height: validateDimension(values.heightMM, true),
+        penWidth: validateDimension(values.penWidthMM, false),
+    };
 
-    page.widthMM = min(parseToMM(ui.width.value, ui.width.id), 1625.6);
-    page.heightMM = min(parseToMM(ui.height.value, ui.height.id), 1625.6);
-    page.penWidthMM = parseToMM(ui.penWidth.value, ui.penWidth.id);
+    setPageInputError(ui.width, errors.width);
+    setPageInputError(ui.height, errors.height);
+    setPageInputError(ui.penWidth, errors.penWidth);
+    if (Object.values(errors).some(Boolean)) return false;
+
+    Object.assign(page, values);
+    return true;
+}
+
+function validateDimension(valueMM, isPageDimension) {
+    if (!Number.isFinite(valueMM) || valueMM <= 0) {
+        return "Enter a positive size with a supported unit.";
+    }
+    if (isPageDimension && valueMM > MAX_PAGE_DIMENSION_MM) {
+        return `Maximum page dimension is ${MAX_PAGE_DIMENSION_MM} mm.`;
+    }
+    return "";
+}
+
+function validatePageInput(input) {
+    const isPageDimension = input !== app.ui.pageInputs.penWidth;
+    const valueMM = parseToMM(input.value, input.id);
+    setPageInputError(input, validateDimension(valueMM, isPageDimension));
+}
+
+function setPageInputError(input, message) {
+    const error = document.getElementById(`${input.id}-error`);
+    input.setAttribute("aria-invalid", message ? "true" : "false");
+    error.textContent = message;
+}
+
+function commitPageInputs() {
+    const previous = { ...app.state.page };
+    if (!initPage()) return;
+
+    const page = app.state.page;
+    if (app.ui.pageInputs.preset.value === "custom") {
+        page.presetKey = "custom";
+        if (page.widthMM > page.heightMM) page.orientation = "landscape";
+        else if (page.heightMM > page.widthMM) page.orientation = "portrait";
+    }
+    const changed = page.widthMM !== previous.widthMM ||
+        page.heightMM !== previous.heightMM ||
+        page.penWidthMM !== previous.penWidthMM ||
+        page.orientation !== previous.orientation ||
+        page.presetKey !== previous.presetKey;
+    if (changed) {
+        initCanvas();
+        initializeSampler();
+    } else {
+        saveSettings();
+    }
+    syncPresetSelection();
+}
+
+function applyPagePreset() {
+    const ui = app.ui.pageInputs;
+    const presetKey = ui.preset.value;
+    if (presetKey === "custom") {
+        ui.dimensions.hidden = false;
+        app.state.page.presetKey = "custom";
+        ui.width.value = `${(app.state.page.widthMM / 25.4).toFixed(4)}in`;
+        ui.height.value = `${(app.state.page.heightMM / 25.4).toFixed(4)}in`;
+        saveSettings();
+        return;
+    }
+
+    const preset = PAGE_PRESETS[presetKey];
+    if (!preset) return;
+    const isLandscape = app.state.page.orientation === "landscape";
+    app.state.page.presetKey = presetKey;
+    app.state.page.widthMM = isLandscape ? preset.heightMM : preset.widthMM;
+    app.state.page.heightMM = isLandscape ? preset.widthMM : preset.heightMM;
+    ui.dimensions.hidden = true;
+    ui.width.value = `${(app.state.page.widthMM / 25.4).toFixed(4)}in`;
+    ui.height.value = `${(app.state.page.heightMM / 25.4).toFixed(4)}in`;
+    setPageInputError(app.ui.pageInputs.width, "");
+    setPageInputError(app.ui.pageInputs.height, "");
+    syncOrientationButtons();
+    initCanvas();
+    initializeSampler();
+}
+
+function syncPresetSelection() {
+    const page = app.state.page;
+    app.ui.pageInputs.preset.value = PAGE_PRESETS[page.presetKey] ? page.presetKey : "custom";
+    app.ui.pageInputs.dimensions.hidden = app.ui.pageInputs.preset.value !== "custom";
+    syncOrientationButtons();
+}
+
+function syncOrientationButtons() {
+    const isPortrait = app.state.page.orientation !== "landscape";
+    app.ui.pageInputs.orientation.portrait.setAttribute("aria-pressed", String(isPortrait));
+    app.ui.pageInputs.orientation.landscape.setAttribute("aria-pressed", String(!isPortrait));
+}
+
+function inferPageSelection(page, savedPage) {
+    if (PAGE_PRESETS[savedPage.presetKey] && ["portrait", "landscape"].includes(savedPage.orientation)) {
+        return;
+    }
+
+    const match = Object.entries(PAGE_PRESETS).find(([, preset]) =>
+        (Math.abs(preset.widthMM - page.widthMM) < 0.01 && Math.abs(preset.heightMM - page.heightMM) < 0.01) ||
+        (Math.abs(preset.heightMM - page.widthMM) < 0.01 && Math.abs(preset.widthMM - page.heightMM) < 0.01)
+    );
+    if (match) {
+        const [, preset] = match;
+        page.presetKey = match[0];
+        page.orientation = page.widthMM > page.heightMM ? "landscape" : "portrait";
+        if (preset.widthMM === preset.heightMM) page.orientation = "portrait";
+        return;
+    }
+
+    page.presetKey = "custom";
+    page.orientation = page.widthMM > page.heightMM ? "landscape" : "portrait";
+}
+
+function updateOrientationFromInputs() {
+    const ui = app.ui.pageInputs;
+    const widthMM = parseToMM(ui.width.value, ui.width.id);
+    const heightMM = parseToMM(ui.height.value, ui.height.id);
+    if (validateDimension(widthMM, true) || validateDimension(heightMM, true)) return;
+    if (widthMM > heightMM) app.state.page.orientation = "landscape";
+    else if (heightMM > widthMM) app.state.page.orientation = "portrait";
+    syncOrientationButtons();
+}
+
+function setOrientation(orientation) {
+    const page = app.state.page;
+    const ui = app.ui.pageInputs;
+    if (orientation === page.orientation) return;
+
+    if (ui.preset.value === "custom") {
+        if (!initPage()) return;
+        if ((orientation === "landscape" && page.widthMM < page.heightMM) ||
+            (orientation === "portrait" && page.heightMM < page.widthMM)) {
+            [page.widthMM, page.heightMM] = [page.heightMM, page.widthMM];
+        }
+        page.presetKey = "custom";
+        page.orientation = orientation;
+        ui.width.value = `${(page.widthMM / 25.4).toFixed(4)}in`;
+        ui.height.value = `${(page.heightMM / 25.4).toFixed(4)}in`;
+    } else {
+        const preset = PAGE_PRESETS[page.presetKey];
+        if (!preset) return;
+        page.orientation = orientation;
+        page.widthMM = orientation === "landscape" ? preset.heightMM : preset.widthMM;
+        page.heightMM = orientation === "landscape" ? preset.widthMM : preset.heightMM;
+    }
+
+    syncOrientationButtons();
+    initCanvas();
+    initializeSampler();
 }
 
 function initSamplerParameters() {
     const sliders = app.ui.sliders;
+    const inputs = app.ui.textInputs;
     const params = app.state.samplerParameters;
 
     params.radius = parseFloat(sliders.radius.value);
     params.attempts = parseInt(sliders.attempts.value);
-    params.shadows = parseFloat(sliders.shadows.value);
+    params.shadows = Math.max(parseFloat(sliders.shadows.value) || 0, SHADOW_EPSILON);
     params.highlights = parseFloat(sliders.highlights.value);
+
+    for (const key of Object.keys(sliders)) {
+        sliders[key].value = params[key];
+        inputs[key].value = key === "shadows" ? String(params[key]) : params[key];
+    }
 }
 
 function initCanvas() {
@@ -367,9 +591,6 @@ function initCanvas() {
     // ---- compute render metrics ----
     app.render.strokeWidth =
         page.penWidthMM * app.render.pixelsPerMM;
-
-    app.render.circleRadius =
-        app.render.strokeWidth / 2;
 
     strokeWeight(app.render.strokeWidth);
     noFill();
@@ -489,11 +710,14 @@ function renderToSVG() {
 // helper functions
 function parseToMM(value, fieldName) {
     try {
+        value = value.trim();
+        if (!value) return null;
         if (!/[a-zA-Z]/.test(value)) {
             value = value + " mm";
         }
         const unit = math.unit(value);
-        return unit.to("mm").toNumber("mm");
+        const valueMM = unit.to("mm").toNumber("mm");
+        return Number.isFinite(valueMM) ? valueMM : null;
 
     } catch (err) {
         console.warn(`Invalid unit in ${fieldName}:`, value);
@@ -553,27 +777,23 @@ function domToP5Image() {
 }
 
 function channelValToColor(val) {
-    const stops = app.state.palette.stops;
-
-    if (!stops || stops.length === 0) {
+    if (!app.state.palette || typeof app.state.palette.sample !== "function") {
         return color(0);
     }
 
-    // undo the shadow exponentiation
-    const adjustedVal = Math.pow(val, 1 / app.state.samplerParameters.shadows);
+    const channelValue = Number.isFinite(val) ? Math.max(0, Math.min(1, val)) : 0;
+    const shadowExponent = Number.isFinite(app.state.samplerParameters.shadows)
+        ? Math.max(app.state.samplerParameters.shadows, SHADOW_EPSILON)
+        : SHADOW_EPSILON;
+    const adjustedVal = Math.pow(channelValue, 1 / shadowExponent);
 
-    if (stops.length === 1) {
-        return color(stops[0].color);
+    try {
+        const sampledColor = app.state.palette.sample(adjustedVal);
+        return typeof sampledColor === "string" && sampledColor.length > 0
+            ? color(sampledColor)
+            : color(0);
+    } catch (error) {
+        console.warn("Palette color sampling failed:", error);
+        return color(0);
     }
-
-    for (let i = 0; i < stops.length - 1; i++) {
-        const a = stops[i];
-        const b = stops[i + 1];
-
-        if (adjustedVal >= a.t && adjustedVal <= b.t) {
-            return a.color
-        }
-    }
-
-    return color(stops[stops.length - 1].color);
 }

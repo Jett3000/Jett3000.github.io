@@ -57,8 +57,6 @@ class DensityPoissonSampler {
     // alert if no sample placed
     if (!found) {
       alert('no valid pixels in image')
-    } else {
-      console.log('constructed sampler');
     }
   };
 

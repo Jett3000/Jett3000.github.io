@@ -2,104 +2,179 @@
 <html data-bs-theme="light" lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Stipple Studio</title>
-    <meta name="twitter:card" content="summary">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Jett Pavlica's Portfolio">
-    <meta property="og:image" content="https://jett.codes/assets/img/thumbnails/stipple-studio-cover.png">
-    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
-    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
-    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/Atkinson%20Hyperlegible%20Mono.css">
-    <link rel="stylesheet" href="assets/css/playground/stipple-studio-styles.css">
-    <link rel="stylesheet" href="assets/css/playground/user-gradient-styles.css">
-<script src="https://cdn.jsdelivr.net/npm/heic2any"></script>
-<script src="https://cdn.jsdelivr.net/npm/mathjs@11/lib/browser/math.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Stipple Studio</title>
+  <meta name="twitter:card" content="summary">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Jett Pavlica's Portfolio">
+  <meta property="og:image" content="https://jett.codes/assets/img/thumbnails/stipple-studio-cover.png">
+  <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
+  <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg"
+    media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/Atkinson%20Hyperlegible%20Mono.css">
+  <link rel="stylesheet" href="assets/css/playground/stipple-studio-styles.css">
+  <link rel="stylesheet" href="assets/css/playground/user-gradient-styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/heic2any"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@11/lib/browser/math.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"
     integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://unpkg.com/p5.js-svg@1.5.1"></script>
 </head>
 
-<body>
-    <div id="app-container">
-        <div id="canvas-container">
-            <h1 id="p5_loading">loading stipple studio...</h1>
+<body class="studio-app">
+  <div id="app-container">
+    <div id="canvas-container">
+      <h1 id="p5_loading">loading stipple studio...</h1>
+    </div>
+    <aside id="control-sidebar">
+      <div class="sidebar-heading">
+        <h2 class="app-title">Stipple Studio</h2>
+      </div>
+      <div class="section-content" id="upload-section">
+        <label class="custom-file-upload panel-button" for="file-upload"> Upload Image </label>
+        <button id="user-download-svg" class="panel-button" type="button">Export SVG</button>
+        <button id="user-download-png" class="panel-button" type="button">Export PNG</button>
+        <p id="count-label" class="panel-element">Samples:<br /> 0</p>
+        <button id="user-regenerate" class="panel-element" type="button">Regenerate</button>
+      </div>
+      <details open id="generation-section" class="control-section">
+        <summary>Generation Settings</summary>
+
+        <div class="section-content">
+
+          <div class="param-group">
+            <div class="param-row">
+              <label for="attempts-slider">Attempts</label>
+              <input id="attempts-input" type="number" min="1" max="40" step="1" />
+            </div>
+            <input id="attempts-slider" type="range" max="40" min="1" step="1" />
+          </div>
+
+          <div class="param-group">
+            <div class="param-row">
+              <label for="radius-slider">Spawn Radius</label>
+              <input id="radius-input" type="number" min="1" max="5" step="0.01" />
+            </div>
+            <input id="radius-slider" type="range" max="5" min="1" step="0.001" />
+          </div>
+
+          <div class="param-group">
+            <div class="param-row">
+              <label for="highlights-slider">Highlights</label>
+              <input id="highlights-input" type="number" min="1" max="25" step="1" />
+            </div>
+            <input id="highlights-slider" type="range" max="25" min="1" step="1" />
+          </div>
+
+          <div class="param-group">
+            <div class="param-row">
+              <label for="shadows-slider">Shadows</label>
+              <input id="shadows-input" type="number" min="0" max="12" step="0.001" />
+            </div>
+            <input id="shadows-slider" type="range" max="12" min="0" step="0.001" />
+          </div>
+
         </div>
-        <aside id="control-sidebar">
-            <h2 class="app-title">Stipple Studio</h2>
-  <div class="section-content" id="upload-section">
-    <label class="custom-file-upload panel-button" for="file-upload"> Upload Image </label>
-    <button id="user-download-svg" class="panel-button" type="button">Export SVG</button>
-    <button id="user-download-png" class="panel-button" type="button">Export PNG</button>
-    <p style="color:white" id="count-label" class="panel-element">Samples:<br /> 0</p>
-    <button id="user-regenerate" class="panel-element" type="button">Regenerate</button>
-  </div><details open id="generation-section" class="control-section">
-  <summary>Generation Settings</summary>
+      </details>
+      <details open id="page-setup-section" class="control-section">
+        <summary>Page Setup</summary>
+        <div class="section-content">
+          <div class="page-preset-field">
+            <label for="page-preset">Paper size</label>
+            <select id="page-preset">
+              <optgroup label="Custom">
+                <option value="custom">Custom size</option>
+              </optgroup>
+              <optgroup label="Fine art">
+                <option value="art-5x7">5 x 7 in</option>
+                <option value="art-8x10">8 x 10 in</option>
+                <option value="art-9x12">9 x 12 in</option>
+                <option value="art-11x14">11 x 14 in</option>
+                <option value="art-12x16">12 x 16 in</option>
+                <option value="art-16x20">16 x 20 in</option>
+                <option value="art-18x24">18 x 24 in</option>
+                <option value="art-20x24">20 x 24 in</option>
+                <option value="art-24x30">24 x 30 in</option>
+                <option value="art-24x36">24 x 36 in</option>
+              </optgroup>
+              <optgroup label="Architectural">
+                <option value="arch-a">Arch A - 9 x 12 in</option>
+                <option value="arch-b">Arch B - 12 x 18 in</option>
+                <option value="arch-c">Arch C - 18 x 24 in</option>
+                <option value="arch-d">Arch D - 24 x 36 in</option>
+                <option value="arch-e">Arch E - 36 x 48 in</option>
+              </optgroup>
+              <optgroup label="ISO A series">
+                <option value="a4">A4 - 210 x 297 mm</option>
+                <option value="a5">A5 - 148 x 210 mm</option>
+                <option value="a3">A3 - 297 x 420 mm</option>
+                <option value="a2">A2 - 420 x 594 mm</option>
+                <option value="a1">A1 - 594 x 841 mm</option>
+                <option value="a0">A0 - 841 x 1189 mm</option>
+              </optgroup>
+              <optgroup label="US standard">
+                <option value="letter">US Letter - 8.5 x 11 in</option>
+                <option value="legal">US Legal - 8.5 x 14 in</option>
+                <option value="tabloid">Tabloid - 11 x 17 in</option>
+              </optgroup>
 
-  <div class="section-content">
-
-    <div class="param-group">
-      <div class="param-row">
-        <label for="attempts-slider">Attempts</label>
-        <input id="attempts-input" type="number" min="1" max="40" step="1" />
-      </div>
-      <input id="attempts-slider" type="range" max="40" min="1" step="1" />
-    </div>
-
-    <div class="param-group">
-      <div class="param-row">
-        <label for="radius-slider">Spawn Radius</label>
-        <input id="radius-input" type="number" min="1" max="5" step="0.01" />
-      </div>
-      <input id="radius-slider" type="range" max="5" min="1" step="0.001" />
-    </div>
-
-    <div class="param-group">
-      <div class="param-row">
-        <label for="highlights-slider">Highlights</label>
-        <input id="highlights-input" type="number" min="1" max="25" step="1" />
-      </div>
-      <input id="highlights-slider" type="range" max="25" min="1" step="1" />
-    </div>
-
-    <div class="param-group">
-      <div class="param-row">
-        <label for="shadows-slider">Shadows</label>
-        <input id="shadows-input" type="number" min="0" max="12" step="0.1" />
-      </div>
-      <input id="shadows-slider" type="range" max="12" min="0" step="0.1" />
-    </div>
-
-  </div>
-</details><details open id="page-setup-section" class="control-section">
-  <summary>Page Setup</summary>
-  <div class="section-content">
-    <label for="page-width">width</label>
-    <input id="page-width" type="text" value="11in" />
-    <label for="page-height">height</label>
-    <input id="page-height" type="text" value="14in"/>
-    <label for="pen-width">pen width</label>
-    <input id="pen-width" type="text" value="0.5mm"/>
-  </div>
-</details>  <details open class="control-section">
+            </select>
+          </div>
+          <div class="orientation-control" role="group" aria-label="Page orientation">
+            <button id="orientation-portrait" class="orientation-button" type="button" aria-label="Portrait orientation"
+              aria-pressed="false" title="Portrait">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <rect x="6.5" y="3.5" width="11" height="17" rx="1.5" />
+              </svg>
+              <span>Portrait</span>
+            </button>
+            <button id="orientation-landscape" class="orientation-button" type="button"
+              aria-label="Landscape orientation" aria-pressed="false" title="Landscape">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <rect x="3.5" y="6.5" width="17" height="11" rx="1.5" />
+              </svg>
+              <span>Landscape</span>
+            </button>
+          </div>
+          <div class="dimension-grid" hidden>
+            <div class="dimension-field">
+              <label for="page-width">Width </label>
+              <input id="page-width" type="text" value="11in" inputmode="decimal" autocomplete="off"
+                aria-describedby="page-width-error" />
+              <small class="field-error" id="page-width-error" aria-live="polite"></small>
+            </div>
+            <div class="dimension-field">
+              <label for="page-height">Height </label>
+              <input id="page-height" type="text" value="14in" inputmode="decimal" autocomplete="off"
+                aria-describedby="page-height-error" />
+              <small class="field-error" id="page-height-error" aria-live="polite"></small>
+            </div>
+          </div>
+          <div class="dimension-field pen-width-field">
+            <label for="pen-width">Pen width <span>mm</span></label>
+            <input id="pen-width" type="text" value="0.5mm" inputmode="decimal" autocomplete="off"
+              aria-describedby="pen-width-error" />
+            <small class="field-error" id="pen-width-error" aria-live="polite"></small>
+          </div>
+        </div>
+      </details>
+      <details open class="control-section">
         <summary>Palette</summary>
         <div class="section-content">
-            <div id="gradient-editor"></div>
-            
-        
+          <div id="gradient-editor"></div>
+
+
         </div>
       </details><a role="button" id="user-guide" href="stipple-studio-guide.html">User Guide</a>
-        </aside>
-    </div>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/DensityPoissonSampler.js"></script>
-    <script src="assets/js/StippleStudio.js"></script>
-    <script src="assets/js/UserGradient.js"></script>
+    </aside>
+  </div>
+  <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+  <script src="assets/js/DensityPoissonSampler.js"></script>
+  <script src="assets/js/StippleStudio.js"></script>
+  <script src="assets/js/UserGradient.js"></script>
 </body>
 
 </html>

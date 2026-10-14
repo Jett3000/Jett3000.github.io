@@ -1,20 +1,217 @@
-.gradient-bar {
-  position: relative;
-  height: 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: white 1px solid;
-  margin-bottom: var(--sm-margin);
+#gradient-editor .gradient-editor {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+    padding-top: 2px;
 }
 
-.gradient-stop {
-  position: absolute;
-  top: -4px;
-  width: 12px;
-  height: 28px;
-  border: 2px solid white;
-  border-radius: 3px;
-  transform: translateX(-50%);
-  cursor: grab;
+#gradient-editor .gradient-bar {
+    position: relative;
+    height: 28px;
+    margin: 0 1px 34px;
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(248, 200, 220, 0.04);
+    cursor: crosshair;
+    touch-action: pan-y;
 }
 
+#gradient-editor .gradient-stop {
+    position: absolute;
+    top: calc(100% + 6px);
+    z-index: 1;
+    display: grid;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    place-items: center;
+    transform: translateX(-50%);
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: grab;
+    touch-action: none;
+}
+
+#gradient-editor .gradient-stop::before {
+    width: 17px;
+    height: 17px;
+    border: 2px solid #fff7fb;
+    border-radius: 4px;
+    background: var(--stop-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    content: "";
+}
+
+#gradient-editor .gradient-stop:hover::before,
+#gradient-editor .gradient-stop.is-selected::before {
+    border-color: #f8c8dc;
+    box-shadow: 0 0 0 2px rgba(248, 200, 220, 0.12), 0 0 5px rgba(248, 200, 220, 0.18);
+}
+
+#gradient-editor .gradient-stop:active {
+    cursor: grabbing;
+}
+
+#gradient-editor .gradient-stop:focus-visible {
+    outline: 2px solid #f8c8dc;
+    outline-offset: 1px;
+}
+
+#gradient-editor .gradient-preset-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    min-width: 0;
+}
+
+#gradient-editor .gradient-preset-button {
+    min-height: 36px;
+    padding: 7px 10px;
+    border: 1px solid #493542;
+    border-radius: 5px;
+    background: linear-gradient(115deg, #151017, #0d0b10 72%);
+    color: #fff7fb;
+    font: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+}
+
+#gradient-editor .gradient-preset-button:hover {
+    border-color: #f8c8dc;
+    background: linear-gradient(115deg, rgba(248, 200, 220, 0.18), rgba(189, 154, 255, 0.1));
+    box-shadow: 0 0 12px rgba(248, 200, 220, 0.08);
+}
+
+#gradient-editor .gradient-preset-button:focus-visible {
+    outline: 2px solid #f8c8dc;
+    outline-offset: 2px;
+}
+
+#gradient-editor .gradient-stop-inspector {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(88px, 0.72fr);
+    align-items: end;
+    gap: 10px;
+    min-width: 0;
+    padding-top: 2px;
+}
+
+#gradient-editor .gradient-inspector-field {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+    color: #fff7fb;
+    font-size: 0.74rem;
+}
+
+#gradient-editor .gradient-inspector-field>span {
+    text-align: center;
+}
+
+#gradient-editor .gradient-inspector-field input {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: 7px 9px;
+    border: 1px solid #493542;
+    border-radius: 5px;
+    outline: none;
+    background: #08070a;
+    color: #fff7fb;
+    font: inherit;
+    font-size: 0.82rem;
+}
+
+#gradient-editor .gradient-inspector-field input:focus-visible {
+    border-color: #f8c8dc;
+    outline: 2px solid #f8c8dc;
+    outline-offset: 2px;
+    box-shadow: 0 0 14px rgba(248, 200, 220, 0.14);
+}
+
+#gradient-editor .gradient-inspector-field input[aria-invalid="true"] {
+    border-color: #ff8d91;
+}
+
+#gradient-editor .gradient-inspector-field input:disabled {
+    color: #bbaeb8;
+    background: #111014;
+    cursor: not-allowed;
+}
+
+#gradient-editor .gradient-field-error {
+    min-height: 0;
+    color: #ff9b9e;
+    font-size: 0.66rem;
+    line-height: 1.35;
+}
+
+#gradient-editor .gradient-field-error:empty {
+    display: none;
+}
+
+#gradient-editor .gradient-picker-button,
+#gradient-editor .gradient-remove-button {
+    min-height: 38px;
+    padding: 7px 9px;
+    border: 1px solid #493542;
+    border-radius: 5px;
+    background: linear-gradient(115deg, #151017, #0d0b10 72%);
+    color: #fff7fb;
+    font: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+}
+
+#gradient-editor .gradient-picker-button {
+    grid-column: 1;
+}
+
+#gradient-editor .gradient-remove-button {
+    grid-column: 2;
+}
+
+#gradient-editor .gradient-picker-button:hover,
+#gradient-editor .gradient-remove-button:not(:disabled):hover {
+    border-color: #f8c8dc;
+    background: linear-gradient(115deg, rgba(248, 200, 220, 0.18), rgba(189, 154, 255, 0.1));
+    box-shadow: 0 0 16px rgba(248, 200, 220, 0.1);
+}
+
+#gradient-editor .gradient-picker-button:focus-visible,
+#gradient-editor .gradient-remove-button:focus-visible {
+    outline: 2px solid #f8c8dc;
+    outline-offset: 2px;
+}
+
+#gradient-editor .gradient-remove-button:disabled {
+    border-color: #30262f;
+    color: #837783;
+    cursor: not-allowed;
+}
+
+#gradient-editor .gradient-native-picker {
+    position: fixed;
+    z-index: 1000;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 420px) {
+    #gradient-editor .gradient-stop-inspector {
+        grid-template-columns: minmax(0, 1fr) minmax(76px, 0.7fr);
+        gap: 8px;
+    }
+
+    #gradient-editor .gradient-picker-button,
+    #gradient-editor .gradient-remove-button {
+        padding-inline: 6px;
+        font-size: 0.68rem;
+    }
+}
