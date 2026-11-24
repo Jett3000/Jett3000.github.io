@@ -4,63 +4,131 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Projects by Jett</title>
+    <title>Works by Jett Pavlica</title>
     <meta name="twitter:card" content="summary">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Jett Pavlica's Portfolio">
     <meta property="og:image" content="https://jett.codes/assets/img/headshot-in-pink.webp">
     <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
-    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg"
+        media="(prefers-color-scheme: dark)">
     <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg">
-    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/svg+xml" sizes="96x96" href="assets/img/new-sig.svg"
+        media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Atkinson%20Hyperlegible%20Mono.css">
     <link rel="stylesheet" href="assets/css/glass.css">
     <link rel="stylesheet" href="assets/css/sitewide-styles.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+    <link rel="stylesheet" href="assets/css/works-styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
 </head>
 
-<body id="body" style="background-color: var(--pink);"><a class="home-button glass-card" href="index.html"><img class="img-fluid" width="548" height="550" src="assets/img/home-icon.webp"></a>
-    <main class="main-content">
-        <div id="page-title" class="glass-card">
-            <h1>Digital Design Projects</h1>
-        </div>
-        <p>Websites</p>
-        <div class="nav-card-grid"><a class="grid-link" href="https://constellationcollective.art">
-                <div class="grid-card glass-card"><img class="img-fluid grid-card-image" width="3040" height="1710" src="assets/img/thumbnails/cc-screenshot.webp">
-                    <p class="grid-card-title">Constellation Collective</p>
-                </div>
-            </a><a class="grid-link" href="https://www.gillespieconsulting.org/">
-                <div class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2856" height="1606" src="assets/img/thumbnails/gc-screenshot.webp">
-                    <p class="grid-card-title">Gillespie Consulting</p>
-                </div>
-            </a><a class="grid-link" href="https://durmpac.art">
-                <div class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2000" height="1125" src="assets/img/thumbnails/dp-screenshot.webp">
-                    <p class="grid-card-title">Durham Powerful Arts Collective</p>
-                </div>
-            </a><a class="grid-link" href="https://haptichappenings.github.io/">
-                <div class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2500" height="1406" src="assets/img/thumbnails/hh-screenshot.webp">
-                    <p class="grid-card-title">Haptic Happenings</p>
-                </div>
-            </a><a class="grid-link" href="index.html">
-                <div class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2000" height="1125" src="assets/img/thumbnails/portfolio-screenshot.webp">
-                    <p class="grid-card-title">and the site you're on!</p>
-                </div>
-            </a></div>
-        <p>Digital Zines</p>
-        <div class="nav-card-grid"><a class="grid-link" href="https://durmpac.art/uproot-zine.html">
-                <div class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2000" height="1125" src="assets/img/thumbnails/uproot-cover.webp">
-                    <p class="grid-card-title">UPROOT: BIPOC Visions of our Food System</p>
-                </div>
-            </a><a class="grid-link" href="https://jett.codes/prototype/cover.html">
-                <div class="grid-card glass-card"><img class="img-fluid grid-card-image" width="3182" height="1790" src="assets/img/thumbnails/prototype-cover.png">
-                    <p class="grid-card-title"><em>PROTOTYPE</em></p>
-                </div>
-            </a><a class="grid-link" href="https://durmpac.art/sawubona-zine.html">
-                <div class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2000" height="1125" src="assets/img/thumbnails/sawubona-cover.webp">
-                    <p class="grid-card-title">Sawubona</p>
-                </div>
-            </a></div>
+<body id="body" style="background-color: var(--pink);"><a class="home-button glass-card" href="index.html"
+        aria-label="Back to home"><img class="img-fluid" width="548" height="550" src="assets/img/home-icon.webp"></a>
+    <main class="works-main">
+        <section class="works-section" aria-labelledby="selected-work-heading">
+            <h2 class="section-label glass-card" id="selected-work-heading">selected work</h2>
+            <div class="featured-grid">
+                <a class="featured-project" href="https://durmpac.art/uproot-zine.html">
+                    <article class="grid-card glass-card">
+                        <img class="img-fluid grid-card-image" width="2000" height="1125"
+                            src="assets/img/thumbnails/uproot-thumbnail.gif" alt="UPROOT zine cover">
+                        <span class="project-meta">digital publication</span>
+                        <p class="grid-card-title">UPROOT: BIPOC Visions of our Food System</p>
+                    </article>
+                </a>
+                <a class="featured-project" href="https://www.gillespieconsulting.org/">
+                    <article class="grid-card glass-card">
+                        <img class="img-fluid grid-card-image" width="2856" height="1606"
+                            src="assets/img/thumbnails/gillespie-consulting.gif" alt="Gillespie Consulting website">
+                        <span class="project-meta">website</span>
+                        <p class="grid-card-title">Gillespie Consulting</p>
+                    </article>
+                </a>
+            </div>
+        </section>
+
+        <section class="works-section playground-section" aria-labelledby="playground-heading">
+            <h2 class="section-label glass-card" id="playground-heading">playground</h2>
+            <div class="playground-grid">
+
+                <a class="playground-project" href="ssd.html">
+                    <article class="grid-card glass-card">
+                        <img class="img-fluid grid-card-image" width="6000" height="3336"
+                            src="assets/img/thumbnails/ssd-thumbnail.gif" alt="Soli State Drive interface">
+                        <span class="project-meta">generative system</span>
+                        <p class="grid-card-title">Soli State Drive</p>
+                    </article>
+                </a>
+                <a class="playground-project" href="stipple-studio.html">
+                    <article class="grid-card glass-card">
+                        <img class="img-fluid grid-card-image" width="3001" height="1688"
+                            src="assets/img/thumbnails/stipple-studio-thumbnail.gif" alt="Stipple Studio interface">
+                        <span class="project-meta">interactive tool</span>
+                        <p class="grid-card-title">Stipple Studio</p>
+                    </article>
+                </a>
+            </div>
+        </section>
+
+        <section class="works-section" aria-labelledby="more-work-heading">
+            <h2 class="section-label glass-card" id="more-work-heading">more work</h2>
+            <div class="more-grid">
+                <a class="more-project" href="https://constellationcollective.art">
+                    <article class="grid-card glass-card"><img class="img-fluid grid-card-image" width="3040"
+                            height="1710" src="assets/img/thumbnails/cc-screenshot.webp" alt="">
+                        <p class="grid-card-title">Constellation Collective</p>
+                    </article>
+                </a>
+                <a class="more-project" href="https://durmpac.art">
+                    <article class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2000"
+                            height="1125" src="assets/img/thumbnails/dp-screenshot.webp" alt="">
+                        <p class="grid-card-title">Durham Powerful Arts Collective</p>
+                    </article>
+                </a>
+                <a class="more-project" href="https://haptichappenings.github.io/">
+                    <article class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2500"
+                            height="1406" src="assets/img/thumbnails/hh-screenshot.webp" alt="">
+                        <p class="grid-card-title">Haptic Happenings</p>
+                    </article>
+                </a>
+                <a class="more-project" href="https://jett.codes/prototype/cover.html">
+                    <article class="grid-card glass-card"><img class="img-fluid grid-card-image" width="3182"
+                            height="1790" src="assets/img/thumbnails/prototype-cover.png" alt="">
+                        <p class="grid-card-title"><em>PROTOTYPE</em></p>
+                    </article>
+                </a>
+                <a class="more-project" href="https://durmpac.art/sawubona-zine.html">
+                    <article class="grid-card glass-card"><img class="img-fluid grid-card-image" width="2000"
+                            height="1125" src="assets/img/thumbnails/sawubona-cover.webp" alt="">
+                        <p class="grid-card-title">Sawubona</p>
+                    </article>
+                </a>
+            </div>
+        </section>
+
+        <section class="works-section" aria-labelledby="practice-heading">
+            <h2 class="section-label glass-card" id="practice-heading">art + exhibitions</h2>
+            <div class="practice-grid">
+                <img class="practice-image" width="1255" height="683" src="assets/img/mesh-dots.webp"
+                    alt="Computational pen-plotter work">
+                <article class="practice-copy glass-card">
+                    <p>Jett is a computational artist and pen plotter. Designs begin in code and grow from observations
+                        of nature, lived experience, math, and other sources of inspiration.</p>
+                    <ul>
+                        <li>The Boulder Garden — 2025 — Durham, NC</li>
+                        <li>To Be Here Now Is To Be — 2025 — Hillsborough, NC</li>
+                        <li>Haptic Happenings — 2024 — Durham, NC</li>
+                        <li>Weird Art Productions — 2024 — Raleigh, NC</li>
+                        <li>We Don't Care — 2023 — Durham, NC</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <a class="works-contact glass-card" href="contact.html">
+            <strong>Want to make something together?</strong>
+        </a>
     </main>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/background-shader.js"></script>
