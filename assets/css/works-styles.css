@@ -160,11 +160,18 @@
   text-align: center;
 }
 
+.works-contact:hover {
+  backdrop-filter: brightness(.3);
+}
+
 .works-contact strong {
-  max-width: 20ch;
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: clamp(1rem, 3vw, 2rem);
   line-height: 1.15;
   font-weight: 700;
+}
+
+.works-contact-prefix {
+  white-space: nowrap;
 }
 
 .works-contact-action {

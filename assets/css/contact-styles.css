@@ -41,12 +41,6 @@
   white-space: nowrap;
 }
 
-.contact-rotating-word {
-  /* text-decoration: underline; */
-  text-decoration-thickness: 0.06em;
-  text-underline-offset: 0.12em;
-}
-
 .contact-intro p {
   max-width: 48ch;
   line-height: 1.5;

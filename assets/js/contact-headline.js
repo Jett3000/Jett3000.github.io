@@ -1,8 +1,8 @@
 (() => {
-  const ending = document.querySelector(".contact-rotating-word");
-  if (!ending || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const endings = document.querySelectorAll(".rotating-word");
+  if (!endings.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const endings = [
+  const phrases = [
     "create together",
     "collaborate on something",
     "run an experiment",
@@ -19,16 +19,14 @@
     "have a gossip sesh",
     "see what I look like on Zoom",
     "set a meeting",
-    "draw something up"
+    "draw something up",
+    "make something together"
   ];
 
-  for (let i = endings.length - 1; i > 0; i--) {
+  for (let i = phrases.length - 1; i > 0; i--) {
     const randomIndex = Math.floor(Math.random() * (i + 1));
-    [endings[i], endings[randomIndex]] = [endings[randomIndex], endings[i]];
+    [phrases[i], phrases[randomIndex]] = [phrases[randomIndex], phrases[i]];
   }
-
-  let index = 0;
-  ending.textContent = endings[index];
 
   const wait = (milliseconds) => new Promise((resolve) => {
     window.setTimeout(resolve, milliseconds);
@@ -38,25 +36,30 @@
     return base + Math.floor(Math.random() * variation);
   };
 
-  async function replaceEnding(nextEnding) {
-    while (ending.textContent.length > 0) {
-      ending.textContent = ending.textContent.slice(0, -1);
+  async function replaceEnding(element, nextEnding) {
+    while (element.textContent.length > 0) {
+      element.textContent = element.textContent.slice(0, -1);
       await wait(variableDelay(32, 16));
     }
 
     for (const character of nextEnding) {
-      ending.textContent += character;
+      element.textContent += character;
       await wait(variableDelay(82, 58));
     }
   }
 
-  async function rotate() {
+  async function rotate(element, startIndex) {
+    let index = startIndex;
+    element.textContent = phrases[index];
+
     while (true) {
       await wait(variableDelay(1800, 500));
-      index = (index + 1) % endings.length;
-      await replaceEnding(endings[index]);
+      index = (index + 1) % phrases.length;
+      await replaceEnding(element, phrases[index]);
     }
   }
 
-  rotate();
+  endings.forEach((ending, elementIndex) => {
+    rotate(ending, elementIndex % phrases.length);
+  });
 })();
