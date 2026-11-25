@@ -21,11 +21,12 @@ export class Board {
         });
 
         // ---------- build piles ----------
-        // each pile simply stores its high card
+        // buildpiles[pileIndex] = rank of top card in build pile,
+        // or -2/-3/-4/-5 for empty piles (one per suit)
         this.buildpiles = [-2, -3, -4, -5] // special flags for each initial buildpile
 
         // ---------- draw pile ----------
-        // Initially empty; we reveal from deck
+        // populated by user with "reveal cards" move
         this.drawpile = [];
 
         // ---------- deck slot (bank) ----------

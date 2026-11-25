@@ -161,11 +161,6 @@ const sketch = (p) => {
             });
             const creditLine = document.getElementById('credit-line');
             creditLine.innerHTML = creditLine.innerHTML.replaceAll('|', "<br>-<br>");
-
-            if (!p.getItem('mobileAlert')) {
-                alert('come back on a desktop for more features :)');
-                p.storeItem('mobileAlert', true);
-            }
         }
 
         // fade in ui
@@ -330,7 +325,6 @@ const sketch = (p) => {
             autoAllowance--
 
             if (treeMode) {
-                debugger;
                 let termNodes = [];
                 for (let node of graphNodes) {
                     if (node.potentialMoves.length || node.oddMoves.length) {
@@ -360,8 +354,7 @@ const sketch = (p) => {
             } else if (lastNode.oddMoves.length) {
                 p.progressNode(lastNode, lastNode.oddMoves.shift());
                 return;
-            }
-            if (backtracking && lastNode.parent) {
+            } else if (backtracking && lastNode.parent) {
                 lastNode = lastNode.parent;
                 autoAllowance++;
                 return;
